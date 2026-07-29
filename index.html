@@ -375,12 +375,10 @@ nav a.nav-cta:hover { background: var(--saffron); }
 /* FIX: Filters as horizontally scrollable row on mobile — no wrapping clutter */
 .filters {
   display: flex; gap: 7px; margin-bottom: 36px;
-  /* FIX: Horizontal scroll on narrow screens instead of ugly wrapping */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: 4px;
-  /* FIX: Extend clickable area slightly */
   -ms-overflow-style: none;
 }
 .filters::-webkit-scrollbar { display: none; }
@@ -388,7 +386,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
   padding: 9px 18px; border: 1.5px solid var(--line); border-radius: var(--pill);
   background: var(--white); font-size: .76rem; font-weight: 600; color: var(--muted);
   transition: all .18s;
-  /* FIX: Don't shrink on mobile — keeps readable size */
   white-space: nowrap; flex-shrink: 0;
   min-height: 44px;
 }
@@ -419,6 +416,15 @@ nav a.nav-cta:hover { background: var(--saffron); }
 .mcard-body h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 6px; }
 .mcard-desc { font-size: .79rem; color: var(--muted); line-height: 1.7; margin-bottom: 14px; flex: 1; }
 
+.size-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.size-btn {
+  flex: 1; padding: 9px 6px; border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  background: var(--warm); font-size: .72rem; font-weight: 700; color: var(--muted);
+  transition: all .18s; min-height: 40px;
+}
+.size-btn:hover { border-color: var(--saffron); color: var(--saffron-d); }
+.size-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
 .price-row {
   display: flex; justify-content: space-between; align-items: baseline;
   border-top: 1px solid var(--line); padding-top: 12px; margin-bottom: 12px;
@@ -426,7 +432,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
 .price-row .pr { font-family: var(--serif); font-size: 1.35rem; color: var(--saffron); }
 .price-row .pu { font-size: .7rem; color: var(--muted); font-weight: 600; }
 
-/* FIX: Qty wrap with proper touch targets */
 .qty-wrap {
   display: flex; align-items: center; background: var(--warm);
   border-radius: var(--pill); overflow: hidden; width: fit-content;
@@ -446,7 +451,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
   background: none; border: none; font-size: .72rem; font-weight: 600;
   color: var(--muted); padding: 4px 0; margin-bottom: 9px;
   text-decoration: underline; text-underline-offset: 3px;
-  /* FIX: Tappable area */
   min-height: 36px; display: inline-flex; align-items: center;
 }
 .note-toggle:hover { color: var(--saffron); }
@@ -603,7 +607,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   display: block; font-size: .81rem; color: rgba(255,255,255,.32);
   text-decoration: none; margin-bottom: 9px; line-height: 1.5;
   transition: color .2s;
-  /* FIX: tappable area for footer links */
   padding: 3px 0;
 }
 .fcol a:hover { color: rgba(255,255,255,.82); }
@@ -615,7 +618,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 
 /* ── FLOATING ELEMENTS ── */
-/* FIX: WA float button always sits above the mobile cart bar */
 .wa-float {
   position: fixed; bottom: 24px; right: 84px;
   width: 52px; height: 52px; border-radius: 50%;
@@ -625,7 +627,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 .wa-float:hover { transform: scale(1.1); }
 
-/* FIX: Desktop cart FAB — separate from mobile controls */
 .cart-fab {
   position: fixed; bottom: 26px; right: 24px;
   background: var(--ink); color: #fff; border: none; border-radius: var(--pill);
@@ -643,7 +644,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   font-size: .68rem; font-weight: 800;
 }
 
-/* FIX: Mobile cart bar with safe area inset */
 .mob-cart-bar {
   display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
   background: var(--ink); color: #fff;
@@ -671,23 +671,15 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 .overlay.open { opacity: 1; pointer-events: auto; }
 
-/* ── CART PANEL: core layout ──
-   KEY FIXES:
-   • height uses 100dvh (dynamic — shrinks when browser chrome appears/hides)
-   • NO padding-bottom here — adding it to a flex column container silently
-     reduces the height budget shared by all children, crushing .cart-items
-   • Safe-area padding belongs on the LAST flex child (.cart-footer) instead
-*/
 .cart-panel {
   position: fixed; top: 0; right: 0;
   width: 420px;
   max-width: 100vw;
-  height: 100dvh;          /* dynamic viewport — correct on mobile browsers */
+  height: 100dvh;
   background: var(--white); z-index: 201;
   transform: translateX(100%); transition: transform .32s cubic-bezier(.2,.9,.3,1);
   display: flex; flex-direction: column;
   box-shadow: -12px 0 60px rgba(28,17,8,.14);
-  /* intentionally NO padding-bottom here */
 }
 .cart-panel.open { transform: none; }
 
@@ -705,16 +697,9 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 .close-btn:hover { background: var(--line); color: var(--ink); transform: rotate(90deg); }
 
-/* ── CART ITEMS: the scrollable middle zone ──
-   KEY FIXES:
-   • min-height: 0 is REQUIRED on flex children with overflow — without it,
-     flex items refuse to shrink below their content size, which prevents
-     scroll from working and pushes the footer off-screen
-   • flex: 1 fills all remaining height between the fixed header and footer
-*/
 .cart-items {
   flex: 1;
-  min-height: 0;         /* critical: allows flex child to shrink and enable scroll */
+  min-height: 0;
   overflow-y: auto;
   padding: 4px 20px;
   -webkit-overflow-scrolling: touch;
@@ -739,7 +724,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   background: var(--warm); border-radius: var(--pill);
   padding: 2px 4px; border: 1.5px solid var(--line);
 }
-/* FIX: Proper touch targets for cart quantity controls */
 .cq-btn {
   width: 32px; height: 32px; border: none; background: transparent;
   font-size: 1rem; font-weight: 600;
@@ -755,7 +739,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 .citem-del:hover { background: #fef3e8; }
 
-/* FIX: Summary and footer are flex-shrink: 0 so they don't get squashed */
 .cart-summary {
   padding: 12px 20px; border-top: 1px solid var(--line);
   background: var(--paper); flex-shrink: 0;
@@ -770,31 +753,19 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 .summary-row.total .tprice { font-family: var(--serif); font-size: 1.5rem; color: var(--saffron); }
 
-/* ── CART FOOTER: fixed-height zone containing the step wizard ──
-   KEY FIXES:
-   • overflow-y REMOVED from .cart-footer — having a flex-shrink:0 child with
-     overflow-y:auto and no explicit height causes browsers to give it 0px
-     scrollable height, hiding all content inside it on mobile
-   • Instead, .step-panel.active gets its own scroll so only the form content
-     scrolls, not the tabs (which should always stay visible)
-   • padding-bottom with safe-area lives here — on the last flex child this
-     correctly pushes content above the home indicator / nav bar
-   • max-height caps the footer at 65% of dvh so .cart-items always gets room
-*/
 .cart-footer {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--line);
-  padding: 14px 20px 0;          /* bottom padding added per-panel via safe-area below */
+  padding: 14px 20px 0;
   padding-bottom: max(14px, env(safe-area-inset-bottom));
-  max-height: 65dvh;             /* prevents footer from crushing the items list */
-  /* NO overflow-y here — see .step-panel.active instead */
+  max-height: 65dvh;
 }
 .step-tabs {
   display: flex; margin-bottom: 14px; border-radius: var(--pill);
   overflow: hidden; border: 1.5px solid var(--line); background: var(--warm);
-  flex-shrink: 0;   /* tabs must never be squashed by the scrollable panel below */
+  flex-shrink: 0;
 }
 .step-tab {
   flex: 1; padding: 10px 4px; text-align: center; font-size: .73rem;
@@ -802,19 +773,15 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   transition: all .18s; min-height: 44px;
 }
 .step-tab.active { background: var(--ink); color: #fff; border-radius: var(--pill); }
-/* Step panels: hidden by default */
 .step-panel { display: none; }
-/* Active step: scrollable within the footer, with breathing room at bottom */
 .step-panel.active {
   display: block;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  /* Enough bottom padding so the last button clears the safe area zone */
   padding-bottom: 8px;
-  /* flex: 1 lets it fill remaining footer space after the tabs */
   flex: 1;
-  min-height: 0;    /* critical: allows flex child to shrink below content size */
+  min-height: 0;
 }
 
 .order-types { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
@@ -835,11 +802,9 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   width: 100%; border: 1.5px solid var(--line); border-radius: var(--r-sm);
   padding: 11px 12px; font-family: var(--sans);
   color: var(--ink); background: var(--white); transition: border-color .2s;
-  /* prevent zoom-on-focus on iOS (requires font-size ≥ 16px) */
   font-size: 16px;
 }
 .ofield input:focus, .ofield textarea:focus, .ofield select:focus { outline: none; border-color: var(--saffron); }
-/* Shorter textarea — saves ~20px of vertical space in the cramped footer */
 .ofield textarea { resize: none; height: 52px; }
 
 .wa-btn {
@@ -864,186 +829,112 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 .reveal.visible { opacity: 1; transform: none; }
 
 /* ═══════════════════════════════════════════════════
-   RESPONSIVE BREAKPOINTS — Mobile-first fixes
+   RESPONSIVE BREAKPOINTS
 ═══════════════════════════════════════════════════ */
 
-/* ── 1024px (tablets landscape) ── */
 @media(max-width:1024px){
   .trust-g { grid-template-columns: repeat(2,1fr); }
   .footer-g { grid-template-columns: 1fr 1fr; }
   .fo-in { grid-template-columns: 1fr; gap: 40px; }
-  /* FIX: Stat card stays inside frame on 1024px */
   .hc-stat { right: 0; }
 }
 
-/* ── 860px (tablets portrait / large phones) ── */
 @media(max-width:860px){
-  /* Hero */
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    padding-top: 32px;
-    /* FIX: text comes first on mobile */
-  }
-  .hero-vis { order: -1; } /* FIX: image above text on narrow screens */
+  .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 32px; }
+  .hero-vis { order: -1; }
   .hero-frame { aspect-ratio: 16/9; border-radius: 20px; }
-  /* FIX: keep stat card inside frame */
   .hc-stat { top: 16px; right: 16px; padding: 10px 14px; min-width: 80px; }
   .hc-stat .hcs-num { font-size: 1.4rem; }
   .hc-price { bottom: 16px; left: 16px; padding: 12px 16px; }
   .hc-price .hcp-price { font-size: 1.6rem; }
-  .hero-spice { display: none; } /* FIX: hide decorative dots that clip on mobile */
-
-  /* About */
+  .hero-spice { display: none; }
   .about-g { grid-template-columns: 1fr; gap: 40px; }
   .about-frame { aspect-ratio: 16/9; border-radius: 20px; }
-  /* FIX: Badge stays inside frame boundary */
   .a-badge { right: 16px; bottom: -10px; padding: 12px 16px; min-width: 100px; }
   .a-badge .ab-n { font-size: 1.8rem; }
-  .about-vis { margin-bottom: 20px; } /* FIX: space for badge overflow */
-
-  /* Visit */
+  .about-vis { margin-bottom: 20px; }
   .icards { grid-template-columns: 1fr; gap: 10px; }
   .visit-hd { flex-direction: column; }
   .visit-hd p { text-align: left; max-width: 100%; }
-
-  /* Gallery */
-  .ggrid {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(3, 160px);
-  }
+  .ggrid { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 160px); }
   .gi:first-child { grid-row: span 1; }
-
-  /* Nav: show hamburger */
   nav a:not(.nav-cta) { display: none; }
   .ham { display: flex; }
-  /* FIX: Hide phone text but keep pulse + icon on small screens */
   .hdr-phone span:last-child { display: none; }
-
-  /* Floating WA: reposition so it doesn't cover cart FAB */
   .wa-float { right: 24px; bottom: 24px; }
-  /* FIX: Cart FAB hidden on mobile (use bottom bar instead) */
   .cart-fab { display: none !important; }
-
-  /* Menu grid: 2 columns on tablets */
   .mgrid { grid-template-columns: repeat(2, 1fr); }
-
-  /* FIX: Map shorter on mobile */
   .mapwrap { height: 280px; border-radius: 16px; }
 }
 
-/* ── 600px (phones) ── */
 @media(max-width:600px){
-  /* Global */
   .wrap { padding: 56px 5%; }
   .gallery-sec, .fo-sec, .visit-sec, .menu-sec { padding: 56px 5%; }
-
-  /* Trust */
   .trust-g { grid-template-columns: 1fr 1fr; gap: 10px; }
   .trust-c { padding: 12px 14px; gap: 10px; }
   .t-ico { font-size: 1.3rem; }
   .t-copy strong { font-size: .78rem; }
   .t-copy span { font-size: .65rem; }
-
-  /* Hero */
   .hero { padding-top: 24px; gap: 20px; }
   .hero h1 { font-size: clamp(2.4rem, 9vw, 3rem); }
   .hero-desc { font-size: .9rem; margin-bottom: 24px; }
   .hero-frame { aspect-ratio: 4/3; }
-  /* FIX: CTA buttons stack and stretch full width */
   .hero-ctas { flex-direction: column; gap: 10px; }
   .btn-ink, .btn-ghost, .btn-wa { justify-content: center; width: 100%; }
-
-  /* About */
   .a-badge { right: 12px; padding: 10px 14px; min-width: 90px; }
   .a-badge .ab-n { font-size: 1.5rem; }
   .a-badge .ab-l { font-size: .52rem; }
   .stats { gap: 8px; }
   .stat { padding: 14px 10px; }
   .stat .sn { font-size: 1.6rem; }
-
-  /* Menu */
   .menu-hd { flex-direction: column; align-items: flex-start; }
   .menu-hd p { text-align: left; max-width: 100%; }
-  /* FIX: Single column on phones */
   .mgrid { grid-template-columns: 1fr; }
   .mcard-img { height: 180px; }
-
-  /* Fast Order panel */
   .fo-panel { padding: 16px; }
   .fo-item { padding: 10px 0; }
   .fo-item-name { font-size: .82rem; }
-
-  /* Gallery: single column */
   .gallery-hd { flex-direction: column; align-items: flex-start; }
   .gallery-hd p { text-align: left; max-width: 100%; }
   .ggrid { grid-template-columns: 1fr; grid-template-rows: auto; }
   .gi { height: 200px; }
-
-  /* Visit */
   .mapwrap { height: 240px; border-radius: 12px; }
-
-  /* Footer */
   .footer-g { grid-template-columns: 1fr; gap: 28px; padding-bottom: 28px; }
   footer { padding: 44px 5% 24px; }
   .fbot { flex-direction: column; align-items: flex-start; gap: 6px; }
-
-  /* FIX: WA float button moves up when cart bar is visible */
   .mob-cart-bar.visible ~ .wa-float,
-  body.cart-bar-visible .wa-float {
-    bottom: calc(72px + env(safe-area-inset-bottom));
-  }
+  body.cart-bar-visible .wa-float { bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
 
-/* ── 400px (small phones like iPhone SE) ── */
 @media(max-width:400px){
   :root { --hdr: 56px; }
   .hdr-in { padding: 0 4%; }
   .logo-name { font-size: .92rem; }
   .logo-sub { font-size: .52rem; }
   .logo-mark { width: 38px; height: 38px; border-radius: 11px; }
-
   .hero h1 { font-size: clamp(2.1rem, 8vw, 2.6rem); }
-
-  /* FIX: Trust grid single column on very small screens */
   .trust-g { grid-template-columns: 1fr; }
-
-  /* FIX: Filters need horizontal scroll — already set above */
   .ftab { padding: 8px 14px; font-size: .72rem; }
-
-  /* FIX: Constrain stats to fit */
   .stat { min-width: 70px; }
-
-  /* Cart panel edge-to-edge on tiny screens */
   .cart-panel { border-radius: 0; }
   .cart-hdr { padding: 14px 16px 11px; }
   .cart-items { padding: 4px 14px; }
   .cart-summary { padding: 10px 14px; }
-  /* Footer: tighter padding so more room for the form on 400px phones */
   .cart-footer { padding: 10px 14px 0; padding-bottom: max(10px, env(safe-area-inset-bottom)); max-height: 70dvh; }
-  /* Shrink tabs slightly so they don't dominate */
   .step-tab { font-size: .68rem; min-height: 40px; padding: 8px 4px; }
-  /* Tighten order-type cards */
   .otype { padding: 9px 8px; border-radius: var(--r-md); }
   .otype .oi { font-size: 1.2rem; margin-bottom: 3px; }
-  /* Smaller fields */
   .ofield input, .ofield textarea, .ofield select { padding: 9px 11px; }
   .ofield textarea { height: 44px; }
   .order-fields { gap: 7px; margin-bottom: 10px; }
   .order-types { margin-bottom: 10px; }
-  /* Ensure continue/send buttons still meet touch target */
   .step-continue, .wa-btn { min-height: 48px; padding: 12px; }
-
-  /* Smaller section padding */
   .wrap, .gallery-sec, .fo-sec, .visit-sec, .menu-sec { padding: 44px 4%; }
   .trust { padding: 20px 4%; }
   footer { padding: 36px 4% 20px; }
-
-  /* WA strip compact */
   .wa-strip p span { display: none; }
 }
 
-/* ── 320px (absolute minimum) ── */
 @media(max-width:340px){
   .hero-tags { gap: 6px; }
   .tag { padding: 5px 10px; font-size: .66rem; }
@@ -1213,6 +1104,7 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
     </div>
     <div class="filters" role="group" aria-label="Filter menu items">
       <button class="ftab active" data-f="all">All Items</button>
+      <button class="ftab" data-f="Chanay">Chanay</button>
       <button class="ftab" data-f="Bread">Bread</button>
       <button class="ftab" data-f="Snack">Snack</button>
       <button class="ftab" data-f="Vegetarian">Vegetarian</button>
@@ -1220,6 +1112,40 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
       <button class="ftab" data-f="Spicy">Spicy</button>
     </div>
     <div class="mgrid">
+
+      <div class="mcard reveal" data-base="Murgh Chanay" data-name="Murgh Chanay (Half Plate)" data-price="100" data-unit="" data-step="1" data-cat="Chanay" data-img="images/murgh-chanay.jpg">
+        <div class="mcard-img"><img src="images/murgh-chanay.jpg" alt="Murgh Chanay" loading="lazy" width="400" height="300"><span class="chip">Chanay</span></div>
+        <div class="mcard-body">
+          <h3>Murgh Chanay</h3>
+          <p class="mcard-desc">Tender chicken simmered with spiced chickpeas in a rich, home-style masala. Comforting and full of flavour.</p>
+          <div class="size-row" role="group" aria-label="Select plate size">
+            <button type="button" class="size-btn active" onclick="selectSize(this,100,'Half Plate')">Half Plate · Rs. 100</button>
+            <button type="button" class="size-btn" onclick="selectSize(this,150,'Full Plate')">Full Plate · Rs. 150</button>
+          </div>
+          <div class="price-row"><span class="pr">Rs. 100</span></div>
+          <div class="qty-wrap"><button class="qbtn" onclick="changeQty(this,-1)" aria-label="Decrease">−</button><span class="qval" aria-label="Quantity">1</span><button class="qbtn" onclick="changeQty(this,1)" aria-label="Increase">+</button></div>
+          <button class="note-toggle" onclick="toggleNote(this)">+ Add special instructions</button>
+          <textarea class="note-field" placeholder="E.g. extra spicy, less oil…" rows="2" aria-label="Special instructions"></textarea>
+          <button class="add-btn" onclick="addToCart(this)">Add to Order</button>
+        </div>
+      </div>
+
+      <div class="mcard reveal" data-base="Anday Chanay" data-name="Anday Chanay (Half Plate)" data-price="130" data-unit="" data-step="1" data-cat="Chanay" data-img="images/anday-chanay.jpg">
+        <div class="mcard-img"><img src="images/anday-chanay.jpg" alt="Anday Chanay" loading="lazy" width="400" height="300"><span class="chip">Chanay</span></div>
+        <div class="mcard-body">
+          <h3>Anday Chanay</h3>
+          <p class="mcard-desc">Boiled eggs tossed through a spiced chickpea curry — a hearty, protein-packed favourite.</p>
+          <div class="size-row" role="group" aria-label="Select plate size">
+            <button type="button" class="size-btn active" onclick="selectSize(this,130,'Half Plate')">Half Plate · Rs. 130</button>
+            <button type="button" class="size-btn" onclick="selectSize(this,180,'Full Plate')">Full Plate · Rs. 180</button>
+          </div>
+          <div class="price-row"><span class="pr">Rs. 130</span></div>
+          <div class="qty-wrap"><button class="qbtn" onclick="changeQty(this,-1)" aria-label="Decrease">−</button><span class="qval" aria-label="Quantity">1</span><button class="qbtn" onclick="changeQty(this,1)" aria-label="Increase">+</button></div>
+          <button class="note-toggle" onclick="toggleNote(this)">+ Add special instructions</button>
+          <textarea class="note-field" placeholder="E.g. extra spicy, less oil…" rows="2" aria-label="Special instructions"></textarea>
+          <button class="add-btn" onclick="addToCart(this)">Add to Order</button>
+        </div>
+      </div>
 
       <div class="mcard reveal" data-name="Tala Naan" data-price="100" data-unit="" data-step="1" data-cat="Bread" data-img="images/tali-naan.jpg">
         <div class="mcard-img"><img src="images/tali-naan.jpg" alt="Tala Naan" loading="lazy" width="400" height="300"><span class="chip">Bread</span></div>
@@ -1505,15 +1431,19 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 const WA = "923466816902";
 
 const ICONS = {
-  "Potato Samosas": `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L4 8v8l8 6 8-6V8z"/><path d="M12 2v14M4 8l8 6 8-6"/></svg>`,
-  "Tala Naan":      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="13" rx="9" ry="6"/><path d="M8 10c1-3 7-3 8 0"/><path d="M6 13c2 2 10 2 12 0"/></svg>`,
-  "Crispy Pakoras": `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="4"/><circle cx="15" cy="14" r="3"/><circle cx="7" cy="15" r="2.5"/></svg>`,
-  "Baingan Fry":    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c0 0 1-1 2 0s1 3 0 5c-1 2-5 9-5 11a5 5 0 0010 0c0-2-4-9-5-11-1-2-1-4 0-5z"/><path d="M12 3c-1-1-2 0-2 2"/></svg>`,
-  "Aloo Tikki":     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M9 10c1-1 5-1 6 0"/><path d="M8 13h8"/><path d="M9 16c1 1 5 1 6 0"/></svg>`,
-  "Fry Chilli":     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3c0 0-1 1-1 3 0 1 1 2 1 3-2 1-4 1-6 3-2 2-3 5-2 8 1 2 3 3 5 3s4-2 4-4c0-3-2-4-2-6 0-1 1-2 2-3 2-1 3-2 3-4 0-1-1-2-2-3z"/><path d="M14 3c1-1 3 0 3 2"/></svg>`,
+  "Potato Samosas": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L4 8v8l8 6 8-6V8z"/><path d="M12 2v14M4 8l8 6 8-6"/></svg>',
+  "Tala Naan":      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="13" rx="9" ry="6"/><path d="M8 10c1-3 7-3 8 0"/><path d="M6 13c2 2 10 2 12 0"/></svg>',
+  "Crispy Pakoras": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="4"/><circle cx="15" cy="14" r="3"/><circle cx="7" cy="15" r="2.5"/></svg>',
+  "Baingan Fry":    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c0 0 1-1 2 0s1 3 0 5c-1 2-5 9-5 11a5 5 0 0010 0c0-2-4-9-5-11-1-2-1-4 0-5z"/><path d="M12 3c-1-1-2 0-2 2"/></svg>',
+  "Aloo Tikki":     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M9 10c1-1 5-1 6 0"/><path d="M8 13h8"/><path d="M9 16c1 1 5 1 6 0"/></svg>',
+  "Fry Chilli":     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3c0 0-1 1-1 3 0 1 1 2 1 3-2 1-4 1-6 3-2 2-3 5-2 8 1 2 3 3 5 3s4-2 4-4c0-3-2-4-2-6 0-1 1-2 2-3 2-1 3-2 3-4 0-1-1-2-2-3z"/><path d="M14 3c1-1 3 0 3 2"/></svg>',
 };
 
 const MENU = [
+  { name:"Murgh Chanay (Half Plate)", price:100, unit:"", step:1 },
+  { name:"Murgh Chanay (Full Plate)", price:150, unit:"", step:1 },
+  { name:"Anday Chanay (Half Plate)", price:130, unit:"", step:1 },
+  { name:"Anday Chanay (Full Plate)", price:180, unit:"", step:1 },
   { name:"Potato Samosas", price:40,  unit:"",      step:1   },
   { name:"Tala Naan",      price:100, unit:"",      step:1   },
   { name:"Crispy Pakoras", price:400, unit:"kg",    step:0.5 },
@@ -1531,7 +1461,6 @@ hamBtn.addEventListener('click', () => {
   const open = mobNav.classList.toggle('open');
   hamBtn.textContent = open ? '✕' : '☰';
   hamBtn.setAttribute('aria-expanded', open);
-  // FIX: prevent body scroll when mobile nav is open
   document.body.style.overflow = open ? 'hidden' : '';
 });
 function closeMobNav() {
@@ -1541,7 +1470,6 @@ function closeMobNav() {
   document.body.style.overflow = '';
 }
 
-/* FIX: Close mobile nav when clicking outside */
 document.addEventListener('click', e => {
   if (mobNav.classList.contains('open') &&
       !mobNav.contains(e.target) && !hamBtn.contains(e.target)) {
@@ -1549,12 +1477,10 @@ document.addEventListener('click', e => {
   }
 });
 
-/* Header shadow */
 window.addEventListener('scroll', () => {
   document.getElementById('siteHdr').classList.toggle('scrolled', window.scrollY > 10);
 }, {passive: true});
 
-/* Marquee pause on hover */
 const mwrap = document.querySelector('.marquee-wrap');
 if (mwrap) {
   const mt = mwrap.querySelector('.marquee-track');
@@ -1583,6 +1509,14 @@ function changeQty(btn, delta) {
   v = Math.max(step, Math.round((v + delta * step) * 100) / 100);
   el.textContent = v;
   if (navigator.vibrate) navigator.vibrate(6);
+}
+function selectSize(btn, price, label) {
+  const card = btn.closest('.mcard');
+  card.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  card.dataset.price = price;
+  card.dataset.name = card.dataset.base + ' (' + label + ')';
+  card.querySelector('.pr').textContent = 'Rs. ' + price;
 }
 function toggleNote(btn) {
   const field = btn.nextElementSibling;
@@ -1626,28 +1560,29 @@ function cartQty(name, delta) {
 function removeItem(name) { delete cart[name]; renderCart(); }
 function getTotal() { return Object.values(cart).reduce((s, it) => s + it.price * it.qty, 0); }
 
-function buildWaMsg(items, total, extra = {}) {
+function buildWaMsg(items, total, extra) {
+  if (!extra) extra = {};
   const { name = '', phone = '', time = '', notes = '', type = 'walkin' } = extra;
   let lines = ['🍽️ *Order — Umar Hayat Chaska Point*', ''];
   items.forEach(it => {
-    const ql = it.unit ? `${it.qty} ${it.unit}` : `×${it.qty}`;
-    lines.push(`• ${it.name} (${ql}) — Rs. ${Math.round(it.price * it.qty)}`);
-    if (it.note) lines.push(`  _Note: ${it.note}_`);
+    const ql = it.unit ? it.qty + ' ' + it.unit : '×' + it.qty;
+    lines.push('• ' + it.name + ' (' + ql + ') — Rs. ' + Math.round(it.price * it.qty));
+    if (it.note) lines.push('  _Note: ' + it.note + '_');
   });
   lines.push('');
-  lines.push(`*Total: Rs. ${Math.round(total)}*`);
+  lines.push('*Total: Rs. ' + Math.round(total) + '*');
   lines.push('');
-  lines.push(`Order type: ${type === 'walkin' ? 'Walk-in 🚶' : 'Takeaway 🛍️'}`);
-  if (name)  lines.push(`Name: ${name}`);
-  if (phone) lines.push(`Phone: ${phone}`);
-  if (time)  lines.push(`Time: ${time}`);
-  if (notes) lines.push(`Notes: ${notes}`);
+  lines.push('Order type: ' + (type === 'walkin' ? 'Walk-in 🚶' : 'Takeaway 🛍️'));
+  if (name)  lines.push('Name: ' + name);
+  if (phone) lines.push('Phone: ' + phone);
+  if (time)  lines.push('Time: ' + time);
+  if (notes) lines.push('Notes: ' + notes);
   return lines.join('\n');
 }
-function waLink(msg) { return `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`; }
+function waLink(msg) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg); }
 
-const defaultMsg = encodeURIComponent("Hi! I'd like to place an order at Umar Hayat Chaska Point 🍽️\n\nCould you share today's availability?");
-const defaultHref = `https://wa.me/${WA}?text=${defaultMsg}`;
+var defaultMsg = encodeURIComponent("Hi! I'd like to place an order at Umar Hayat Chaska Point 🍽️\n\nCould you share today's availability?");
+var defaultHref = 'https://wa.me/' + WA + '?text=' + defaultMsg;
 document.getElementById('heroWaBtn').href    = defaultHref;
 document.getElementById('fastStripBtn').href = defaultHref;
 document.getElementById('waFloat').href      = defaultHref;
@@ -1655,28 +1590,28 @@ document.getElementById('waFloat').href      = defaultHref;
 /* ── Fast order panel ── */
 function renderFoItems() {
   const c = document.getElementById('foItems');
-  c.innerHTML = MENU.map(m => {
+  c.innerHTML = MENU.map(function(m) {
     const q = foQty[m.name];
     const icon = ICONS[m.name] || '';
-    return `<div class="fo-item">
-      <div class="fo-item-l">
-        <div class="fo-item-icon">${icon}</div>
-        <div style="min-width:0;">
-          <div class="fo-item-name">${m.name}</div>
-          <div class="fo-item-price">Rs. ${m.price}${m.unit ? ' / ' + m.unit : ''}</div>
-        </div>
-      </div>
-      <div class="fo-qty">
-        <button class="fo-qbtn" onclick="foChange('${m.name}',-1)" aria-label="Remove one ${m.name}">−</button>
-        <span class="fo-qval">${q}</span>
-        <button class="fo-qbtn" onclick="foChange('${m.name}',1)" aria-label="Add one ${m.name}">+</button>
-      </div>
-    </div>`;
+    return '<div class="fo-item">' +
+      '<div class="fo-item-l">' +
+        '<div class="fo-item-icon">' + icon + '</div>' +
+        '<div style="min-width:0;">' +
+          '<div class="fo-item-name">' + m.name + '</div>' +
+          '<div class="fo-item-price">Rs. ' + m.price + (m.unit ? ' / ' + m.unit : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fo-qty">' +
+        '<button class="fo-qbtn" onclick="foChange(\'' + m.name + '\',-1)" aria-label="Remove one ' + m.name + '">−</button>' +
+        '<span class="fo-qval">' + q + '</span>' +
+        '<button class="fo-qbtn" onclick="foChange(\'' + m.name + '\',1)" aria-label="Add one ' + m.name + '">+</button>' +
+      '</div>' +
+    '</div>';
   }).join('');
   updateFoTotal();
 }
 function foChange(name, delta) {
-  const m = MENU.find(x => x.name === name);
+  const m = MENU.find(function(x) { return x.name === name; });
   if (!m) return;
   foQty[name] = Math.max(0, Math.round((foQty[name] + delta * m.step) * 100) / 100);
   renderFoItems();
@@ -1684,10 +1619,10 @@ function foChange(name, delta) {
 }
 function updateFoTotal() {
   let total = 0;
-  MENU.forEach(m => { total += m.price * foQty[m.name]; });
-  document.getElementById('foSum').textContent = `Rs. ${Math.round(total)}`;
-  const items = MENU.filter(m => foQty[m.name] > 0)
-    .map(m => ({ name: m.name, qty: foQty[m.name], unit: m.unit, price: m.price, note: '' }));
+  MENU.forEach(function(m) { total += m.price * foQty[m.name]; });
+  document.getElementById('foSum').textContent = 'Rs. ' + Math.round(total);
+  const items = MENU.filter(function(m) { return foQty[m.name] > 0; })
+    .map(function(m) { return { name: m.name, qty: foQty[m.name], unit: m.unit, price: m.price, note: '' }; });
   const btn = document.getElementById('foSendBtn');
   btn.href = items.length === 0 ? defaultHref : waLink(buildWaMsg(items, total, { type: 'walkin' }));
 }
@@ -1704,43 +1639,42 @@ function renderCart() {
     el.innerHTML = '<div class="empty-state"><div class="empty-ico">🍽️</div><p>Your order is empty.<br>Add some snacks from the menu!</p></div>';
     summaryEl.style.display = 'none'; footerEl.style.display = 'none';
   } else {
-    el.innerHTML = names.map(n => {
+    el.innerHTML = names.map(function(n) {
       const it = cart[n];
       const line = Math.round(it.price * it.qty * 100) / 100;
-      const ql = it.unit ? `${it.qty} ${it.unit}` : `×${it.qty}`;
-      return `<div class="citem">
-        <div class="citem-img">${it.img ? `<img src="${it.img}" alt="${n}" loading="lazy">` : ''}</div>
-        <div class="citem-info">
-          <div class="citem-name">${n}</div>
-          ${it.note ? `<div class="citem-note">"${it.note}"</div>` : ''}
-          <div class="citem-price">Rs. ${line} (${ql})</div>
-        </div>
-        <div class="citem-right">
-          <div class="citem-qty">
-            <button class="cq-btn" onclick="cartQty('${n}',-1)" aria-label="Decrease ${n}">−</button>
-            <span class="cq-val">${it.qty}</span>
-            <button class="cq-btn" onclick="cartQty('${n}',1)" aria-label="Increase ${n}">+</button>
-          </div>
-          <button class="citem-del" onclick="removeItem('${n}')">Remove</button>
-        </div>
-      </div>`;
+      const ql = it.unit ? it.qty + ' ' + it.unit : '×' + it.qty;
+      return '<div class="citem">' +
+        '<div class="citem-img">' + (it.img ? '<img src="' + it.img + '" alt="' + n + '" loading="lazy">' : '') + '</div>' +
+        '<div class="citem-info">' +
+          '<div class="citem-name">' + n + '</div>' +
+          (it.note ? '<div class="citem-note">"' + it.note + '"</div>' : '') +
+          '<div class="citem-price">Rs. ' + line + ' (' + ql + ')</div>' +
+        '</div>' +
+        '<div class="citem-right">' +
+          '<div class="citem-qty">' +
+            '<button class="cq-btn" onclick="cartQty(\'' + n + '\',-1)" aria-label="Decrease ' + n + '">−</button>' +
+            '<span class="cq-val">' + it.qty + '</span>' +
+            '<button class="cq-btn" onclick="cartQty(\'' + n + '\',1)" aria-label="Increase ' + n + '">+</button>' +
+          '</div>' +
+          '<button class="citem-del" onclick="removeItem(\'' + n + '\')">Remove</button>' +
+        '</div>' +
+      '</div>';
     }).join('');
     summaryEl.style.display = 'block'; footerEl.style.display = 'block';
-    document.getElementById('subtotalEl').textContent = `Rs. ${total}`;
-    document.getElementById('totalEl').textContent = `Rs. ${total}`;
+    document.getElementById('subtotalEl').textContent = 'Rs. ' + total;
+    document.getElementById('totalEl').textContent = 'Rs. ' + total;
   }
   const count = names.length;
-  document.getElementById('cartSubhead').textContent = count === 1 ? '1 item' : `${count} items`;
+  document.getElementById('cartSubhead').textContent = count === 1 ? '1 item' : count + ' items';
   document.getElementById('cartCount').textContent = count;
   document.getElementById('cartFab').classList.toggle('hidden', count === 0);
-  document.getElementById('mobCartItems').textContent = count === 1 ? '1 item' : `${count} items`;
-  document.getElementById('mobCartTotal').textContent = `Rs. ${total}`;
+  document.getElementById('mobCartItems').textContent = count === 1 ? '1 item' : count + ' items';
+  document.getElementById('mobCartTotal').textContent = 'Rs. ' + total;
 
   const cartBarVisible = count > 0;
   document.getElementById('mobCartBar').classList.toggle('visible', cartBarVisible);
-  // FIX: Move WA float up when cart bar is visible
   document.getElementById('waFloat').style.bottom = cartBarVisible
-    ? `calc(76px + env(safe-area-inset-bottom))` : '24px';
+    ? 'calc(76px + env(safe-area-inset-bottom))' : '24px';
 
   buildPreview(names, total);
 }
@@ -1752,7 +1686,7 @@ function selOrderType(t) {
 }
 function goStep(n) {
   curStep = n;
-  [1, 2, 3].forEach(i => {
+  [1, 2, 3].forEach(function(i) {
     document.getElementById('tab' + i).classList.toggle('active', i === n);
     document.getElementById('tab' + i).setAttribute('aria-selected', i === n);
     document.getElementById('step' + i).classList.toggle('active', i === n);
@@ -1760,20 +1694,20 @@ function goStep(n) {
   if (n === 3) buildPreview(Object.keys(cart), getTotal());
 }
 function buildPreview(names, total) {
-  const name  = document.getElementById('custName')?.value.trim() || '';
-  const phone = document.getElementById('custPhone')?.value.trim() || '';
-  const time  = document.getElementById('custTime')?.value || '';
-  const notes = document.getElementById('custNotes')?.value.trim() || '';
-  const items = names.map(n => ({ name: n, qty: cart[n].qty, unit: cart[n].unit, price: cart[n].price, note: cart[n].note }));
-  const msg = buildWaMsg(items, total, { name, phone, time, notes, type: orderType });
+  const name  = (document.getElementById('custName') && document.getElementById('custName').value.trim()) || '';
+  const phone = (document.getElementById('custPhone') && document.getElementById('custPhone').value.trim()) || '';
+  const time  = (document.getElementById('custTime') && document.getElementById('custTime').value) || '';
+  const notes = (document.getElementById('custNotes') && document.getElementById('custNotes').value.trim()) || '';
+  const items = names.map(function(n) { return { name: n, qty: cart[n].qty, unit: cart[n].unit, price: cart[n].price, note: cart[n].note }; });
+  const msg = buildWaMsg(items, total, { name: name, phone: phone, time: time, notes: notes, type: orderType });
   const prev = document.getElementById('orderPreview');
   if (prev) {
-    prev.innerHTML = items.map(it => {
-      const ql = it.unit ? `${it.qty} ${it.unit}` : `×${it.qty}`;
-      return `<div style="margin-bottom:3px;">• <strong>${it.name}</strong> (${ql}) — Rs. ${Math.round(it.price * it.qty)}${it.note ? `<br><span style="color:var(--muted);font-style:italic;font-size:.73rem;">"${it.note}"</span>` : ''}</div>`;
+    prev.innerHTML = items.map(function(it) {
+      const ql = it.unit ? it.qty + ' ' + it.unit : '×' + it.qty;
+      return '<div style="margin-bottom:3px;">• <strong>' + it.name + '</strong> (' + ql + ') — Rs. ' + Math.round(it.price * it.qty) + (it.note ? '<br><span style="color:var(--muted);font-style:italic;font-size:.73rem;">"' + it.note + '"</span>' : '') + '</div>';
     }).join('') +
-    `<div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-weight:700;">Total: Rs. ${Math.round(total)}</div>` +
-    (name ? `<div style="margin-top:5px;font-size:.73rem;color:var(--muted);">Ordering as: ${name}${phone ? ' · ' + phone : ''}</div>` : '');
+    '<div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-weight:700;">Total: Rs. ' + Math.round(total) + '</div>' +
+    (name ? '<div style="margin-top:5px;font-size:.73rem;color:var(--muted);">Ordering as: ' + name + (phone ? ' · ' + phone : '') + '</div>' : '');
   }
   const waBtn = document.getElementById('waFinalBtn');
   if (waBtn) waBtn.href = waLink(msg);
@@ -1784,7 +1718,6 @@ function openCart() {
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   goStep(1);
-  // Attach visual-viewport listener so cart reflows when the keyboard opens
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', _onVVResize);
     window.visualViewport.addEventListener('scroll', _onVVResize);
@@ -1794,27 +1727,20 @@ function closeCart() {
   document.getElementById('cartPanel').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow = '';
-  // Remove visual-viewport listener
   if (window.visualViewport) {
     window.visualViewport.removeEventListener('resize', _onVVResize);
     window.visualViewport.removeEventListener('scroll', _onVVResize);
   }
-  // Reset any keyboard-offset applied to the panel
   const panel = document.getElementById('cartPanel');
   panel.style.height = '';
   panel.style.maxHeight = '';
 }
 
-/* Shrinks the cart panel height to match the visual viewport when the
-   software keyboard is open. This prevents the keyboard from covering
-   the "Review & Send" button on iOS and Android. */
 function _onVVResize() {
   const panel = document.getElementById('cartPanel');
   if (!panel.classList.contains('open')) return;
   const vv = window.visualViewport;
-  // How much of the screen is actually visible (excludes keyboard)
   const visibleH = vv.height;
-  // Only apply on mobile widths where keyboard overlap is a real problem
   if (window.innerWidth <= 768) {
     panel.style.height = visibleH + 'px';
     panel.style.maxHeight = visibleH + 'px';
@@ -1823,15 +1749,15 @@ function _onVVResize() {
     panel.style.maxHeight = '';
   }
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeCart(); });
 
 /* ── Scroll reveal ── */
-const revObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
+const revObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
     if (e.isIntersecting) { e.target.classList.add('visible'); revObs.unobserve(e.target); }
   });
 }, { threshold: 0.07 });
-document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+document.querySelectorAll('.reveal').forEach(function(el) { revObs.observe(el); });
 </script>
 </body>
 </html>
