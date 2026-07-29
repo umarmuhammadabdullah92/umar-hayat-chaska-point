@@ -52,7 +52,6 @@
 /* ── RESET ── */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* FIX: overflow-x on both html AND body to prevent horizontal scroll */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -65,24 +64,19 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  /* FIX: Safe area support for notched phones */
   padding-bottom: env(safe-area-inset-bottom);
 }
 img {
   display: block;
   max-width: 100%;
   height: auto;
-  /* FIX: Prevent images from causing overflow */
   width: 100%;
 }
 button { font-family: var(--sans); cursor: pointer; }
 a { color: inherit; }
 
-/* FIX: Respect reduced motion */
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
-/* ── TOUCH TARGET BASELINE ── */
-/* FIX: Ensure all interactive elements meet 44px minimum touch target */
 button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
@@ -119,7 +113,6 @@ button, a, [role="button"] {
   max-width: 1280px; margin: 0 auto; padding: 0 5%;
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px; min-height: 44px;
-  /* FIX: wrap on tiny screens */
   flex-wrap: wrap;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -132,7 +125,6 @@ button, a, [role="button"] {
   color: #fff; padding: 8px 16px; border-radius: var(--pill);
   font-size: .76rem; font-weight: 700; text-decoration: none; white-space: nowrap;
   transition: background .18s;
-  /* FIX: 44px touch target */
   min-height: 44px;
 }
 .wa-strip-cta:hover { background: rgba(255,255,255,.28); }
@@ -157,7 +149,7 @@ button, a, [role="button"] {
   border: 1.5px solid var(--line); border-radius: var(--pill);
   font-size: .79rem; font-weight: 600; text-decoration: none; color: var(--ink);
   white-space: nowrap; transition: all .2s;
-  min-height: 44px; /* FIX: touch target */
+  min-height: 44px;
 }
 .hdr-phone:hover { border-color: var(--green); color: #0D7A43; }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; animation: pulse 2.4s ease-in-out infinite; }
@@ -176,7 +168,6 @@ nav a.nav-cta {
 }
 nav a.nav-cta:hover { background: var(--saffron); }
 
-/* FIX: Ham button with proper sizing */
 .ham {
   display: none; background: none; border: 1.5px solid var(--line);
   border-radius: var(--r-sm); padding: 0; color: var(--ink);
@@ -186,7 +177,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
 }
 .ham:hover { border-color: var(--ink); }
 
-/* FIX: Mobile nav with backdrop overlay capability */
 .mob-nav {
   display: none; position: fixed;
   top: var(--hdr); left: 0; right: 0; bottom: 0;
@@ -195,7 +185,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
   z-index: 99; padding: 20px 6%;
   flex-direction: column; gap: 0;
   overflow-y: auto;
-  /* FIX: Account for safe area on notched phones */
   padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 .mob-nav.open { display: flex; animation: slideDown .2s ease; }
@@ -203,7 +192,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
 .mob-nav a {
   font-size: 1.05rem; font-weight: 500; color: var(--ink); text-decoration: none;
   padding: 16px 0; border-bottom: 1px solid var(--line);
-  /* FIX: touch target */
   min-height: 56px; display: flex; align-items: center;
 }
 .mob-nav a.mob-cta {
@@ -253,7 +241,7 @@ nav a.nav-cta:hover { background: var(--saffron); }
   padding: 14px 28px; background: var(--ink); color: #fff;
   border-radius: var(--pill); font-weight: 700; font-size: .85rem;
   text-decoration: none; border: 2px solid var(--ink); transition: all .2s;
-  min-height: 50px; /* FIX: generous touch target */
+  min-height: 50px;
 }
 .btn-ink:hover { background: var(--saffron); border-color: var(--saffron); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(224,123,26,.25); }
 
@@ -372,7 +360,6 @@ nav a.nav-cta:hover { background: var(--saffron); }
 }
 .menu-hd p { color: var(--muted); font-size: .88rem; line-height: 1.75; max-width: 240px; text-align: right; }
 
-/* FIX: Filters as horizontally scrollable row on mobile — no wrapping clutter */
 .filters {
   display: flex; gap: 7px; margin-bottom: 36px;
   overflow-x: auto;
@@ -1346,7 +1333,7 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   </div>
   <div class="fbot">
     <span>© 2026 Umar Hayat Chaska Point. All rights reserved.</span>
-    <span>Made with ❤️ in Gujrat</span>
+    <span>Serving Gujrat since 2005</span>
   </div>
 </footer>
 
@@ -1508,7 +1495,6 @@ function changeQty(btn, delta) {
   let v = parseFloat(el.textContent);
   v = Math.max(step, Math.round((v + delta * step) * 100) / 100);
   el.textContent = v;
-  if (navigator.vibrate) navigator.vibrate(6);
 }
 function selectSize(btn, price, label) {
   const card = btn.closest('.mcard');
@@ -1547,7 +1533,6 @@ function addToCart(btn) {
   renderCart();
   btn.textContent = 'Added ✓'; btn.classList.add('added');
   setTimeout(() => { btn.textContent = 'Add to Order'; btn.classList.remove('added'); }, 1300);
-  if (navigator.vibrate) navigator.vibrate([8, 25, 8]);
 }
 
 function cartQty(name, delta) {
@@ -1581,8 +1566,8 @@ function buildWaMsg(items, total, extra) {
 }
 function waLink(msg) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg); }
 
-var defaultMsg = encodeURIComponent("Hi! I'd like to place an order at Umar Hayat Chaska Point 🍽️\n\nCould you share today's availability?");
-var defaultHref = 'https://wa.me/' + WA + '?text=' + defaultMsg;
+const defaultMsg = encodeURIComponent("Hi! I'd like to place an order at Umar Hayat Chaska Point 🍽️\n\nCould you share today's availability?");
+const defaultHref = 'https://wa.me/' + WA + '?text=' + defaultMsg;
 document.getElementById('heroWaBtn').href    = defaultHref;
 document.getElementById('fastStripBtn').href = defaultHref;
 document.getElementById('waFloat').href      = defaultHref;
@@ -1615,7 +1600,6 @@ function foChange(name, delta) {
   if (!m) return;
   foQty[name] = Math.max(0, Math.round((foQty[name] + delta * m.step) * 100) / 100);
   renderFoItems();
-  if (navigator.vibrate) navigator.vibrate(6);
 }
 function updateFoTotal() {
   let total = 0;
