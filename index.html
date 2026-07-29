@@ -1113,16 +1113,16 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
     </div>
     <div class="mgrid">
 
-      <div class="mcard reveal" data-base="Murgh Chanay" data-name="Murgh Chanay (Half Plate)" data-price="100" data-unit="" data-step="1" data-cat="Chanay" data-img="images/murgh-chanay.jpg">
+      <div class="mcard reveal" data-base="Murgh Chanay" data-name="Murgh Chanay (Half Plate)" data-price="130" data-unit="" data-step="1" data-cat="Chanay" data-img="images/murgh-chanay.jpg">
         <div class="mcard-img"><img src="images/murgh-chanay.jpg" alt="Murgh Chanay" loading="lazy" width="400" height="300"><span class="chip">Chanay</span></div>
         <div class="mcard-body">
           <h3>Murgh Chanay</h3>
           <p class="mcard-desc">Tender chicken simmered with spiced chickpeas in a rich, home-style masala. Comforting and full of flavour.</p>
           <div class="size-row" role="group" aria-label="Select plate size">
-            <button type="button" class="size-btn active" onclick="selectSize(this,100,'Half Plate')">Half Plate · Rs. 100</button>
-            <button type="button" class="size-btn" onclick="selectSize(this,150,'Full Plate')">Full Plate · Rs. 150</button>
+            <button type="button" class="size-btn active" onclick="selectSize(this,130,'Half Plate')">Half Plate · Rs. 130</button>
+            <button type="button" class="size-btn" onclick="selectSize(this,180,'Full Plate')">Full Plate · Rs. 180</button>
           </div>
-          <div class="price-row"><span class="pr">Rs. 100</span></div>
+          <div class="price-row"><span class="pr">Rs. 130</span></div>
           <div class="qty-wrap"><button class="qbtn" onclick="changeQty(this,-1)" aria-label="Decrease">−</button><span class="qval" aria-label="Quantity">1</span><button class="qbtn" onclick="changeQty(this,1)" aria-label="Increase">+</button></div>
           <button class="note-toggle" onclick="toggleNote(this)">+ Add special instructions</button>
           <textarea class="note-field" placeholder="E.g. extra spicy, less oil…" rows="2" aria-label="Special instructions"></textarea>
@@ -1130,16 +1130,16 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
         </div>
       </div>
 
-      <div class="mcard reveal" data-base="Anday Chanay" data-name="Anday Chanay (Half Plate)" data-price="130" data-unit="" data-step="1" data-cat="Chanay" data-img="images/anday-chanay.jpg">
+      <div class="mcard reveal" data-base="Anday Chanay" data-name="Anday Chanay (Half Plate)" data-price="100" data-unit="" data-step="1" data-cat="Chanay" data-img="images/anday-chanay.jpg">
         <div class="mcard-img"><img src="images/anday-chanay.jpg" alt="Anday Chanay" loading="lazy" width="400" height="300"><span class="chip">Chanay</span></div>
         <div class="mcard-body">
           <h3>Anday Chanay</h3>
           <p class="mcard-desc">Boiled eggs tossed through a spiced chickpea curry — a hearty, protein-packed favourite.</p>
           <div class="size-row" role="group" aria-label="Select plate size">
-            <button type="button" class="size-btn active" onclick="selectSize(this,130,'Half Plate')">Half Plate · Rs. 130</button>
-            <button type="button" class="size-btn" onclick="selectSize(this,180,'Full Plate')">Full Plate · Rs. 180</button>
+            <button type="button" class="size-btn active" onclick="selectSize(this,100,'Half Plate')">Half Plate · Rs. 100</button>
+            <button type="button" class="size-btn" onclick="selectSize(this,150,'Full Plate')">Full Plate · Rs. 150</button>
           </div>
-          <div class="price-row"><span class="pr">Rs. 130</span></div>
+          <div class="price-row"><span class="pr">Rs. 100</span></div>
           <div class="qty-wrap"><button class="qbtn" onclick="changeQty(this,-1)" aria-label="Decrease">−</button><span class="qval" aria-label="Quantity">1</span><button class="qbtn" onclick="changeQty(this,1)" aria-label="Increase">+</button></div>
           <button class="note-toggle" onclick="toggleNote(this)">+ Add special instructions</button>
           <textarea class="note-field" placeholder="E.g. extra spicy, less oil…" rows="2" aria-label="Special instructions"></textarea>
@@ -1440,10 +1440,10 @@ const ICONS = {
 };
 
 const MENU = [
-  { name:"Murgh Chanay (Half Plate)", price:100, unit:"", step:1 },
-  { name:"Murgh Chanay (Full Plate)", price:150, unit:"", step:1 },
-  { name:"Anday Chanay (Half Plate)", price:130, unit:"", step:1 },
-  { name:"Anday Chanay (Full Plate)", price:180, unit:"", step:1 },
+  { name:"Murgh Chanay (Half Plate)", price:130, unit:"", step:1 },
+  { name:"Murgh Chanay (Full Plate)", price:180, unit:"", step:1 },
+  { name:"Anday Chanay (Half Plate)", price:100, unit:"", step:1 },
+  { name:"Anday Chanay (Full Plate)", price:150, unit:"", step:1 },
   { name:"Potato Samosas", price:40,  unit:"",      step:1   },
   { name:"Tala Naan",      price:100, unit:"",      step:1   },
   { name:"Crispy Pakoras", price:400, unit:"kg",    step:0.5 },
