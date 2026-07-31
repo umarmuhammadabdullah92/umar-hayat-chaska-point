@@ -6,7 +6,7 @@
 <title>Umar Hayat Chaska Point — Digital Marketing Plan | Group 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Scheherazade+New:wght@400;500;600;700&family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#1b120c;
@@ -38,12 +38,16 @@
   .deck{height:100vh;position:relative}
 
   /* ---------- slides ---------- */
-  .slide{display:none;height:100vh;flex-direction:column;padding:44px 56px 92px}
+  .slide{display:none;height:100vh;flex-direction:column;padding:44px 56px 92px;position:relative}
   .slide.active{display:flex;animation:slideUp .5s cubic-bezier(.22,.68,.35,1.1) both}
   @keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
   @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
   .shead{margin-bottom:26px;flex:none}
+  .shead.compact{margin-bottom:12px}
+  .shead.compact h2{font-size:clamp(24px,2.7vw,32px)}
+  .shead.compact p.sub{margin-top:4px;font-size:12.5px}
+  .shead.compact .kicker{margin-bottom:6px;font-size:11px}
   .kicker{
     font-size:12px;letter-spacing:.22em;text-transform:uppercase;
     color:var(--gold);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px;
@@ -139,15 +143,15 @@
   .footline{margin-top:34px;font-size:12px;color:var(--muted);letter-spacing:.06em}
 
   /* ---------- agenda ---------- */
-  .agenda{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .agenda .card{display:flex;align-items:center;gap:16px;padding:20px}
+  .agenda{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .agenda .card{display:flex;align-items:center;gap:14px;padding:20px 16px}
   .agenda .num{
-    font-family:'Playfair Display',serif;font-size:30px;font-weight:800;color:var(--gold);
-    width:56px;height:56px;flex:none;border:1px solid rgba(240,165,46,.4);border-radius:14px;
+    font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:var(--gold);
+    width:54px;height:54px;flex:none;border:1px solid rgba(240,165,46,.4);border-radius:12px;
     display:flex;align-items:center;justify-content:center;background:rgba(240,165,46,.08);
   }
-  .agenda b{font-size:16px;display:block}
-  .agenda span{font-size:12.5px;color:var(--muted);margin-top:3px;display:block}
+  .agenda b{font-size:15.5px;display:block}
+  .agenda span{font-size:12px;color:var(--muted);margin-top:3px;display:block;line-height:1.5}
 
   /* ---------- two-col page ---------- */
   .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
@@ -520,7 +524,208 @@
     .postslot{grid-template-columns:1fr}
     .site-grid{grid-template-columns:repeat(2,1fr)}
     .tl{grid-template-columns:1fr 1fr}
+    .tcenter .kicker + div{grid-template-columns:1fr!important}
   }
+
+  @media (max-height:830px){
+    .slide{padding:26px 44px 72px}
+    .shead{margin-bottom:12px}
+    .shead.compact{margin-bottom:10px}
+    .shead h2{font-size:clamp(22px,2.5vw,28px)}
+    .shead p.sub{margin-top:4px;font-size:12px}
+    .kicker{font-size:10.5px;margin-bottom:6px}
+    .content .cols{gap:10px}
+    .infopanel{padding:10px 12px}
+    .panel-hd{gap:8px;margin-bottom:6px}
+    .panel-ico{width:30px;height:30px;font-size:12px}
+    .info-row{padding:4px 2px}
+    .info-row b{font-size:12.5px}
+    .info-row small{font-size:9.5px}
+    .ptask{padding:4px 8px;gap:8px}
+    .ptask .pt-num{min-width:20px;height:20px;font-size:10px}
+    .ptask .pt-txt b{font-size:12px}
+    .ptask .pt-txt span{font-size:10.5px}
+    .sb-name{font-size:19px}
+    .sb-txt{font-size:12.5px;line-height:1.6}
+    .gi-name{font-size:44px}
+    .gi-intro{font-size:22px}
+    .gi-members b{font-size:20px}
+    .mem-head{font-size:22px;margin-bottom:10px}
+    .mphoto{height:20vh;min-height:130px}
+    .mcard figcaption{padding:8px 10px 10px}
+    .imgframe img{max-height:34vh}
+  }
+
+  /* ---------- bismillah slide ---------- */
+  .bismillah{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    min-height:100%;
+  }
+  .bismillah::before{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(78vmin,660px);height:min(78vmin,660px);border-radius:50%;
+    background:radial-gradient(circle,rgba(240,165,46,.14) 0%,transparent 68%);
+    animation:pulse 8s ease-in-out infinite;
+  }
+  .bismillah-wrap{position:relative;z-index:2;text-align:center;padding:20px 40px}
+  .bismillah-ar{
+    font-family:'Scheherazade New','Amiri','Times New Roman',serif;
+    font-size:clamp(50px,8vw,98px);line-height:1.6;font-weight:700;
+    background:linear-gradient(120deg,#fff3da 0%,var(--gold2) 40%,var(--gold) 60%,var(--gold2) 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+    filter:drop-shadow(0 6px 28px rgba(240,165,46,.3));
+    direction:rtl;unicode-bidi:embed;
+  }
+  .bismillah-div{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    margin:26px auto 0;max-width:360px;
+  }
+  .bismillah-div::before,.bismillah-div::after{
+    content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(240,165,46,.6));
+  }
+  .bismillah-div::after{background:linear-gradient(90deg,rgba(240,165,46,.6),transparent)}
+  .bismillah-div span{color:var(--gold);font-size:13px;line-height:1}
+  .bismillah-en{
+    margin-top:22px;font-family:'Playfair Display',Georgia,serif;
+    font-size:clamp(16px,2vw,22px);font-weight:700;color:var(--cream);
+    text-align:center;letter-spacing:.03em;
+  }
+  .bismillah-en b{
+    font-weight:700;
+    background:linear-gradient(120deg,var(--gold2),var(--gold));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+  }
+
+  /* ---------- assignment info slide ---------- */
+  .infopanel{position:relative;padding:12px 14px;overflow:hidden}
+  .infopanel::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,var(--gold),rgba(240,165,46,.15));
+  }
+  .panel-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .panel-ico{
+    width:36px;height:36px;flex:none;border-radius:10px;
+    background:linear-gradient(135deg,#ffc766,#d97b13);color:#241100;
+    font-family:'Playfair Display',serif;font-weight:800;font-size:14px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 16px rgba(0,0,0,.3);
+  }
+  .det-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .det{
+    position:relative;padding:12px 14px;border-radius:12px;border:1px solid rgba(240,165,46,.14);
+    background:rgba(240,165,46,.05);border-left:3px solid rgba(240,165,46,.55);
+  }
+  .det small{display:block;font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-bottom:5px}
+  .det b{font-size:13px;font-weight:700;color:var(--cream);line-height:1.35}
+  .det-div{height:1px;margin:16px 0;background:linear-gradient(90deg,rgba(240,165,46,.35),transparent)}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tags span{
+    background:linear-gradient(170deg,rgba(240,165,46,.10),rgba(240,165,46,.03));
+    border:1px solid rgba(240,165,46,.25);color:var(--gold2);
+    font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px;letter-spacing:.01em;
+  }
+  /* ---------- business slide ---------- */
+  .busslide .shead{border-bottom:1px solid rgba(240,165,46,.18);padding-bottom:10px;margin-bottom:16px}
+  .busslide .infopanel{padding:16px 18px}
+  .busslide .panel-hd{margin-bottom:10px}
+  .busslide .panel-hd h4{font-size:15.5px;letter-spacing:.01em}
+  .busslide .info-row{padding:7px 2px}
+  .busslide .info-row small{font-size:10px}
+  .busslide .info-row b{font-size:14px}
+  .busslide .tags{margin-top:8px}
+  .busslide .tags span{font-size:12.5px;padding:8px 14px}
+  .imgframe{
+    height:100%;display:flex;align-items:center;justify-content:center;
+    padding:10px;border-radius:18px;border:1px solid rgba(240,165,46,.2);
+    background:linear-gradient(170deg,rgba(52,36,20,.3),rgba(20,12,6,.3));
+  }
+  .info-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:5px 2px;border-bottom:1px dashed rgba(255,255,255,.08)}
+  .info-row:last-child{border-bottom:none}
+  .info-row small{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;white-space:nowrap}
+  .info-row b{font-size:13.5px;font-weight:700;color:var(--cream);text-align:right;line-height:1.35}
+  .imgframe img{
+    width:100%;max-height:38vh;object-fit:contain;display:block;
+    border-radius:12px;border:1px solid rgba(240,165,46,.3);box-shadow:var(--shadow);
+  }
+  .task-big{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .task-big li{
+    display:flex;align-items:center;font-size:12px;line-height:1.3;font-weight:600;
+    background:rgba(240,165,46,.06);border:1px solid rgba(240,165,46,.14);
+    border-radius:8px;padding:7px 10px;color:var(--cream);
+  }
+  .task-big li::before{content:"";position:static;width:8px;height:8px;flex:none;margin-right:9px;background:var(--gold);transform:rotate(45deg)}
+  .info-block{position:relative;padding-left:18px}
+  .info-block::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:3px;background:linear-gradient(180deg,var(--gold),rgba(240,165,46,.2));border-radius:3px}
+  .info-label{display:inline-block;font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:8px}
+  .gi-name{font-family:'Playfair Display',serif;font-size:60px;font-weight:800;color:var(--gold2);line-height:1.15;margin:0}
+  .gi-sub{font-size:24px;font-weight:600;color:var(--muted);margin-top:6px}
+  .gi-intro{font-size:25px;line-height:1.55;color:var(--cream);margin:0;max-width:100%}
+  .gi-members{display:flex;flex-wrap:wrap;gap:10px 6px;align-items:center;margin:0}
+  .gi-members b{font-size:24px;font-weight:700;color:var(--gold2)}
+  .gi-members i{font-style:normal;color:var(--gold);font-weight:800;font-size:22px}
+  .mem-head{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--cream);margin:0 0 14px;text-align:left;letter-spacing:.02em}
+  .ptasks{display:grid;gap:8px}
+  .ptask{
+    display:flex;align-items:flex-start;gap:12px;padding:9px 12px;border-radius:10px;
+    background:rgba(240,165,46,.05);border:1px solid rgba(240,165,46,.14);
+  }
+  .ptask .pt-num{
+    font-family:'Playfair Display',serif;font-weight:800;font-size:13px;color:#241100;
+    background:linear-gradient(135deg,#ffc766,#d97b13);border-radius:7px;
+    min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;
+  }
+  .ptask .pt-txt b{display:block;font-size:14.5px;font-weight:700;color:var(--gold2);line-height:1.3}
+  .ptask .pt-txt span{display:block;font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px}
+  .sb-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--gold2);line-height:1.2}
+  .sb-txt{font-size:13.5px;line-height:1.7;color:var(--cream)}
+  .group-hd{
+    position:absolute;top:28px;left:56px;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;display:flex;align-items:center;gap:10px;
+  }
+  .group-hd::before{content:"";width:26px;height:2px;background:var(--gold)}
+  .gi-head{display:none}
+  .sec-label{
+    display:flex;align-items:center;gap:12px;margin-top:14px;font-size:13px;
+    text-transform:uppercase;letter-spacing:.16em;color:var(--muted);font-weight:700;
+  }
+  .sec-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(240,165,46,.35),transparent)}
+  .sec-label .sec-num{
+    background:linear-gradient(135deg,#ffc766,#d97b13);color:#241100;
+    font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.06em;
+  }
+  .memgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
+  .mcard{
+    background:linear-gradient(170deg,rgba(52,36,20,.55),rgba(20,12,6,.5));
+    border:1px solid rgba(240,165,46,.18);border-radius:18px;overflow:hidden;
+    box-shadow:0 14px 34px rgba(0,0,0,.3);text-align:center;margin:0;transition:.25s;
+  }
+  .mcard:hover{transform:translateY(-5px);border-color:rgba(240,165,46,.5);box-shadow:0 20px 44px rgba(0,0,0,.4)}
+  .mphoto{
+    position:relative;height:30vh;min-height:200px;
+    background:
+      radial-gradient(120% 120% at 50% 0%,rgba(240,165,46,.10),transparent 60%),
+      linear-gradient(160deg,rgba(52,36,20,.4),rgba(12,7,4,.6));
+    border-bottom:1px solid rgba(240,165,46,.15);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .mphoto .mono{
+    width:78px;height:78px;border-radius:50%;
+    background:linear-gradient(135deg,#ffc766,#d97b13);color:#241100;
+    font-family:'Playfair Display',serif;font-weight:800;font-size:26px;letter-spacing:.02em;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 4px rgba(240,165,46,.14),0 12px 26px rgba(0,0,0,.4);
+  }
+  .mphoto .add{
+    position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;
+    background:rgba(12,7,4,.55);border:1px solid rgba(240,165,46,.4);color:var(--gold);
+    font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1;
+  }
+  .mcard img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+  .mcard figcaption{padding:12px 10px 14px}
+  .mcard h4{font-family:'Playfair Display',serif;font-size:16.5px;font-weight:700;color:var(--gold2);margin:0}
 </style>
 </head>
 <body>
@@ -528,111 +733,179 @@
 
 <div class="deck" id="deck">
 
-  <!-- ============ 1. TITLE ============ -->
-  <section class="slide tcenter active" data-title="Title">
-    <div class="brandmark">
-      <svg viewBox="0 0 24 24"><path d="M7.2 2.6c-.5 1 .4 1.5 0 2.5-.4.9-1.1 0-.8-1.2.2-.6.4-1 .8-1.3zM12 1.7c-.5 1 .4 1.5 0 2.5-.4.9-1.1 0-.8-1.2.2-.6.4-1 .8-1.3zM16.8 2.6c-.5 1 .4 1.5 0 2.5-.4.9-1.1 0-.8-1.2.2-.6.4-1 .8-1.3zM12 5.4l6.4 9.2c-4 2.2-8.8 2.2-12.8 0L12 5.4zM8.7 14.6c1 .6 2.1.9 3.3.9s2.3-.3 3.3-.9c0 .4-.1.8-.1 1.1 0 1.8-1.4 3.2-3.2 3.2s-3.2-1.4-3.2-3.2c0-.3 0-.7-.1-1.1z"/></svg>
-    </div>
-    <div class="kicker">Bano Qabil Pakistan · BQ-001 Digital Marketing · Group 1</div>
-    <h1 class="title-name">Umar Hayat <span>Chaska Point</span></h1>
-    <div class="coursebar">
-      <b>BQ-001 Digital Marketing</b>
-      <span>Gujrat</span>
-      <span>Male – Batch 2</span>
-      <span>Deadline: 3 Aug 2026</span>
-      <i>"Let's Learn Together, Grow Together"</i>
-    </div>
-    <div class="tasks">
-      <div class="tasks-head">Assigned Tasks</div>
-      <div class="tasks-grid">
-        <span>Social Media Pages Optimization</span>
-        <span>Buyer Persona</span>
-        <span>Marketing Funnel · 2 ads per stage</span>
-        <span>2 Creative Post Designs</span>
-        <span>Website (If Possible)</span>
-        <span>Presentation with Slides</span>
+  <!-- ============ 1. BISMILLAH ============ -->
+  <section class="slide tcenter active" data-title="Bismillah">
+    <div class="bismillah">
+      <div class="bismillah-wrap">
+        <p class="bismillah-ar">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+        <div class="bismillah-div"><span>✦</span></div>
+        <p class="bismillah-en">In the name of Allah, the Most Gracious, the Most <b>Merciful</b></p>
       </div>
     </div>
-    <div class="members">
-      <div class="member"><div class="av">KR</div><b>Kamran Rasool</b><span>Member</span></div>
-      <div class="member"><div class="av">MA</div><b>M. Abdullah</b><span>Member</span></div>
-      <div class="member"><div class="av">SA</div><b>Shayan Ali</b><span>Member</span></div>
-      <div class="member"><div class="av">US</div><b>Umair Shahzad</b><span>Member</span></div>
-    </div>
-    <p class="footline">Professional Group Assignment · Group 1</p>
   </section>
 
-  <!-- ============ 2. AGENDA ============ -->
-  <section class="slide" data-title="Agenda">
-    <div class="shead">
-      <div class="kicker">Group 1 · Assigned Tasks</div>
-      <h2>What This Plan Covers</h2>
-      <p class="sub">Six assigned tasks, one connected strategy — attract Gujrat's snack lovers online and turn them into WhatsApp orders.</p>
+  <!-- ============ 2. ASSIGNMENT INFO ============ -->
+  <section class="slide" data-title="Assignment Information">
+    <div class="shead compact">
+      <div class="kicker">The Fantastic Four · Group 1</div>
+      <h2>Group Introduction</h2>
     </div>
     <div class="content">
-      <div class="agenda">
-        <div class="card"><div class="num">01</div><div><b>Social Media Optimization</b><span>Facebook, Instagram &amp; WhatsApp Business — profiles fixed, built, and ready to sell.</span></div></div>
-        <div class="card"><div class="num">02</div><div><b>Buyer Persona</b><span>Who our customer really is — Bilal, the 27-year-old office worker, and more.</span></div></div>
-        <div class="card"><div class="num">03</div><div><b>Marketing Funnel</b><span>Awareness to Action — 2 ads built for every stage of the funnel (8 ads total).</span></div></div>
-        <div class="card"><div class="num">04</div><div><b>Creative Post Designs</b><span>2 ready-to-post visuals: the Golden Samosa drop and The Chaska Promise.</span></div></div>
-        <div class="card"><div class="num">05</div><div><b>Website</b><span>Single-page site with menu, story, location and a WhatsApp quick-order button.</span></div></div>
-        <div class="card"><div class="num">06</div><div><b>Presentation</b><span>This deck — the full plan, the ads, and the timeline to launch it all.</span></div></div>
+      <div class="card infopanel" style="padding:22px 28px;margin:0 0 18px">
+        <div class="info-block">
+          <span class="info-label">Group Name</span>
+          <p class="gi-name">The Fantastic Four</p>
+          <p class="gi-sub">(Group 1)</p>
+        </div>
+        <div class="det-div"></div>
+        <div class="info-block">
+          <span class="info-label">Introduction</span>
+          <p class="gi-intro">We are The Fantastic Four (Group 1) from the BQ-001 Digital Marketing course at Bano Qabil Pakistan, Gujrat (Male Batch 2). We work together to learn, share ideas, and complete our project using digital marketing skills.</p>
+        </div>
+      </div>
+
+      <h3 class="mem-head">Group Members</h3>
+      <div class="memgrid">
+        <figure class="mcard">
+          <div class="mphoto"><img src="images/kamran.jpg" alt="Kamran Rasool" style="object-fit:contain;width:100%;height:100%;inset:0"></div>
+          <figcaption><h4>Kamran Rasool</h4></figcaption>
+        </figure>
+        <figure class="mcard">
+          <div class="mphoto"><img src="images/abdullah.jpg" alt="M. Abdullah" style="object-fit:contain;width:100%;height:100%;inset:0"></div>
+          <figcaption><h4>M. Abdullah</h4></figcaption>
+        </figure>
+        <figure class="mcard">
+          <div class="mphoto"><img src="images/shayan.jpg" alt="Shayan Ali" style="object-fit:contain;width:100%;height:100%;inset:0"></div>
+          <figcaption><h4>Shayan Ali</h4></figcaption>
+        </figure>
+        <figure class="mcard">
+          <div class="mphoto"><img src="images/umair.jpg" alt="Umair Shahzad" style="object-fit:contain;width:100%;height:100%;inset:0"></div>
+          <figcaption><h4>Umair Shahzad</h4></figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
-  <!-- ============ 3. BUSINESS ============ -->
-  <section class="slide" data-title="Business at a Glance">
-    <div class="shead">
+  <!-- ============ 3. AGENDA ============ -->
+  <section class="slide" data-title="Assignment Overview">
+    <div class="shead compact">
+      <div class="kicker">Professional Group Assignment</div>
+      <h2>Assignment Overview</h2>
+    </div>
+    <div class="content">
+      <div class="cols" style="align-items:stretch;grid-template-columns:1fr 1.05fr 0.95fr">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="card infopanel">
+            <div class="panel-hd">
+              <span class="panel-ico">BQ</span>
+              <h4 style="margin:0">Course Information</h4>
+            </div>
+            <div class="info-row"><small>Institution</small><b>Bano Qabil Pakistan — Gujrat (Male Batch 2)</b></div>
+            <div class="info-row"><small>Course</small><b>BQ-001 Digital Marketing</b></div>
+          </div>
+          <div class="card infopanel">
+            <div class="panel-hd">
+              <span class="panel-ico">UF</span>
+              <h4 style="margin:0">Selected Business</h4>
+            </div>
+            <p class="sb-name">Umar Hayat Chaska Point</p>
+          </div>
+          <div class="card infopanel" style="flex:1">
+            <div class="panel-hd">
+              <span class="panel-ico">◆</span>
+              <h4 style="margin:0">Project Objective</h4>
+            </div>
+            <p class="sb-txt">To apply digital marketing knowledge to improve the online presence of a real business through practical strategies, creative content, and digital solutions.</p>
+          </div>
+          <div class="card infopanel">
+            <div class="panel-hd">
+              <span class="panel-ico">★</span>
+              <h4 style="margin:0">Project Goal</h4>
+            </div>
+            <p class="sb-txt">To help Umar Hayat Chaska Point strengthen its online presence, attract more customers, and promote the business using effective digital marketing techniques.</p>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="card infopanel" style="flex:1;display:flex;flex-direction:column">
+            <div class="panel-hd">
+              <span class="panel-ico">T</span>
+              <h4 style="margin:0">Project Tasks</h4>
+            </div>
+            <div class="ptasks" style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly">
+              <div class="ptask"><span class="pt-num">01</span><div class="pt-txt"><b>Social Media Pages Optimization</b><span>Improve Facebook and Instagram profiles to make them professional and attractive.</span></div></div>
+              <div class="ptask"><span class="pt-num">02</span><div class="pt-txt"><b>Buyer Persona</b><span>Create detailed buyer personas based on the target customers.</span></div></div>
+              <div class="ptask"><span class="pt-num">03</span><div class="pt-txt"><b>Marketing Funnel</b><span>Design a complete marketing funnel (TOFU, MOFU, BOFU).</span><span>Create 2 advertisements for each stage of the funnel.</span></div></div>
+              <div class="ptask"><span class="pt-num">04</span><div class="pt-txt"><b>Creative Post Designs</b><span>Design 2 engaging social media posts for the business.</span></div></div>
+              <div class="ptask"><span class="pt-num">05</span><div class="pt-txt"><b>Website (If Possible)</b><span>Create a simple, responsive, and user-friendly website for the business.</span></div></div>
+              <div class="ptask"><span class="pt-num">06</span><div class="pt-txt"><b>Presentation</b><span>Prepare a professional presentation with slides explaining all completed tasks and results.</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card infopanel" style="height:100%;display:flex;flex-direction:column">
+            <div class="panel-hd">
+              <span class="panel-ico">W</span>
+              <h4 style="margin:0">Work Completed</h4>
+            </div>
+            <img src="images/overview.jpg" alt="Assignment Overview — Work Report" style="flex:1;min-height:0;width:100%;object-fit:contain;border-radius:10px;border:1px solid rgba(240,165,46,.3);box-shadow:var(--shadow)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. BUSINESS ============ -->
+  <section class="slide busslide" data-title="Business at a Glance">
+    <div class="shead compact">
       <div class="kicker">The Business</div>
       <h2>Umar Hayat Chaska Point</h2>
-      <p class="sub">Two decades of the same recipe, the same fresh oil, the same honest flavour — now we take it digital.</p>
     </div>
     <div class="content">
-      <div class="cols">
-        <div>
-          <div class="brandcard">
-            <h3>Chaska Point · Gujrat</h3>
-            <p>Feeding Gujrat since 2005. Every snack made to order — no reheating, no shortcuts, no compromise.</p>
-            <div class="tags">
-              <span>Fresh Oil Every Batch</span><span>No Artificial Colours</span><span>Handmade Daily</span>
-            </div>
-            <div class="wh">
-              <svg viewBox="0 0 24 24"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.14-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.06 2.87 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.34zm-5.42 7.4h-.01a9.87 9.87 0 01-5.03-1.37l-.36-.22-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 012.89 6.99c0 5.45-4.44 9.89-9.88 9.89m8.41-18.3A11.81 11.81 0 0012.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.94L.06 24l6.3-1.65a11.88 11.88 0 005.69 1.45h.01c6.55 0 11.89-5.34 11.89-11.9 0-3.18-1.24-6.16-3.48-8.41z"/></svg>
-              +92 346 681 6902
-            </div>
-          </div>
-          <div class="grid g2" style="margin-top:16px">
-            <div class="card"><h4>Opening Hours</h4><p>Daily, 6:00 AM – 6:00 PM</p></div>
-            <div class="card"><h4>Order Channels</h4><p>Walk-in, Takeaway &amp; WhatsApp ahead-ordering</p></div>
-          </div>
+      <div class="grid g2" style="align-items:start">
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">B</span><h4 style="margin:0">Business Details</h4></div>
+          <div class="info-row"><small>Business Name</small><b style="color:var(--gold2);font-size:15px">Umar Hayat Chaska Point</b></div>
+          <div class="info-row"><small>Business Type</small><b>Restaurant / Fast Food</b></div>
+          <div class="info-row"><small>Category</small><b>Desi Breakfast &amp; Snacks</b></div>
+          <div class="info-row"><small>Owner</small><b>Umar Hayat</b></div>
+          <div class="info-row"><small>Location</small><b>Gujrat, Pakistan</b></div>
+          <div class="info-row"><small>Phone Number</small><b>+92 346 681 6902</b></div>
+          <div class="info-row"><small>Business Hours</small><b>6:00 AM – 2:00 PM</b></div>
         </div>
-        <div>
-          <div class="grid g2">
-            <div class="card stat"><b>20+</b><span>Years Serving</span></div>
-            <div class="card stat"><b>150+</b><span>Daily Customers</span></div>
-            <div class="card stat"><b>4.9</b><span>Google Rating</span></div>
-            <div class="card stat"><b>Rs. 20–400</b><span>Menu Range</span></div>
-          </div>
-          <div class="card" style="margin-top:16px">
-            <h4>Signature Menu</h4>
-            <div class="minimenu">
-              <div><b>Potato Samosas</b><span>Rs. 40 · Best Seller</span></div>
-              <div><b>Tala Naan</b><span>Rs. 100</span></div>
-              <div><b>Murgh Chanay</b><span>Rs. 130 / 180</span></div>
-              <div><b>Anday Chanay</b><span>Rs. 100 / 150</span></div>
-              <div><b>Crispy Pakoras</b><span>Rs. 400 / kg</span></div>
-              <div><b>Aloo Tikki</b><span>Rs. 30 / pc</span></div>
-              <div><b>Baingan Fry</b><span>Rs. 50</span></div>
-              <div><b>Fry Chilli</b><span>Rs. 20 / pc</span></div>
-            </div>
-          </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">P</span><h4 style="margin:0">Products / Services</h4></div>
+          <div class="tags" style="margin-top:6px"><span>Anday Chanay</span><span>Chai</span><span>Paratha</span><span>Other Breakfast &amp; Snack Items</span></div>
+        </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">T</span><h4 style="margin:0">Target Customers</h4></div>
+          <div class="tags" style="margin-top:6px"><span>Students</span><span>Office Workers</span><span>Families</span><span>Local Residents</span><span>Travelers</span></div>
+        </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">✦</span><h4 style="margin:0">Unique Selling Proposition (USP)</h4></div>
+          <div class="tags" style="margin-top:6px"><span>Fresh Ingredients</span><span>Affordable Prices</span><span>Traditional Desi Taste</span><span>Quick Service</span></div>
+        </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">S</span><h4 style="margin:0">Online Presence</h4></div>
+          <div class="info-row"><small>Social Media</small><b>Facebook · Instagram</b></div>
+          <div class="info-row"><small>Website</small><b>umar-hayat-chaska-point.vercel.app</b></div>
+        </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">O</span><h4 style="margin:0">Ordering Method</h4></div>
+          <div class="tags" style="margin-top:6px"><span>WhatsApp</span><span>Walk-in Customers</span></div>
+        </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">◆</span><h4 style="margin:0">Mission</h4></div>
+          <p class="sb-txt" style="font-size:15px;line-height:1.65">To provide fresh, delicious, and affordable desi breakfast with excellent customer service.</p>
+        </div>
+        <div class="card infopanel">
+          <div class="panel-hd"><span class="panel-ico">★</span><h4 style="margin:0">Vision</h4></div>
+          <p class="sb-txt" style="font-size:15px;line-height:1.65">To become the most trusted and popular breakfast restaurant in Gujrat.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ 4. SMO - FACEBOOK ============ -->
+  <!-- ============ 5. SMO - FACEBOOK ============ -->
   <section class="slide" data-title="SMO: Facebook">
     <div class="shead">
       <div class="kicker">Task 1 · Social Media Optimization</div>
@@ -680,7 +953,7 @@
     </div>
   </section>
 
-  <!-- ============ 5. SMO - IG + WA ============ -->
+  <!-- ============ 6. SMO - IG + WA ============ -->
   <section class="slide" data-title="SMO: Instagram & WhatsApp">
     <div class="shead">
       <div class="kicker">Task 1 · Social Media Optimization</div>
@@ -718,7 +991,7 @@
     </div>
   </section>
 
-  <!-- ============ 6. PERSONA PRIMARY ============ -->
+  <!-- ============ 7. PERSONA PRIMARY ============ -->
   <section class="slide" data-title="Buyer Persona: Primary">
     <div class="shead">
       <div class="kicker">Task 2 · Buyer Persona</div>
@@ -754,7 +1027,7 @@
     </div>
   </section>
 
-  <!-- ============ 7. PERSONA SECONDARY ============ -->
+  <!-- ============ 8. PERSONA SECONDARY ============ -->
   <section class="slide" data-title="Buyer Persona: Secondary">
     <div class="shead">
       <div class="kicker">Task 2 · Buyer Persona</div>
@@ -795,7 +1068,7 @@
     </div>
   </section>
 
-  <!-- ============ 8. FUNNEL OVERVIEW ============ -->
+  <!-- ============ 9. FUNNEL OVERVIEW ============ -->
   <section class="slide" data-title="Marketing Funnel">
     <div class="shead">
       <div class="kicker">Task 3 · Marketing Funnel</div>
@@ -827,7 +1100,7 @@
     </div>
   </section>
 
-  <!-- ============ 9. STAGE 1 AWARENESS ============ -->
+  <!-- ============ 10. STAGE 1 AWARENESS ============ -->
   <section class="slide" data-title="Funnel: Awareness Ads">
     <div class="shead">
       <div class="kicker">Stage 1 · Awareness (Top of Funnel)</div>
@@ -864,7 +1137,7 @@
     </div>
   </section>
 
-  <!-- ============ 10. STAGE 2 INTEREST ============ -->
+  <!-- ============ 11. STAGE 2 INTEREST ============ -->
   <section class="slide" data-title="Funnel: Interest Ads">
     <div class="shead">
       <div class="kicker">Stage 2 · Interest (Mid Funnel)</div>
@@ -901,7 +1174,7 @@
     </div>
   </section>
 
-  <!-- ============ 11. STAGE 3 DESIRE ============ -->
+  <!-- ============ 12. STAGE 3 DESIRE ============ -->
   <section class="slide" data-title="Funnel: Desire Ads">
     <div class="shead">
       <div class="kicker">Stage 3 · Desire (Mid-Low Funnel)</div>
@@ -938,7 +1211,7 @@
     </div>
   </section>
 
-  <!-- ============ 12. STAGE 4 ACTION ============ -->
+  <!-- ============ 13. STAGE 4 ACTION ============ -->
   <section class="slide" data-title="Funnel: Action Ads">
     <div class="shead">
       <div class="kicker">Stage 4 · Action (Bottom of Funnel)</div>
@@ -975,7 +1248,7 @@
     </div>
   </section>
 
-  <!-- ============ 13. CREATIVE POST 1 ============ -->
+  <!-- ============ 14. CREATIVE POST 1 ============ -->
   <section class="slide" data-title="Creative Post 1">
     <div class="shead">
       <div class="kicker">Task 4 · Creative Post Designs</div>
@@ -1022,7 +1295,7 @@
     </div>
   </section>
 
-  <!-- ============ 14. CREATIVE POST 2 ============ -->
+  <!-- ============ 15. CREATIVE POST 2 ============ -->
   <section class="slide" data-title="Creative Post 2">
     <div class="shead">
       <div class="kicker">Task 4 · Creative Post Designs</div>
@@ -1068,7 +1341,7 @@
     </div>
   </section>
 
-  <!-- ============ 15. WEBSITE ============ -->
+  <!-- ============ 16. WEBSITE ============ -->
   <section class="slide" data-title="Website Plan">
     <div class="shead">
       <div class="kicker">Task 5 · Website</div>
@@ -1091,7 +1364,7 @@
     </div>
   </section>
 
-  <!-- ============ 16. KPIs ============ -->
+  <!-- ============ 17. KPIs ============ -->
   <section class="slide" data-title="KPIs & Metrics">
     <div class="shead">
       <div class="kicker">Measuring Success</div>
@@ -1121,7 +1394,7 @@
     </div>
   </section>
 
-  <!-- ============ 17. TIMELINE ============ -->
+  <!-- ============ 18. TIMELINE ============ -->
   <section class="slide" data-title="Action Plan">
     <div class="shead">
       <div class="kicker">Roadmap</div>
@@ -1157,7 +1430,7 @@
     </div>
   </section>
 
-  <!-- ============ 18. THANKS ============ -->
+  <!-- ============ 19. THANKS ============ -->
   <section class="slide tcenter thanks" data-title="Thank You">
     <div class="brandmark">
       <svg viewBox="0 0 24 24"><path d="M7.2 2.6c-.5 1 .4 1.5 0 2.5-.4.9-1.1 0-.8-1.2.2-.6.4-1 .8-1.3zM12 1.7c-.5 1 .4 1.5 0 2.5-.4.9-1.1 0-.8-1.2.2-.6.4-1 .8-1.3zM16.8 2.6c-.5 1 .4 1.5 0 2.5-.4.9-1.1 0-.8-1.2.2-.6.4-1 .8-1.3zM12 5.4l6.4 9.2c-4 2.2-8.8 2.2-12.8 0L12 5.4zM8.7 14.6c1 .6 2.1.9 3.3.9s2.3-.3 3.3-.9c0 .4-.1.8-.1 1.1 0 1.8-1.4 3.2-3.2 3.2s-3.2-1.4-3.2-3.2c0-.3 0-.7-.1-1.1z"/></svg>
@@ -1200,7 +1473,7 @@
   <div class="brand">Chaska Point<small>Group 1 · Digital Plan</small></div>
   <button class="navbtn" id="ovwBtn" title="Overview">&#9776;</button>
   <button class="navbtn" id="prevBtn" title="Previous (Left arrow)">&#8592;</button>
-  <span class="counter" id="counter">1 / 18</span>
+  <span class="counter" id="counter">1 / 19</span>
   <button class="navbtn" id="nextBtn" title="Next (Right arrow)">&#8594;</button>
   <div class="dots" id="dots"></div>
   <button class="navbtn" id="printBtn" title="Print / Save as PDF"><svg class="icon" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
