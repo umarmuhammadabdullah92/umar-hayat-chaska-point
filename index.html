@@ -1481,18 +1481,6 @@ addToCart = function(btn) {
   bounceBadge();
 };
 
-/* ── FAQ accordion ── */
-function toggleFaq(item) {
-  var wasOpen = item.classList.contains('open');
-  /* close all others */
-  document.querySelectorAll('.faq-item.open').forEach(function(el) {
-    if (el !== item) el.classList.remove('open');
-  });
-  item.classList.toggle('open', !wasOpen);
-  var btn = item.querySelector('.faq-q');
-  if (btn) btn.setAttribute('aria-expanded', !wasOpen);
-}
-
 /* ── Smooth anchor scroll with header offset ── */
 document.querySelectorAll('a[href^="#"]').forEach(function(a) {
   a.addEventListener('click', function(e) {
