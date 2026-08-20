@@ -1296,17 +1296,9 @@ function selectSize(btn, price, label) {
   card.dataset.name = card.dataset.base + ' (' + label + ')';
   card.querySelector('.pr').textContent = 'Rs. ' + price;
 }
-function toggleNote(btn) {
-  const field = btn.nextElementSibling;
-  const showing = field.classList.toggle('show');
-  btn.textContent = showing ? '− Remove instructions' : '+ Add special instructions';
-  if (showing) field.focus();
-}
 
 /* ── Cart state ── */
 let cart = {};
-let orderType = 'walkin';
-let curStep = 1;
 
 function addToCart(btn) {
   const card = btn.closest('.mcard');
