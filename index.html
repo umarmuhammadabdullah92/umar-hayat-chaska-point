@@ -1480,6 +1480,14 @@ addToCart = function(btn) {
   bounceBadge();
 };
 
+/* ── Update WA link when name changes ── */
+var custNameInput = document.getElementById('custName');
+if (custNameInput) {
+  custNameInput.addEventListener('input', function() {
+    renderCart();
+  });
+}
+
 /* ── Smooth anchor scroll with header offset ── */
 document.querySelectorAll('a[href^="#"]').forEach(function(a) {
   a.addEventListener('click', function(e) {
