@@ -729,51 +729,6 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   padding-bottom: max(14px, env(safe-area-inset-bottom));
   max-height: 65dvh;
 }
-.step-tabs {
-  display: flex; margin-bottom: 14px; border-radius: var(--pill);
-  overflow: hidden; border: 1.5px solid var(--line); background: var(--warm);
-  flex-shrink: 0;
-}
-.step-tab {
-  flex: 1; padding: 10px 4px; text-align: center; font-size: .73rem;
-  font-weight: 600; color: var(--muted); border: none; background: transparent;
-  transition: all .18s; min-height: 44px;
-}
-.step-tab.active { background: var(--ink); color: #fff; border-radius: var(--pill); }
-.step-panel { display: none; }
-.step-panel.active {
-  display: block;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  padding-bottom: 8px;
-  flex: 1;
-  min-height: 0;
-}
-
-.order-types { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
-.otype {
-  border: 2px solid var(--line); border-radius: var(--r-lg);
-  padding: 12px 10px; text-align: center; cursor: pointer;
-  transition: all .18s; background: var(--white);
-}
-.otype:hover { border-color: var(--saffron); }
-.otype.sel { border-color: var(--saffron); background: #fff8f1; }
-.otype .oi { font-size: 1.4rem; margin-bottom: 4px; }
-.otype .on { font-size: .82rem; font-weight: 700; }
-.otype .od { font-size: .68rem; color: var(--muted); margin-top: 1px; }
-
-.order-fields { display: flex; flex-direction: column; gap: 9px; margin-bottom: 12px; }
-.ofield label { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-.ofield input, .ofield textarea, .ofield select {
-  width: 100%; border: 1.5px solid var(--line); border-radius: var(--r-sm);
-  padding: 11px 12px; font-family: var(--sans);
-  color: var(--ink); background: var(--white); transition: border-color .2s;
-  font-size: 16px;
-}
-.ofield input:focus, .ofield textarea:focus, .ofield select:focus { outline: none; border-color: var(--saffron); }
-.ofield textarea { resize: none; height: 52px; }
-
 .wa-btn {
   display: flex; align-items: center; justify-content: center; gap: 9px;
   width: 100%; padding: 14px; background: var(--green); color: #fff;
