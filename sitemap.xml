@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://umar-hayat-chaska-point.vercel.app/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/samosa.webp</image:loc>
+      <image:title>Best Samosas in Gujrat — Umar Hayat Chaska Point</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/crispy-pakoras.webp</image:loc>
+      <image:title>Crispy Pakoras in Gujrat — Fresh Oil Every Batch</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/tali-naan.webp</image:loc>
+      <image:title>Tala Naan in Gujrat — Golden Fried Naan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/murgh-chanay.webp</image:loc>
+      <image:title>Murgh Chanay — Traditional Chicken Chickpea Curry Gujrat</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/anday-chanay.webp</image:loc>
+      <image:title>Anday Chanay — Egg Chickpea Curry Gujrat</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/baingan-fry.webp</image:loc>
+      <image:title>Baingan Fry — Fried Aubergine Gujrat</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/aloo-tikki.webp</image:loc>
+      <image:title>Aloo Tikki — Spiced Potato Patties Gujrat</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://umar-hayat-chaska-point.vercel.app/images/fry-chilli.webp</image:loc>
+      <image:title>Fry Chilli — Spicy Battered Green Chillies Gujrat</image:title>
+    </image:image>
+  </url>
+</urlset>
