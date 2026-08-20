@@ -1397,7 +1397,12 @@ function renderCart() {
   document.getElementById('waFloat').style.bottom = cartBarVisible
     ? 'calc(76px + env(safe-area-inset-bottom))' : '24px';
 
-  buildPreview(names, total);
+  const waBtn = document.getElementById('waFinalBtn');
+  if (waBtn) {
+    const name = (document.getElementById('custName') && document.getElementById('custName').value.trim()) || '';
+    const items = names.map(function(n) { return { name: n, qty: cart[n].qty, unit: cart[n].unit, price: cart[n].price }; });
+    waBtn.href = waLink(buildWaMsg(items, total, { name: name }));
+  }
 }
 
 function openCart() {
