@@ -1735,6 +1735,17 @@ addToCart = function(btn) {
   bounceBadge();
 };
 
+/* ── FAQ accordion ── */
+function toggleFaq(item) {
+  var wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(el) {
+    if (el !== item) el.classList.remove('open');
+  });
+  item.classList.toggle('open', !wasOpen);
+  var btn = item.querySelector('.faq-q');
+  if (btn) btn.setAttribute('aria-expanded', !wasOpen);
+}
+
 /* ── Update WA link when name changes ── */
 var custNameInput = document.getElementById('custName');
 if (custNameInput) {
