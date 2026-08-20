@@ -33,19 +33,22 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231C1108'/%3E%3Cpath d='M50 20 L78 78 L50 78 Z' fill='%23E07B1A'/%3E%3Cpath d='M50 20 L22 78 L50 78 Z' fill='%23B85E0A'/%3E%3Ccircle cx='60' cy='58' r='4' fill='rgba(255,255,255,.3)'/%3E%3Cpath d='M22 78 Q32 72 42 78 Q50 84 58 78 Q66 72 78 78' stroke='rgba(255,255,255,.5)' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231C1108'/%3E%3Cpath d='M50 20 L78 78 L50 78 Z' fill='%23E07B1A'/%3E%3Cpath d='M50 20 L22 78 L50 78 Z' fill='%23B85E0A'/%3E%3C/svg%3E">
 
-<!-- Structured Data -->
+<!-- Structured Data — Restaurant -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Restaurant",
   "name": "Umar Hayat Chaska Point",
-  "description": "Gujrat's most trusted snack shop since 2005. Handmade samosas, pakoras, tala naan — fresh oil every day.",
+  "alternateName": "Chaska Point Gujrat",
+  "description": "Best samosa, crispy pakoras, tala naan, murgh chanay and desi snacks in Gujrat, Punjab. Fresh oil every batch, no artificial colours, handmade daily since 2005.",
   "url": "https://umar-hayat-chaska-point.vercel.app/",
   "telephone": "+923466816902",
   "address": {
     "@type": "PostalAddress",
+    "streetAddress": "Gujrat City",
     "addressLocality": "Gujrat",
     "addressRegion": "Punjab",
+    "postalCode": "50700",
     "addressCountry": "PK"
   },
   "geo": {
@@ -53,49 +56,105 @@
     "latitude": 32.5713244,
     "longitude": 74.0865473
   },
-  "image": "https://umar-hayat-chaska-point.vercel.app/images/samosa.jpg",
+  "image": [
+    "https://umar-hayat-chaska-point.vercel.app/images/samosa.webp",
+    "https://umar-hayat-chaska-point.vercel.app/images/crispy-pakoras.webp",
+    "https://umar-hayat-chaska-point.vercel.app/images/tali-naan.webp",
+    "https://umar-hayat-chaska-point.vercel.app/images/murgh-chanay.webp"
+  ],
   "priceRange": "Rs. 20 - Rs. 400",
-  "servesCuisine": "Pakistani",
+  "servesCuisine": ["Pakistani", "Street Food", "Desi Snacks", "Vegetarian"],
   "acceptsReservations": "False",
   "hasMenu": {
     "@type": "Menu",
+    "name": "Umar Hayat Chaska Point Menu",
+    "description": "Fresh handmade snacks, desi food and street food in Gujrat",
     "hasMenuSection": [
       {
         "@type": "MenuSection",
-        "name": "Chanay",
+        "name": "Chanay & Desi Food",
+        "description": "Traditional chickpea curries and desi dishes",
         "hasMenuItem": [
-          {"@type": "MenuItem", "name": "Murgh Chanay", "offers": {"@type": "Offer", "price": "130", "priceCurrency": "PKR"}},
-          {"@type": "MenuItem", "name": "Anday Chanay", "offers": {"@type": "Offer", "price": "100", "priceCurrency": "PKR"}}
+          {
+            "@type": "MenuItem",
+            "name": "Murgh Chanay",
+            "description": "Tender chicken simmered with spiced chickpeas in rich home-style masala. Available in half plate (Rs. 130) and full plate (Rs. 180).",
+            "offers": [
+              {"@type": "Offer", "price": "130", "priceCurrency": "PKR", "name": "Half Plate"},
+              {"@type": "Offer", "price": "180", "priceCurrency": "PKR", "name": "Full Plate"}
+            ]
+          },
+          {
+            "@type": "MenuItem",
+            "name": "Anday Chanay",
+            "description": "Boiled eggs in spiced chickpea curry. Half plate Rs. 100, full plate Rs. 150.",
+            "offers": [
+              {"@type": "Offer", "price": "100", "priceCurrency": "PKR", "name": "Half Plate"},
+              {"@type": "Offer", "price": "150", "priceCurrency": "PKR", "name": "Full Plate"}
+            ]
+          }
         ]
       },
       {
         "@type": "MenuSection",
         "name": "Bread",
+        "description": "Fresh fried naan",
         "hasMenuItem": [
-          {"@type": "MenuItem", "name": "Tala Naan", "offers": {"@type": "Offer", "price": "100", "priceCurrency": "PKR"}}
+          {
+            "@type": "MenuItem",
+            "name": "Tala Naan",
+            "description": "Golden crisp-edged naan shallow-fried in clean fresh oil. Light inside, deeply satisfying. Best tala naan in Gujrat.",
+            "offers": {"@type": "Offer", "price": "100", "priceCurrency": "PKR"}
+          }
         ]
       },
       {
         "@type": "MenuSection",
-        "name": "Snacks",
+        "name": "Samosas & Snacks",
+        "description": "Handmade samosas, tikki and fried snacks",
         "hasMenuItem": [
-          {"@type": "MenuItem", "name": "Potato Samosas", "offers": {"@type": "Offer", "price": "40", "priceCurrency": "PKR"}},
-          {"@type": "MenuItem", "name": "Aloo Tikki", "offers": {"@type": "Offer", "price": "30", "priceCurrency": "PKR"}},
-          {"@type": "MenuItem", "name": "Fry Chilli", "offers": {"@type": "Offer", "price": "20", "priceCurrency": "PKR"}}
+          {
+            "@type": "MenuItem",
+            "name": "Potato Samosas",
+            "description": "Signature handmade samosas since 2005 — spiced potato filling in hand-rolled, perfectly crisp shell. Gujrat's favourite samosa.",
+            "offers": {"@type": "Offer", "price": "40", "priceCurrency": "PKR"}
+          },
+          {
+            "@type": "MenuItem",
+            "name": "Aloo Tikki",
+            "description": "Pan-fried potato patties with cumin and coriander. Crispy outside, soft flavourful inside.",
+            "offers": {"@type": "Offer", "price": "30", "priceCurrency": "PKR"}
+          },
+          {
+            "@type": "MenuItem",
+            "name": "Fry Chilli",
+            "description": "Whole green chillies lightly battered and fried. Bold spicy kick.",
+            "offers": {"@type": "Offer", "price": "20", "priceCurrency": "PKR"}
+          }
         ]
       },
       {
         "@type": "MenuSection",
         "name": "Vegetarian",
         "hasMenuItem": [
-          {"@type": "MenuItem", "name": "Baingan Fry", "offers": {"@type": "Offer", "price": "50", "priceCurrency": "PKR"}}
+          {
+            "@type": "MenuItem",
+            "name": "Baingan Fry",
+            "description": "Thick aubergine slices in spiced batter, fried until tender and crispy.",
+            "offers": {"@type": "Offer", "price": "50", "priceCurrency": "PKR"}
+          }
         ]
       },
       {
         "@type": "MenuSection",
         "name": "By Weight",
         "hasMenuItem": [
-          {"@type": "MenuItem", "name": "Crispy Pakoras", "offers": {"@type": "Offer", "price": "400", "priceCurrency": "PKR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "400", "priceCurrency": "PKR", "unitText": "kg"}}}
+          {
+            "@type": "MenuItem",
+            "name": "Crispy Pakoras",
+            "description": "Classic chickpea-batter pakoras fried in fresh oil. Best crispy pakoras in Gujrat — order by the kilogram.",
+            "offers": {"@type": "Offer", "price": "400", "priceCurrency": "PKR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "400", "priceCurrency": "PKR", "unitText": "kg"}}
+          }
         ]
       }
     ]
@@ -114,11 +173,122 @@
     "reviewCount": "150",
     "bestRating": "5"
   },
+  "areaServed": {
+    "@type": "City",
+    "name": "Gujrat",
+    "containedInPlace": {
+      "@type": "State",
+      "name": "Punjab, Pakistan"
+    }
+  },
   "sameAs": [
     "https://www.facebook.com/profile.php?id=61591548841946",
     "https://www.instagram.com/umarhayatchaskapoint/",
     "https://wa.me/923466816902"
   ]
+}
+</script>
+
+<!-- Structured Data — FAQPage (for Google rich snippets) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the best samosas in Gujrat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Umar Hayat Chaska Point is known for serving the best samosas in Gujrat since 2005. Our handmade potato samosas are filled with spiced potatoes in a hand-rolled, perfectly crisp shell. Fresh oil every batch — no reused oil."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where can I buy crispy pakoras in Gujrat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Umar Hayat Chaska Point in Gujrat sells the freshest crispy pakoras made with chickpea batter fried in clean oil. Available by weight — order 1 kg for Rs. 400. Walk-in or WhatsApp order."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is tala naan and where to find it in Gujrat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tala naan is golden, crisp-edged naan shallow-fried in fresh oil — a beloved Punjabi street food. Umar Hayat Chaska Point in Gujrat serves the best tala naan for just Rs. 100. Light inside, deeply satisfying."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the opening hours of Umar Hayat Chaska Point?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Umar Hayat Chaska Point is open every day from 6:00 AM to 6:00 PM, including weekends. We recommend visiting in the morning for the freshest batch."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I order food on WhatsApp from Umar Hayat Chaska Point?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! You can place your order ahead on WhatsApp at +92 346 681 6902. Your order will be fresh and ready when you arrive — no waiting needed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Umar Hayat Chaska Point use fresh oil?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, 100%. We use fresh, clean oil for every single batch. We never reuse oil — that's our promise since 2005. You can see it yourself at our open kitchen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Umar Hayat Chaska Point use artificial colours?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Never. All our ingredients are 100% natural. No artificial colours, no preservatives, no shortcuts. Just traditional recipes with real ingredients."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is Umar Hayat Chaska Point located in Gujrat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Umar Hayat Chaska Point is located in Gujrat city, Punjab, Pakistan. Search 'Umar Hayat Chaska Point' on Google Maps for exact directions and our pinned location."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- Structured Data — LocalBusiness -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FastFoodRestaurant",
+  "name": "Umar Hayat Chaska Point",
+  "image": "https://umar-hayat-chaska-point.vercel.app/images/samosa.webp",
+  "url": "https://umar-hayat-chaska-point.vercel.app/",
+  "telephone": "+923466816902",
+  "priceRange": "Rs. 20 - Rs. 400",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Gujrat",
+    "addressRegion": "Punjab",
+    "addressCountry": "PK"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 32.5713244,
+    "longitude": 74.0865473
+  },
+  "openingHours": "Mo-Su 06:00-18:00",
+  "menu": "https://umar-hayat-chaska-point.vercel.app/#menu",
+  "acceptsReservations": "False",
+  "servesCuisine": "Pakistani Street Food",
+  "hasMap": "https://www.google.com/maps/place/Umar+Hayat+chaska+point/@32.5713244,74.0865473,17z/"
 }
 </script>
 
