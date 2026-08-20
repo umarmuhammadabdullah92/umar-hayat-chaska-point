@@ -1329,21 +1329,15 @@ function getTotal() { return Object.values(cart).reduce((s, it) => s + it.price 
 
 function buildWaMsg(items, total, extra) {
   if (!extra) extra = {};
-  const { name = '', phone = '', time = '', notes = '', type = 'walkin' } = extra;
+  const { name = '' } = extra;
   let lines = ['🍽️ *Order — Umar Hayat Chaska Point*', ''];
   items.forEach(it => {
     const ql = it.unit ? it.qty + ' ' + it.unit : '×' + it.qty;
     lines.push('• ' + it.name + ' (' + ql + ') — Rs. ' + Math.round(it.price * it.qty));
-    if (it.note) lines.push('  _Note: ' + it.note + '_');
   });
   lines.push('');
   lines.push('*Total: Rs. ' + Math.round(total) + '*');
-  lines.push('');
-  lines.push('Order type: ' + (type === 'walkin' ? 'Walk-in 🚶' : 'Takeaway 🛍️'));
   if (name)  lines.push('Name: ' + name);
-  if (phone) lines.push('Phone: ' + phone);
-  if (time)  lines.push('Time: ' + time);
-  if (notes) lines.push('Notes: ' + notes);
   return lines.join('\n');
 }
 function waLink(msg) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg); }
