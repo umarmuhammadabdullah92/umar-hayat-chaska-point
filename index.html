@@ -1307,12 +1307,10 @@ function addToCart(btn) {
   const unit  = card.dataset.unit || '';
   const img   = card.dataset.img || '';
   const qty   = parseFloat(card.querySelector('.qval').textContent);
-  const note  = card.querySelector('.note-field').value.trim();
   if (cart[name]) {
     cart[name].qty = Math.round((cart[name].qty + qty) * 100) / 100;
-    if (note) cart[name].note = note;
   } else {
-    cart[name] = { price, qty, unit, note, img };
+    cart[name] = { price, qty, unit, img };
   }
   renderCart();
   btn.textContent = 'Added ✓'; btn.classList.add('added');
