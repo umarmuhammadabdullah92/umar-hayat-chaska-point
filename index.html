@@ -1400,45 +1400,10 @@ function renderCart() {
   buildPreview(names, total);
 }
 
-function selOrderType(t) {
-  orderType = t;
-  document.getElementById('ot-walkin').classList.toggle('sel', t === 'walkin');
-  document.getElementById('ot-takeaway').classList.toggle('sel', t === 'takeaway');
-}
-function goStep(n) {
-  curStep = n;
-  [1, 2, 3].forEach(function(i) {
-    document.getElementById('tab' + i).classList.toggle('active', i === n);
-    document.getElementById('tab' + i).setAttribute('aria-selected', i === n);
-    document.getElementById('step' + i).classList.toggle('active', i === n);
-  });
-  if (n === 3) buildPreview(Object.keys(cart), getTotal());
-}
-function buildPreview(names, total) {
-  const name  = (document.getElementById('custName') && document.getElementById('custName').value.trim()) || '';
-  const phone = (document.getElementById('custPhone') && document.getElementById('custPhone').value.trim()) || '';
-  const time  = (document.getElementById('custTime') && document.getElementById('custTime').value) || '';
-  const notes = (document.getElementById('custNotes') && document.getElementById('custNotes').value.trim()) || '';
-  const items = names.map(function(n) { return { name: n, qty: cart[n].qty, unit: cart[n].unit, price: cart[n].price, note: cart[n].note }; });
-  const msg = buildWaMsg(items, total, { name: name, phone: phone, time: time, notes: notes, type: orderType });
-  const prev = document.getElementById('orderPreview');
-  if (prev) {
-    prev.innerHTML = items.map(function(it) {
-      const ql = it.unit ? it.qty + ' ' + it.unit : '×' + it.qty;
-      return '<div style="margin-bottom:3px;">• <strong>' + it.name + '</strong> (' + ql + ') — Rs. ' + Math.round(it.price * it.qty) + (it.note ? '<br><span style="color:var(--muted);font-style:italic;font-size:.73rem;">"' + it.note + '"</span>' : '') + '</div>';
-    }).join('') +
-    '<div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-weight:700;">Total: Rs. ' + Math.round(total) + '</div>' +
-    (name ? '<div style="margin-top:5px;font-size:.73rem;color:var(--muted);">Ordering as: ' + name + (phone ? ' · ' + phone : '') + '</div>' : '');
-  }
-  const waBtn = document.getElementById('waFinalBtn');
-  if (waBtn) waBtn.href = waLink(msg);
-}
-
 function openCart() {
   document.getElementById('cartPanel').classList.add('open');
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  goStep(1);
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', _onVVResize);
     window.visualViewport.addEventListener('scroll', _onVVResize);
