@@ -1605,28 +1605,29 @@ const WA = "923466816902";
 
 
 
-/* ── Mobile Nav ── */
+/* ── Mobile Nav Drawer ── */
 const hamBtn = document.getElementById('hamBtn');
 const mobNav = document.getElementById('mobNav');
-hamBtn.addEventListener('click', () => {
-  const open = mobNav.classList.toggle('open');
-  hamBtn.textContent = open ? '✕' : '☰';
-  hamBtn.setAttribute('aria-expanded', open);
-  document.body.style.overflow = open ? 'hidden' : '';
-});
+const drawerOverlay = document.getElementById('drawerOverlay');
+
+function openMobNav() {
+  mobNav.classList.add('open');
+  drawerOverlay.classList.add('open');
+  hamBtn.classList.add('open');
+  hamBtn.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+}
 function closeMobNav() {
   mobNav.classList.remove('open');
-  hamBtn.textContent = '☰';
+  drawerOverlay.classList.remove('open');
+  hamBtn.classList.remove('open');
   hamBtn.setAttribute('aria-expanded', 'false');
   document.body.style.overflow = '';
 }
-
-document.addEventListener('click', e => {
-  if (mobNav.classList.contains('open') &&
-      !mobNav.contains(e.target) && !hamBtn.contains(e.target)) {
-    closeMobNav();
-  }
+hamBtn.addEventListener('click', () => {
+  mobNav.classList.contains('open') ? closeMobNav() : openMobNav();
 });
+drawerOverlay.addEventListener('click', closeMobNav);
 
 window.addEventListener('scroll', () => {
   document.getElementById('siteHdr').classList.toggle('scrolled', window.scrollY > 10);
