@@ -1812,7 +1812,9 @@ function _onVVResize() {
     panel.style.maxHeight = '';
   }
 }
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeCart(); });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { closeCart(); closeMobNav(); }
+});
 
 /* ── Scroll reveal ── */
 const revObs = new IntersectionObserver(function(entries) {
