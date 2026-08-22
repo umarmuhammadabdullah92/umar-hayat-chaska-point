@@ -419,11 +419,22 @@ h1, h2, h3 { text-wrap: balance; }
 /* ── HEADER ── */
 .site-hdr {
   position: sticky; top: 0; z-index: 100; height: var(--hdr);
-  background: rgba(255,255,255,.96); backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--line); transition: box-shadow .25s;
+  background: rgba(251,247,242,.84);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border-bottom: 1px solid var(--line);
+  transition: box-shadow .3s ease, height .3s ease;
 }
-.site-hdr.scrolled { box-shadow: var(--sh1); }
+.site-hdr.scrolled {
+  height: calc(var(--hdr) - 6px);
+  box-shadow: 0 6px 26px rgba(28,17,8,.08);
+}
+.scroll-progress {
+  position: absolute; left: 0; bottom: -1px; height: 2px; width: 0%;
+  background: linear-gradient(90deg, var(--saffron-d), var(--saffron), var(--saffron-l));
+  border-radius: 0 2px 2px 0; z-index: 1;
+  transition: width .12s linear; pointer-events: none;
+}
 .hdr-in {
   max-width: 1280px; margin: 0 auto; padding: 0 5%;
   display: flex; align-items: center; justify-content: space-between;
