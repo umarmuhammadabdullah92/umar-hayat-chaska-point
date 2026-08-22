@@ -1190,13 +1190,45 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   </div>
 </header>
 
-<!-- Mobile Nav -->
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeMobNav()"></div>
+
+<!-- Mobile Nav — Slide-in Drawer -->
 <nav class="mob-nav" id="mobNav" aria-label="Mobile navigation">
-  <a href="#menu" onclick="closeMobNav()">Snacks Menu</a>
-  <a href="#about" onclick="closeMobNav()">Our Story</a>
-  <a href="#visit" onclick="closeMobNav()">Find Us in Gujrat</a>
-  <a href="https://wa.me/923466816902" target="_blank" rel="noopener" onclick="closeMobNav()">📞 +92 346 681 6902</a>
-  <a href="#menu" onclick="closeMobNav()" class="mob-cta">Order Now →</a>
+  <div class="mn-head">
+    <a href="#" class="logo" onclick="closeMobNav()">
+      <div class="logo-mark">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 11 L34 33 L20 33 Z" fill="#E07B1A"/>
+          <path d="M20 11 L6 33 L20 33 Z" fill="#B85E0A"/>
+          <path d="M6 33 Q9 30.5 12 33 Q15.5 35.5 18 33 Q20 30.5 22 33 Q25.5 35.5 28 33 Q31 30.5 34 33" stroke="rgba(255,255,255,.44)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-name">Umar Hayat</span>
+        <span class="logo-sub">Chaska Point · Gujrat</span>
+      </div>
+    </a>
+  </div>
+  <a href="#menu" class="mn-link" onclick="closeMobNav()">Snacks Menu <span class="chev">→</span></a>
+  <a href="#about" class="mn-link" onclick="closeMobNav()">Our Story <span class="chev">→</span></a>
+  <a href="#visit" class="mn-link" onclick="closeMobNav()">Find Us in Gujrat <span class="chev">→</span></a>
+  <a href="https://wa.me/923466816902" target="_blank" rel="noopener" class="mn-link" style="color:#0D7A43;" onclick="closeMobNav()">WhatsApp +92 346 681 6902 <span class="chev">↗</span></a>
+  <a href="#menu" class="mob-cta" onclick="closeMobNav()">Order Now →</a>
+  <div class="mn-foot">
+    <p class="mn-hours"><strong>Open Daily</strong> · 6:00 AM – 6:00 PM<br>Fresh oil every batch · Since 2005</p>
+    <div class="mn-soc">
+      <a href="https://www.facebook.com/profile.php?id=61591548841946" target="_blank" rel="noopener" class="soc" aria-label="Facebook">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/umarhayatchaskapoint/" target="_blank" rel="noopener" class="soc" aria-label="Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="tel:+923466816902" class="soc" aria-label="Call us">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.08 4.18 2 2 0 014.06 2h3a2 2 0 012 1.72c.13.96.36 1.9.68 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.2a2 2 0 012.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0122 16.92z"/></svg>
+      </a>
+    </div>
+  </div>
 </nav>
 
 <!-- HERO -->
