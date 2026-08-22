@@ -1649,9 +1649,33 @@ hamBtn.addEventListener('click', () => {
 });
 drawerOverlay.addEventListener('click', closeMobNav);
 
-window.addEventListener('scroll', () => {
-  document.getElementById('siteHdr').classList.toggle('scrolled', window.scrollY > 10);
-}, {passive: true});
+/* ── Header scroll state + reading progress + scrollspy ── */
+const siteHdr = document.getElementById('siteHdr');
+const scrollBarEl = document.getElementById('scrollProgress');
+const spyLinks = Array.prototype.slice.call(
+  document.querySelectorAll('.site-hdr nav a[href^="#"]:not(.nav-cta)')
+);
+const spyObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(en) {
+    if (!en.isIntersecting) return;
+    spyLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id);
+    });
+  });
+}, { rootMargin: '-45% 0px -50% 0px' });
+spyLinks.forEach(function(a) {
+  const sec = document.querySelector(a.getAttribute('href'));
+  if (sec) spyObs.observe(sec);
+});
+
+function onHdrScroll() {
+  const y = window.scrollY;
+  siteHdr.classList.toggle('scrolled', y > 10);
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  if (scrollBarEl) scrollBarEl.style.width = (max > 0 ? Math.min(100, (y / max) * 100) : 0) + '%';
+}
+window.addEventListener('scroll', onHdrScroll, {passive: true});
+onHdrScroll();
 
 const mwrap = document.querySelector('.marquee-wrap');
 if (mwrap) {
