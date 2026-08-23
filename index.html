@@ -1758,9 +1758,16 @@ document.addEventListener('click', function(e) {
   e.preventDefault();
 
   /* whatsapp:// scheme opens the installed app instantly */
-  var appUrl = a.href.replace(/^https:\/\/(api\.whatsapp\.com\/send|wa\.me\/[^?]*)\??/, 'whatsapp://send?');
+  var parts = {}, kv, qs = a.href.split('?')[1] || '';
+  qs.split('&').forEach(function(pair) { kv = pair.split('='); if (kv[0]) parts[kv[0]] = kv.slice(1).join('='); });
+  if (!parts.phone) { var wm = a.href.match(/wa\.me\/(\d+)/); if (wm) parts.phone = wm[1]; }
+
+  var out = [];
+  if (parts.phone) out.push('phone=' + parts.phone);
+  if (parts.text) out.push('text=' + parts.text);
+
   var left = Date.now();
-  location.href = appUrl;
+  location.href = 'whatsapp://send?' + out.join('&');
 
   /* if app is missing, fall back to the normal web link */
   setTimeout(function() {
