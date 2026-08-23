@@ -1721,12 +1721,21 @@ function buildWaMsg(items, total, extra) {
   if (name)  lines.push('Name: ' + name);
   return lines.join('\n');
 }
-function waLink(msg) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg); }
+function waLink(msg) { return 'https://api.whatsapp.com/send?phone=' + WA + '&text=' + encodeURIComponent(msg); }
 
 const defaultMsg = encodeURIComponent("Hi! I'd like to place an order at Umar Hayat Chaska Point 🍽️\n\nCan you tell me what is available today?");
-const defaultHref = 'https://wa.me/' + WA + '?text=' + defaultMsg;
+const defaultHref = 'https://api.whatsapp.com/send?phone=' + WA + '&text=' + defaultMsg;
 document.getElementById('heroWaBtn').href    = defaultHref;
 document.getElementById('waFloat').href      = defaultHref;
+
+/* ── Instant WhatsApp: warm the connection before click ── */
+document.querySelectorAll('a[href*="api.whatsapp.com"], a[href*="wa.me"]').forEach(function(a) {
+  a.addEventListener('pointerenter', function() {
+    if (a.dataset.warmed) return;
+    a.dataset.warmed = '1';
+    try { fetch('https://api.whatsapp.com/send?phone=' + WA, { mode: 'no-cors', priority: 'low' }); } catch (e) {}
+  }, { passive: true });
+});
 
 
 
