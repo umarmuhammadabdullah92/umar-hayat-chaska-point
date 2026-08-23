@@ -1021,12 +1021,15 @@ a.fc-item:hover svg { opacity: .9; }
 }
 .faq-item.open .faq-arrow { transform: rotate(180deg); background: var(--saffron-xl); color: var(--saffron); }
 .faq-a {
-  max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .35s ease;
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows .45s cubic-bezier(.22,1,.36,1);
 }
-.faq-item.open .faq-a { max-height: 300px; }
+.faq-item.open .faq-a { grid-template-rows: 1fr; }
 .faq-a-inner {
-  padding: 0 20px 18px; font-size: .85rem; color: var(--muted); line-height: 1.85;
+  overflow: hidden; min-height: 0;
+  padding: 0 20px; font-size: .85rem; color: var(--muted); line-height: 1.85;
 }
+.faq-item.open .faq-a-inner { padding-bottom: 18px; transition: padding .3s ease .08s; }
 
 /* ── SCROLL REVEAL ── */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
