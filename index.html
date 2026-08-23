@@ -1618,13 +1618,6 @@ function onHdrScroll() {
 window.addEventListener('scroll', onHdrScroll, {passive: true});
 onHdrScroll();
 
-const mwrap = document.querySelector('.marquee-wrap');
-if (mwrap) {
-  const mt = mwrap.querySelector('.marquee-track');
-  mwrap.addEventListener('mouseenter', () => mt.style.animationPlayState = 'paused');
-  mwrap.addEventListener('mouseleave', () => mt.style.animationPlayState = 'running');
-}
-
 /* ── Filters ── */
 document.querySelectorAll('.ftab').forEach(t => {
   t.addEventListener('click', () => {
