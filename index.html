@@ -333,6 +333,38 @@ a { color: inherit; }
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
+/* ── POLISH: selection, scrollbar, focus ── */
+::selection { background: var(--saffron); color: #fff; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: #D9C9B5; border-radius: 8px; border: 2px solid var(--paper); }
+::-webkit-scrollbar-thumb:hover { background: var(--saffron); }
+:focus-visible { outline: 2.5px solid var(--saffron); outline-offset: 2px; }
+
+/* ── HERO ENTRANCE ── */
+@keyframes riseIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.hero-txt > * { animation: riseIn .55s cubic-bezier(.2,.9,.3,1) backwards; }
+.hero-txt > :nth-child(1) { animation-delay: .05s; }
+.hero-txt > :nth-child(2) { animation-delay: .12s; }
+.hero-txt > :nth-child(3) { animation-delay: .18s; }
+.hero-txt > :nth-child(4) { animation-delay: .24s; }
+.hero-txt > :nth-child(5) { animation-delay: .30s; }
+.hero-vis { animation: riseIn .65s cubic-bezier(.2,.9,.3,1) .28s backwards; }
+
+/* ── BACK TO TOP ── */
+.to-top {
+  position: fixed; bottom: 24px; left: 24px; z-index: 98;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--white); border: 1.5px solid var(--line);
+  color: var(--ink); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: var(--sh1);
+  opacity: 0; pointer-events: none; transform: translateY(12px);
+  transition: opacity .3s, transform .3s, background .2s, border-color .2s;
+}
+.to-top.show { opacity: 1; pointer-events: auto; transform: none; }
+.to-top:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+@media(max-width:860px){ .to-top { display: none; } }
+
 button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
