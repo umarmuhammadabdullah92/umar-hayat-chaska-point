@@ -336,11 +336,7 @@ a { color: inherit; }
 ::-webkit-scrollbar-thumb:hover { background: var(--saffron); }
 :focus-visible { outline: 2.5px solid var(--saffron); outline-offset: 2px; }
 
-/* ── SMOOTH TOUCH: press feedback, no flash ── */
-.btn, .mcard-add, .qty-btn, .filter-tab, .soc, .to-top, .wa-float, .faq-q, nav a {
-  transition-property: transform, background, color, box-shadow, border-color, opacity;
-  will-change: auto;
-}
+/* ── SMOOTH TOUCH: press feedback ── */
 .btn:active, .mcard-add:active, .qty-btn:active, .soc:active, .to-top:active { transform: scale(.94); }
 .filter-tab:active { transform: scale(.96); }
 .wa-float:active { transform: scale(.9); }
