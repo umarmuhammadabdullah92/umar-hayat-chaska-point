@@ -763,11 +763,19 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
   padding: 3px 0;
 }
 .fcol a:hover { color: rgba(255,255,255,.82); }
-.fcol a.wa-link { color: var(--green); }
+.fc-item {
+  display: flex; align-items: center; gap: 9px;
+  font-size: .81rem; color: rgba(255,255,255,.32);
+  text-decoration: none; margin-bottom: 12px; line-height: 1.5;
+  transition: color .2s;
+}
+a.fc-item:hover { color: rgba(255,255,255,.85); }
+.fc-item svg { flex-shrink: 0; opacity: .55; }
+a.fc-item:hover svg { opacity: .9; }
 .fbot {
   max-width: 1280px; margin: 0 auto; padding-top: 22px;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 8px; font-size: .72rem;
+  display: flex; justify-content: center; align-items: center;
+  text-align: center; font-size: .72rem;
 }
 
 /* ── FLOATING ELEMENTS ── */
