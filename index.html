@@ -1748,6 +1748,26 @@ document.querySelectorAll('a[href*="api.whatsapp.com"], a[href*="wa.me"]').forEa
   }, { passive: true });
 });
 
+/* ── Mobile: jump straight into the WhatsApp APP ── */
+var isPhoneOrTab = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  || (navigator.maxTouchPoints > 0 && window.matchMedia('(pointer: coarse)').matches);
+
+document.addEventListener('click', function(e) {
+  var a = e.target.closest ? e.target.closest('a[href*="api.whatsapp.com"], a[href*="wa.me"]') : null;
+  if (!a || !isPhoneOrTab) return;
+  e.preventDefault();
+
+  /* whatsapp:// scheme opens the installed app instantly */
+  var appUrl = a.href.replace(/^https:\/\/(api\.whatsapp\.com\/send|wa\.me\/[^?]*)\??/, 'whatsapp://send?');
+  var left = Date.now();
+  location.href = appUrl;
+
+  /* if app is missing, fall back to the normal web link */
+  setTimeout(function() {
+    if (!document.hidden && Date.now() - left < 2500) location.href = a.href;
+  }, 900);
+}, true);
+
 
 
 /* ── Render cart panel ── */
