@@ -729,6 +729,15 @@ nav a.nav-cta:hover { background: var(--saffron); }
 
 .mapwrap { width: 100%; height: 380px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); }
 .mapwrap iframe { display: block; width: 100%; height: 100%; border: none; }
+.map-facade {
+  width: 100%; height: 100%; border: none; cursor: pointer;
+  background: rgba(255,255,255,.04);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; color: rgba(255,255,255,.55);
+  font-family: var(--sans); font-size: .85rem; font-weight: 600;
+  transition: background .2s, color .2s;
+}
+.map-facade:hover { background: rgba(255,255,255,.08); color: #fff; }
 .visit-cta { text-align: center; margin-top: 28px; }
 .btn-saffron {
   display: inline-flex; align-items: center; gap: 9px;
