@@ -1635,11 +1635,17 @@ spyLinks.forEach(function(a) {
   if (sec) spyObs.observe(sec);
 });
 
+const toTopEl = document.getElementById('toTop');
+toTopEl.addEventListener('click', function() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
 function onHdrScroll() {
   const y = window.scrollY;
   siteHdr.classList.toggle('scrolled', y > 10);
   const max = document.documentElement.scrollHeight - window.innerHeight;
   if (scrollBarEl) scrollBarEl.style.width = (max > 0 ? Math.min(100, (y / max) * 100) : 0) + '%';
+  if (toTopEl) toTopEl.classList.toggle('show', y > 600);
 }
 window.addEventListener('scroll', onHdrScroll, {passive: true});
 onHdrScroll();
