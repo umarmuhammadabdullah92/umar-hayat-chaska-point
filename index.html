@@ -1784,13 +1784,6 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') { closeCart(); closeMobNav(); }
 });
 
-/* ── Map facade: load Google Maps only on tap ── */
-function loadMap() {
-  var w = document.getElementById('mapWrap');
-  if (!w || w.querySelector('iframe')) return;
-  w.innerHTML = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3394.3828399580227!2d74.0843586!3d32.5713244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f1b3f0e9c7863%3A0xded6742bfb7df020!2sUmar+Hayat+Chaska+Point!5e0!3m2!1sen!2s!4v1680000000000!5m2!1sen!2s" allowfullscreen="" title="Umar Hayat Chaska Point on Google Maps"></iframe>';
-}
-
 /* ── Scroll reveal ── */
 const revObs = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) {
