@@ -758,13 +758,13 @@ footer { background: #0C0A05; color: rgba(255,255,255,.35); padding: 56px 5% 28p
 }
 .soc:hover { background: var(--saffron); border-color: var(--saffron); color: #fff; transform: translateY(-2px); }
 
-/* Brand-coloured socials */
-.soc-fb { color: #4DA3F7; border-color: rgba(24,119,242,.45); }
-.soc-fb:hover { background: #1877F2; border-color: #1877F2; color: #fff; }
-.soc-ig { color: #E8618C; border-color: rgba(221,42,123,.45); }
-.soc-ig:hover { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); border-color: transparent; color: #fff; }
-.soc-wa { color: var(--green); border-color: rgba(37,211,102,.45); }
-.soc-wa:hover { background: #25D366; border-color: #25D366; color: #fff; }
+/* Brand-coloured socials — real brand colours */
+.soc-fb { background: #1877F2; border-color: #1877F2; color: #fff; }
+.soc-fb:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(24,119,242,.45); }
+.soc-ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); border-color: transparent; color: #fff; }
+.soc-ig:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(214,36,159,.45); }
+.soc-wa { background: #25D366; border-color: #25D366; color: #fff; }
+.soc-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(37,211,102,.4); }
 .fcol h4 { font-family: var(--serif); font-size: .98rem; color: #fff; margin-bottom: 16px; }
 .fcol a, .fcol p {
   display: block; font-size: .81rem; color: rgba(255,255,255,.32);
