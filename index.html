@@ -631,18 +631,8 @@ nav a.nav-cta:hover { background: var(--saffron); }
 
 /* ── ABOUT ── */
 .wrap { max-width: 1280px; margin: 0 auto; padding: clamp(40px, 6vw, 100px) 5%; }
-.about-g { display: grid; grid-template-columns: 5fr 6fr; gap: clamp(32px, 5vw, 88px); align-items: center; }
-.about-vis { position: relative; }
-.about-frame { border-radius: 28px; overflow: hidden; aspect-ratio: 4/5; box-shadow: var(--sh3); background: var(--warm); }
-.about-frame img { width: 100%; height: 100%; object-fit: cover; }
+.about-g { max-width: 720px; margin: 0 auto; }
 
-.a-badge {
-  position: absolute; bottom: -20px; right: -20px;
-  background: var(--saffron); color: #fff; border-radius: 20px;
-  padding: 18px 22px; box-shadow: var(--sh2); text-align: center; min-width: 120px;
-}
-.a-badge .ab-n { font-family: var(--serif); font-size: 2.4rem; line-height: 1; }
-.a-badge .ab-l { font-size: .58rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.7); margin-top: 3px; }
 
 .about-txt p { color: var(--muted); font-size: .95rem; line-height: 1.88; margin-bottom: 14px; max-width: 50ch; }
 
@@ -1072,7 +1062,6 @@ a.fc-item:hover svg { opacity: .9; }
   .hero-desc { font-size: 1.05rem; max-width: 440px; }
   .mgrid { gap: 22px; }
   .mcard-img { height: 220px; }
-  .about-g { gap: 88px; }
   .icards { gap: 16px; }
   .mapwrap { height: 440px; }
 }
@@ -1089,11 +1078,6 @@ a.fc-item:hover svg { opacity: .9; }
   .hc-stat .hcs-num { font-size: 1.4rem; }
   .hc-price { bottom: 16px; left: 16px; padding: 12px 16px; }
   .hc-price .hcp-price { font-size: 1.6rem; }
-  .about-g { grid-template-columns: 1fr; gap: 40px; }
-  .about-frame { aspect-ratio: 16/9; border-radius: 20px; }
-  .a-badge { right: 16px; bottom: -10px; padding: 12px 16px; min-width: 100px; }
-  .a-badge .ab-n { font-size: 1.8rem; }
-  .about-vis { margin-bottom: 20px; }
   .icards { grid-template-columns: 1fr; gap: 10px; }
   .visit-hd { flex-direction: column; }
   .visit-hd p { text-align: left; max-width: 100%; }
@@ -1288,18 +1272,12 @@ a.fc-item:hover svg { opacity: .9; }
 <section id="about">
   <div class="wrap">
     <div class="about-g reveal">
-      <div class="about-vis">
-        <div class="about-frame">
-          <img src="images/tali-naan.webp" alt="Tala naan being prepared — crispy fried naan in Gujrat at Umar Hayat Chaska Point" loading="lazy" decoding="async" width="640" height="800">
-        </div>
-      </div>
       <div class="about-txt">
         <div class="eyebrow" style="margin-bottom:12px;">Our Story</div>
         <h2 class="display" style="font-size:clamp(1.9rem,3.5vw,3rem);margin-bottom:20px;">Feeding Gujrat<br>Since 2005</h2>
         <p>We started as a small roadside stall in 2005. Today we are known for the <strong>best samosa in Gujrat</strong> and are a favourite family spot for <strong>nashta</strong> and desi snacks. Everything is made by hand with fresh oil — no artificial colours, no tricks. Just good, honest food.</p>
         <div class="stats">
           <div class="stat"><div class="sn">20+</div><div class="sl">Years Serving</div></div>
-          <div class="stat"><div class="sn">150+</div><div class="sl">Daily Customers</div></div>
           <div class="stat"><div class="sn">5.0★</div><div class="sl">Google Rating</div></div>
         </div>
       </div>
