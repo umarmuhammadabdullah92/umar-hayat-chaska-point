@@ -1032,7 +1032,7 @@ a.fc-item:hover svg { opacity: .9; }
 .faq-item.open .faq-a-inner { padding-bottom: 18px; transition: padding .3s ease .08s; }
 
 /* ── SCROLL REVEAL ── */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); will-change: opacity, transform; }
 .reveal.visible { opacity: 1; transform: none; }
 .reveal-d1 { transition-delay: .08s; }
 .reveal-d2 { transition-delay: .16s; }
