@@ -64,6 +64,35 @@ h1,h2,h3{text-wrap:balance;}
 .section-hd h2{font-size:clamp(1.9rem,3.5vw,3rem);margin:12px 0 10px;}
 .section-hd p{color:var(--muted);font-size:.92rem;line-height:1.8;}
 
+/* ---------- Home hero (classic full-screen restaurant) ---------- */
+.hero{position:relative;min-height:min(94vh,820px);display:grid;place-items:center;text-align:center;color:#fff;overflow:hidden;background:var(--dark-bg);}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%;opacity:.5;}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(17,14,7,.5) 0%,rgba(17,14,7,.32) 45%,rgba(17,14,7,.82) 100%);}
+.hero-in{position:relative;z-index:2;max-width:880px;margin:auto;padding:clamp(96px,16vh,170px) 5% 40px;}
+.hero-in .eyebrow{justify-content:center;color:var(--gold-l);margin-bottom:18px;}
+.hero-in h1{font-family:var(--serif);font-size:clamp(2.7rem,6.5vw,4.8rem);line-height:1.06;letter-spacing:-.02em;color:#fff;margin-bottom:20px;}
+.hero-in h1 em{color:var(--gold-l);font-style:italic;}
+.hero-desc{color:rgba(255,255,255,.8);font-size:clamp(1rem,1.4vw,1.12rem);line-height:1.8;max-width:580px;margin:0 auto 32px;}
+.hero-ctas{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;}
+.btn-lg{padding:16px 34px;font-size:.9rem;min-height:54px;}
+.hero-facts{position:relative;z-index:2;display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:0 5% 34px;}
+.hero-facts span{display:inline-flex;align-items:center;gap:9px;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:10px 18px;border-radius:var(--pill);}
+.hero-facts strong{font-family:var(--serif);color:#fff;font-size:.95rem;letter-spacing:.02em;}
+
+/* ---------- Classic info strip ---------- */
+.info-strip{background:var(--dark-2);border-bottom:1px solid rgba(255,255,255,.06);}
+.strip-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);}
+.strip-item{display:flex;align-items:center;justify-content:center;gap:11px;padding:17px 22px;color:rgba(255,255,255,.78);text-decoration:none;font-size:.85rem;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,.07);transition:background .2s;line-height:1.5;}
+.strip-item:last-child{border-right:none;}
+.strip-item svg{flex-shrink:0;color:var(--gold-l);}
+.strip-item:hover{background:rgba(255,255,255,.05);color:#fff;}
+
+/* ---------- Home welcome intro ---------- */
+.intro-sec .intro{max-width:780px;margin:0 auto;text-align:center;}
+.intro-sec .intro .eyebrow{justify-content:center;}
+.intro-sec .intro h2{font-family:var(--serif);font-size:clamp(2.1rem,4vw,3.2rem);margin:14px 0 18px;line-height:1.12;}
+.intro-sec .intro p{color:var(--muted);font-size:1rem;line-height:1.9;}
+
 @keyframes riseIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
 .hero-txt>*{animation:riseIn .55s cubic-bezier(.2,.9,.3,1) backwards;}
 .hero-txt>:nth-child(1){animation-delay:.05s;}
@@ -466,13 +495,18 @@ body.has-cart .wa-float{right:84px;}
 }
 @media (max-width:1024px){}
 @media (max-width:860px){
-  .hero{grid-template-columns:1fr;gap:28px;padding-top:32px;}
-  .hero-vis{order:-1;}
+  .hero{min-height:88vh;display:block;}
+  .strip-in{grid-template-columns:1fr;}
+  .strip-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.07);justify-content:flex-start;}
+  .strip-item:last-child{border-bottom:none;}
+  .hero-facts span{flex:1 1 100%;justify-content:center;}
+  .hero-in{padding-top:110px;}
+  .hero h1{font-size:clamp(2.4rem,7vw,3.6rem);}
+  .hero-desc{max-width:100%;}
+  .hero-ctas{flex-direction:column;align-items:stretch;}
+  .hero-ctas .btn-lg{width:100%;}
   .about-g{grid-template-columns:1fr;gap:36px;}
   .about-frame{aspect-ratio:16/10;border-radius:20px;}
-  .hero-frame{aspect-ratio:16/9;border-radius:20px;}
-  .hc-price{bottom:16px;left:16px;padding:12px 16px;}
-  .hc-price .hcp-price{font-size:1.6rem;}
   .icards{grid-template-columns:1fr;gap:10px;}
   nav a:not(.nav-cta){display:none;}
   .ham{display:flex;}
