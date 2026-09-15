@@ -624,6 +624,7 @@ html[data-theme="light"] .icard:hover{background:#FFF9EC;border-color:rgba(144,1
 html[data-theme="light"] .i-ico{background:rgba(166,126,43,.12);border-color:rgba(160,120,38,.22);}
 html[data-theme="light"] .stat .sn{color:#A67E2B;}
 html[data-theme="light"] .rev-stars{color:#A67E2B;}
+html[data-theme="light"] .rev-card{border-color:rgba(166,126,43,.28);box-shadow:0 4px 18px rgba(120,90,20,.08);}
 html[data-theme="light"] .g-item{background:var(--white);}
 html[data-theme="light"] .qbtn{background:var(--white);}
 html[data-theme="light"] .qbtn:active{background:rgba(166,126,43,.16);}
