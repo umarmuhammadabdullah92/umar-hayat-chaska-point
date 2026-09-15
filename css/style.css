@@ -153,6 +153,13 @@ h1,h2,h3{text-wrap:balance;}
 .scroll-progress{position:absolute;left:0;bottom:-1px;height:2px;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:0 2px 2px 0;z-index:1;transition:width .12s linear;pointer-events:none;}
 .hdr-in{max-width:1280px;margin:0 auto;padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:100%;gap:12px;}
 .hdr-right{display:flex;align-items:center;gap:8px;}
+.theme-toggle{width:44px;height:44px;flex-shrink:0;border:1.5px solid var(--line);border-radius:13px;background:var(--white);color:var(--gold-l);display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s,color .2s,transform .15s;}
+.theme-toggle:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px);}
+.theme-toggle:active{transform:scale(.92);}
+.theme-toggle svg{width:19px;height:19px;display:block;}
+.theme-toggle .ic-sun{display:none;}
+html[data-theme="light"] .theme-toggle .ic-sun{display:block;}
+html[data-theme="light"] .theme-toggle .ic-moon{display:none;}
 .hdr-phone{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border:1.5px solid var(--line);border-radius:var(--pill);font-size:.79rem;font-weight:600;text-decoration:none;color:var(--ink);white-space:nowrap;transition:all .2s;min-height:44px;}
 .hdr-phone:hover{border-color:var(--green);color:var(--green);}
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 2.4s ease-in-out infinite;}
