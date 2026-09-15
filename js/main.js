@@ -45,12 +45,13 @@
   };
 
   /* ---- Highlight current page in nav ---- */
-  var page=location.pathname.split('/').pop()||'index.html';
+  function pageId(p){return p.replace(/\.html$/,'').replace(/\/$/,'')||'index';}
+  var page=pageId(location.pathname);
   document.querySelectorAll('nav a[href]').forEach(function(a){
     var h=a.getAttribute('href');
     if(!h||h.charAt(0)==='#')return;
-    var p=h.split('/').pop();
-    if(p===page||(page===''&&p==='index.html')||(page==='/'&&p==='index.html'))a.classList.add('active');
+    var p=pageId(h);
+    if(p===page)a.classList.add('active');
   });
 
   /* ---- Smooth scroll for hash links on same page ---- */
