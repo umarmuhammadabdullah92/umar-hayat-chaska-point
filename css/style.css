@@ -616,4 +616,15 @@ body.has-cart .wa-float{right:84px;}
 }
 @media (max-width:340px){
   .mcard-body{padding:14px 14px 16px;}
+
+html[data-theme="light"] .icard{background:var(--white);border-color:var(--line);}
+html[data-theme="light"] .icard:hover{background:#FFF9EC;border-color:rgba(144,106,28,.35);}
+html[data-theme="light"] .i-ico{background:rgba(166,126,43,.12);border-color:rgba(160,120,38,.22);}
+html[data-theme="light"] .stat .sn{color:#A67E2B;}
+html[data-theme="light"] .rev-stars{color:#A67E2B;}
+html[data-theme="light"] .g-item{background:var(--white);}
+html[data-theme="light"] .qbtn{background:var(--white);}
+html[data-theme="light"] .qbtn:active{background:rgba(166,126,43,.16);}
+html[data-theme="light"] .mn-foot .mob-gold.soc{color:#A67E2B;}
+
 }
