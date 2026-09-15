@@ -4,6 +4,42 @@
   window.UHCP={WA:WA};
   var isPhone=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>0&&window.matchMedia('(pointer:coarse)').matches);
 
+  /* ---- Theme (light / dark) ---- */
+  var THEME_KEY='uhcp-theme';
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    var btn=document.getElementById('themeToggle');
+    if(btn)btn.setAttribute('aria-label',t==='light'?'Switch to dark theme':'Switch to light theme');
+    metaTheme();
+  }
+  function metaTheme(){
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(m)m.setAttribute('content',document.documentElement.getAttribute('data-theme')==='light'?'#FFFBF3':'#0C0B0F');
+  }
+  function storedTheme(){
+    try{return localStorage.getItem(THEME_KEY);}catch(e){return null;}
+  }
+  function prefersLight(){
+    return window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches;
+  }
+  (function initTheme(){
+    var t=storedTheme();
+    applyTheme(t||(prefersLight()?'light':'dark'));
+    document.addEventListener('click',function(e){
+      var btn=e.target&&e.target.closest?e.target.closest('#themeToggle'):null;
+      if(!btn)return;
+      var cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+      applyTheme(cur);
+      try{localStorage.setItem(THEME_KEY,cur);}catch(e){}
+    });
+    var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: light)'):null;
+    if(mq&&mq.addEventListener){
+      mq.addEventListener('change',function(ev){
+        if(!storedTheme())applyTheme(ev.matches?'light':'dark');
+      });
+    }
+  })();
+
   /* ---- Mobile nav ---- */
   var ham=document.getElementById('hamBtn');
   var mob=document.getElementById('mobNav');
