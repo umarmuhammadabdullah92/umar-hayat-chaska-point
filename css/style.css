@@ -41,3 +41,94 @@
 .about-txt .stat{padding:12px 10px;border-radius:12px;}
 .about-txt .stat .sn{font-size:1.5rem;}
 .about-txt .stat .sl{font-size:.58rem;}
+
+/* ============ Premium Polish Layer ============ */
+
+/* ---- Info Strip: subtle gold top-line + glow ---- */
+.info-strip{position:relative;border-top:none;}
+.info-strip::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6;}
+.strip-item svg{opacity:.85;transition:opacity .2s,transform .2s;}
+.strip-item:hover svg{opacity:1;transform:scale(1.12);}
+.strip-item{transition:background .2s,color .2s;position:relative;}
+
+/* ---- Feature Cards: icon glow, refined hover ---- */
+.feature-card{position:relative;overflow:hidden;}
+.feature-card::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 30% 30%,rgba(201,169,98,.06) 0%,transparent 70%);opacity:0;transition:opacity .35s;pointer-events:none;}
+.feature-card:hover::after{opacity:1;}
+.feature-card:hover{border-color:rgba(201,169,98,.55);box-shadow:var(--sh2),0 0 0 1px rgba(201,169,98,.15);}
+.feature-card .feature-ico{position:relative;z-index:1;}
+.feature-card > div{position:relative;z-index:1;}
+.feature-card h3{color:var(--ink);letter-spacing:-.01em;}
+.feature-card p{color:var(--muted);}
+
+/* ---- Section Headings: decorative gold line ---- */
+.section-hd h2{position:relative;padding-bottom:18px;}
+.section-hd h2::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:40px;height:2px;background:var(--gold);border-radius:2px;}
+
+/* ---- Intro Section: elegant divider ---- */
+.intro-sec .intro h2{position:relative;padding-bottom:14px;}
+.intro-sec .intro h2::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:36px;height:2px;background:var(--gold);border-radius:2px;opacity:.7;}
+
+/* ---- Review Cards: decorative quote mark ---- */
+.rev-card{position:relative;overflow:hidden;}
+.rev-card::before{content:'\201C';position:absolute;top:8px;right:18px;font-family:var(--serif);font-size:4.5rem;line-height:1;color:var(--gold);opacity:.08;pointer-events:none;}
+.rev-card blockquote{position:relative;z-index:1;}
+.rev-card .rev-who{position:relative;z-index:1;}
+.rev-stars{position:relative;z-index:1;}
+.rev-card:hover{box-shadow:var(--sh2),0 0 0 1px rgba(201,169,98,.15);}
+.rev-who{display:flex;align-items:center;gap:8px;}
+.rev-src{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);opacity:.7;}
+.rev-name{position:relative;}
+.rev-card .rev-stars{font-size:1rem;letter-spacing:.08em;}
+
+/* ---- Stats: elegant underline accent ---- */
+.stat{position:relative;overflow:hidden;}
+.stat::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--gold);border-radius:2px;transition:width .3s ease;}
+.stat:hover::after{width:60%;}
+.stat .sn{color:var(--gold-l);transition:color .25s;}
+.stat:hover .sn{color:var(--gold);}
+
+/* ---- Best Sellers: image overlay + refined chip ---- */
+.bs-card{position:relative;}
+.bs-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 50%);pointer-events:none;z-index:1;}
+.bs-img .chip{z-index:2;border-color:rgba(201,169,98,.45);background:rgba(8,7,10,.7);backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,.4);}
+.bs-name{letter-spacing:-.01em;}
+.bs-price{position:relative;}
+.bs-price::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:2px;height:16px;background:var(--gold);opacity:.4;border-radius:2px;}
+.bs-sub{letter-spacing:.01em;}
+
+/* ---- CTA Buttons: subtle glow ---- */
+.btn-saffron{position:relative;overflow:hidden;}
+.btn-saffron::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 50%);pointer-events:none;}
+.btn-saffron:hover{box-shadow:0 8px 30px rgba(201,169,98,.35),0 0 0 1px rgba(201,169,98,.3);}
+.btn-outline:hover{box-shadow:0 6px 24px rgba(0,0,0,.25);border-color:var(--gold);transform:translateY(-2px);}
+.btn-ink:hover{box-shadow:0 8px 30px rgba(0,0,0,.4),0 0 0 1px rgba(201,169,98,.2);}
+
+/* ---- About Section: image hover lift ---- */
+.about-frame{transition:box-shadow .4s,transform .4s;}
+.about-g:hover .about-frame{box-shadow:var(--sh3),0 0 0 1px rgba(201,169,98,.2);transform:translateY(-4px);}
+.about-txt h2{letter-spacing:-.02em;}
+.about-txt p strong{color:var(--gold);font-weight:700;}
+
+/* ---- Social Cards: refined ---- */
+.social-card{transition:transform .3s,box-shadow .3s;}
+.social-card:hover{transform:translateY(-3px);box-shadow:var(--sh2);}
+
+/* ---- Info Strip Mobile: elegant stack ---- */
+@media (max-width:560px){.info-strip::before{height:1px;opacity:.4;}.strip-item{gap:10px;letter-spacing:.01em;}.strip-item svg{width:13px;height:13px;}}
+
+/* ---- Feature Card Mobile: refined ---- */
+@media (max-width:560px){.feature-card{gap:10px;padding:14px 14px;}.feature-card .feature-ico{width:34px;height:34px;border-radius:10px;}.feature-card h3{font-size:.88rem;}.feature-card p{font-size:.75rem;line-height:1.5;}}
+
+/* ---- Review Cards Mobile: quote subtle ---- */
+@media (max-width:560px){.rev-card::before{font-size:3.5rem;top:4px;right:12px;}}
+
+/* ---- Stat Mobile ---- */
+@media (max-width:560px){.stat .sn{font-size:1.35rem;}.stat .sl{font-size:.55rem;letter-spacing:.1em;}}
+
+/* ---- BS-card Mobile ---- */
+@media (max-width:560px){.bs-body{padding:12px 14px 16px;}.bs-name{font-size:1rem;}.bs-price{font-size:1.25rem;}}
+
+/* ---- Smooth reveal transitions ---- */
+.reveal{transition:opacity .6s ease,transform .6s ease;}
+.reveal[data-visible]{opacity:1;transform:none;}
