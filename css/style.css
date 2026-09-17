@@ -144,3 +144,8 @@
 .seo-links a{font-size:.92rem;font-weight:600;color:var(--saffron);text-decoration:none;}
 .seo-links a:hover{text-decoration:underline;}
 @media (max-width:768px){.seo-cols{grid-template-columns:1fr;gap:14px;}.seo-links{flex-direction:column;gap:10px;}}
+
+/* ---- Menu intro SEO text ---- */
+.menu-intro-txt{max-width:760px;margin:20px auto 4px;text-align:center;}
+.menu-intro-txt h2{font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.1rem);margin:0 0 10px;color:var(--ink);line-height:1.25;}
+.menu-intro-txt p{margin:0 auto;font-size:.96rem;line-height:1.65;color:var(--ink-2);max-width:680px;}
