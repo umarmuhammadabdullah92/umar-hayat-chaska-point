@@ -68,16 +68,11 @@
     document.body.style.overflow = on ? 'hidden' : '';
   }
 
-  /* -------------------------------------------------- current page */
-  /* Exactly one nav item may claim to be the current page. The nav is
-     duplicated across the topbar and the mobile drawer, so both copies
-     of the matching link are marked — that is correct, they are two
-     landmarks pointing at the same page. */
+  /* -------------------------------------------------- current section */
+  /* With one page there is no "current page", so instead the section you
+     are reading is marked. The nav is duplicated across the topbar and the
+     mobile drawer, so both copies of the matching link are marked. */
   function markCurrent() {
-    // One page, so "the current page" is meaningless. Instead, mark the
-    // section actually in view. The observer is skipped if the browser
-    // lacks IntersectionObserver, in which case the nav simply carries no
-    // current marker rather than lying about one.
     // Measure the header so scroll-margin-top can clear it exactly.
     const hdr = document.querySelector('.site-hdr');
     const measure = () => {
@@ -88,7 +83,7 @@
     addEventListener('resize', measure, { passive: true });
 
     const links = $$('[data-nav="section"]');
-    if (!links.length || !('IntersectionObserver' in window)) return;
+    if (!links.length) return;
     links.forEach(a => a.removeAttribute('aria-current'));
 
     const byId = {};
@@ -97,45 +92,35 @@
       (byId[id] = byId[id] || []).push(a);
     });
 
-    // Track the topmost section that has crossed a line just under the
-    // sticky header, so the marker changes at a sensible moment instead of
-    // whenever a section happens to be 1% visible.
-    const line = () => window.innerHeight * 0.3;
-    const visible = new Set();
-    let current = null;
-
     const mark = id => {
-      if (id === current) return;
-      current = id;
       // clear every copy first, then mark all of them: the nav is rendered
       // twice, and marking only one copy leaves the visible one unhighlighted
       links.forEach(a => a.removeAttribute('aria-current'));
       if (id && byId[id]) byId[id].forEach(a => a.setAttribute('aria-current', 'true'));
     };
 
+    // The current section is the last one whose top has passed a line a
+    // little below the sticky header. This is derived from scroll position
+    // rather than from an IntersectionObserver because a section shorter
+    // than the viewport can never be "intersecting" in any useful sense:
+    // #about is 85px tall, so a band-based observer skipped straight over
+    // it and highlighted Contact while About was the thing on screen.
+    const line = () => window.innerHeight * 0.3 + window.scrollY;
+
     const pick = () => {
-      // the topmost visible section wins; if none are visible, fall back to
-      // the last one that was, so the marker does not flicker at the end
-      const seen = Object.keys(byId).filter(id => visible.has(id));
-      mark(seen.length ? seen[0] : null);
+      const y = line();
+      let id = null;
+      for (const k of Object.keys(byId)) {
+        const el = document.getElementById(k);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top + window.scrollY <= y) id = k;
+      }
+      mark(id);
     };
-
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) visible.add(e.target.id);
-        else visible.delete(e.target.id);
-      });
-      pick();
-    }, { rootMargin: '-' + (window.innerHeight * 0.3) + 'px 0px -55% 0px',
-         threshold: 0 });
-
-    Object.keys(byId).forEach(id => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
 
     addEventListener('scroll', pick, { passive: true });
     addEventListener('hashchange', pick);
+    addEventListener('resize', pick, { passive: true });
     pick();
   }
 

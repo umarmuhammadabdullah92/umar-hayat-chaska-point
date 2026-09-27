@@ -304,7 +304,7 @@ og_image = '/img/' + OG_IMAGE if OG_IMAGE else '/umarhayatchaskapoint-trimmed.pn
 
 def page(path, title, desc, body, active):
     return f'''<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
