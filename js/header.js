@@ -74,19 +74,69 @@
      of the matching link are marked — that is correct, they are two
      landmarks pointing at the same page. */
   function markCurrent() {
-    // /index.html and / both mean "home", otherwise the Home link is never
-    // marked when the site is browsed by its .html filenames.
-    const norm = p => {
-      let s = p.replace(/\.html$/, '').replace(/\/+$/, '');
-      return s === '' || s === '/index' ? '/' : s;
+    // One page, so "the current page" is meaningless. Instead, mark the
+    // section actually in view. The observer is skipped if the browser
+    // lacks IntersectionObserver, in which case the nav simply carries no
+    // current marker rather than lying about one.
+    // Measure the header so scroll-margin-top can clear it exactly.
+    const hdr = document.querySelector('.site-hdr');
+    const measure = () => {
+      if (hdr) document.documentElement.style
+        .setProperty('--hdr-h', Math.round(hdr.getBoundingClientRect().height) + 'px');
     };
-    const path = norm(location.pathname);
-    $$('[data-nav]').forEach(a => {
-      a.removeAttribute('aria-current');
-      if (a.dataset.nav !== 'page') return;
-      const u = new URL(a.getAttribute('href'), location.origin);
-      if (norm(u.pathname) === path) a.setAttribute('aria-current', 'page');
+    measure();
+    addEventListener('resize', measure, { passive: true });
+
+    const links = $$('[data-nav="section"]');
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    links.forEach(a => a.removeAttribute('aria-current'));
+
+    const byId = {};
+    links.forEach(a => {
+      const id = a.getAttribute('href').slice(1);
+      (byId[id] = byId[id] || []).push(a);
     });
+
+    // Track the topmost section that has crossed a line just under the
+    // sticky header, so the marker changes at a sensible moment instead of
+    // whenever a section happens to be 1% visible.
+    const line = () => window.innerHeight * 0.3;
+    const visible = new Set();
+    let current = null;
+
+    const mark = id => {
+      if (id === current) return;
+      current = id;
+      // clear every copy first, then mark all of them: the nav is rendered
+      // twice, and marking only one copy leaves the visible one unhighlighted
+      links.forEach(a => a.removeAttribute('aria-current'));
+      if (id && byId[id]) byId[id].forEach(a => a.setAttribute('aria-current', 'true'));
+    };
+
+    const pick = () => {
+      // the topmost visible section wins; if none are visible, fall back to
+      // the last one that was, so the marker does not flicker at the end
+      const seen = Object.keys(byId).filter(id => visible.has(id));
+      mark(seen.length ? seen[0] : null);
+    };
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) visible.add(e.target.id);
+        else visible.delete(e.target.id);
+      });
+      pick();
+    }, { rootMargin: '-' + (window.innerHeight * 0.3) + 'px 0px -55% 0px',
+         threshold: 0 });
+
+    Object.keys(byId).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+
+    addEventListener('scroll', pick, { passive: true });
+    addEventListener('hashchange', pick);
+    pick();
   }
 
   /* ---------------------------------------------------- search sheet */

@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Umar Hayat Chaska Point — Nashta, Barbecue &amp; Fried</title>
-<meta name="description" content="Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal.">
+<meta name="description" content="Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal. Menu, opening hours, address and WhatsApp ordering.">
 <meta name="theme-color" content="#0E0B08">
 <meta property="og:title" content="Umar Hayat Chaska Point — Nashta, Barbecue &amp; Fried">
-<meta property="og:description" content="Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal.">
+<meta property="og:description" content="Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal. Menu, opening hours, address and WhatsApp ordering.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/umarhayatchaskapoint-trimmed.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -69,11 +69,10 @@
 
   <nav class="mainnav" aria-label="Primary">
     <div class="mainnav-in">
-      <a href="/" data-nav="page" aria-current="page">Home</a>
-      <a href="/menu" data-nav="page">Menu</a>
-      <a href="/about" data-nav="page">About Us</a>
-      <a href="/contact" data-nav="page">Contact</a>
-      <a class="nav-cta" href="/contact">Order Now</a>
+      <a href="#menu" data-nav="section">Menu</a>
+      <a href="#about" data-nav="section">About Us</a>
+      <a href="#contact" data-nav="section">Contact</a>
+      <a class="nav-cta" href="#contact">Order Now</a>
     </div>
   </nav>
 </header>
@@ -135,10 +134,9 @@
     <div class="seg" id="drawerSeg" role="radiogroup" aria-label="Currency"></div>
   </div>
   <nav class="drawer-nav" aria-label="Mobile">
-      <a href="/" data-nav="page" aria-current="page">Home</a>
-      <a href="/menu" data-nav="page">Menu</a>
-      <a href="/about" data-nav="page">About Us</a>
-      <a href="/contact" data-nav="page">Contact</a>
+      <a href="#menu" data-nav="section">Menu</a>
+      <a href="#about" data-nav="section">About Us</a>
+      <a href="#contact" data-nav="section">Contact</a>
   </nav>
   <div class="drawer-foot">
     <nav class="social" aria-label="Social media">
@@ -190,10 +188,237 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg> <span>View cart</span> <b data-cart-count hidden>0</b>
 </button>
 <main id="main">
-  <section class="wrap">
-    <h1 class="vh">Umar Hayat Chaska Point</h1>
-  </section>
+  <h1 class="vh">Umar Hayat Chaska Point</h1>
+<section id="menu" class="sect" aria-labelledby="menu-h">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg> Menu</p>
+      <h2 id="menu-h">The menu</h2>
+    </header>
 
+    <div class="filters" role="group" aria-label="Filter by category">
+      <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="filter" type="button" data-filter="nashta" aria-pressed="false">Nashta</button>
+      <button class="filter" type="button" data-filter="barbecue" aria-pressed="false">Barbecue</button>
+      <button class="filter" type="button" data-filter="fried" aria-pressed="false">Fried Items</button>
+      <span class="price-note" id="filterCount" style="align-self:center;margin-left:auto"></span>
+    </div>
+
+    <div class="grid grid--menu">
+      <article class="card" id="murag-chanay" data-item="Murag Chanay" data-price="999" data-cat="nashta">
+        <h3>Murag Chanay</h3>
+        <p>Chicken curry.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="anday-chanay" data-item="Anday Chanay" data-price="999" data-cat="nashta">
+        <h3>Anday Chanay</h3>
+        <p>Egg curry.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="haleem-chawal" data-item="Haleem Chawal" data-price="999" data-cat="nashta">
+        <h3>Haleem Chawal</h3>
+        <p>Haleem with rice.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="malai-boti" data-item="Chicken Malai Boti" data-price="480" data-cat="barbecue">
+        <h3>Chicken Malai Boti</h3>
+        <p>Cream and cheese marinade, skewered and grilled over charcoal.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Chicken Malai Boti"><button type="button" class="size is-on" data-size aria-pressed="true">4 pc</button><button type="button" class="size" data-size aria-pressed="false">8 pc</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>480</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="seekh-kebab" data-item="Chicken Seekh Kebab" data-price="520" data-cat="barbecue">
+        <h3>Chicken Seekh Kebab</h3>
+        <p>Hand-minced chicken with coriander and green chilli.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Chicken Seekh Kebab"><button type="button" class="size is-on" data-size aria-pressed="true">4 pc</button><button type="button" class="size" data-size aria-pressed="false">8 pc</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>520</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chicken-tikka" data-item="Chicken Tikka" data-price="550" data-cat="barbecue">
+        <h3>Chicken Tikka</h3>
+        <p>Yoghurt-marinated thigh meat, charred at the edges.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Chicken Tikka"><button type="button" class="size is-on" data-size aria-pressed="true">Half</button><button type="button" class="size" data-size aria-pressed="false">Full</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>550</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="mutton-seekh" data-item="Mutton Seekh Kebab" data-price="850" data-cat="barbecue">
+        <h3>Mutton Seekh Kebab</h3>
+        <p>Minced mutton seekh, spiced with raw papaya.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Mutton Seekh Kebab"><button type="button" class="size is-on" data-size aria-pressed="true">4 pc</button><button type="button" class="size" data-size aria-pressed="false">8 pc</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>850</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="beef-boti" data-item="Beef Boti" data-price="780" data-cat="barbecue">
+        <h3>Beef Boti</h3>
+        <p>Tender beef boti with onion and black pepper.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Beef Boti"><button type="button" class="size is-on" data-size aria-pressed="true">4 pc</button><button type="button" class="size" data-size aria-pressed="false">8 pc</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>780</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="grilled-chicken" data-item="Grilled Chicken" data-price="950" data-cat="barbecue">
+        <h3>Grilled Chicken</h3>
+        <p>Whole bird marinated overnight, grilled to order.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Grilled Chicken"><button type="button" class="size is-on" data-size aria-pressed="true">Half</button><button type="button" class="size" data-size aria-pressed="false">Full</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>950</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="bbq-platter-two" data-item="BBQ Platter for Two" data-price="2400" data-cat="barbecue">
+        <h3>BBQ Platter for Two</h3>
+        <p>Malai boti, seekh kebab, tikka, naan, salad and chutney.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for BBQ Platter for Two"><button type="button" class="size is-on" data-size aria-pressed="true">Serves 2</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>2400</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="samosa-fried" data-item="Samosa" data-price="999" data-cat="fried">
+        <h3>Samosa</h3>
+        <p>Fried pastry.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="pakora" data-item="Pakora" data-price="999" data-cat="fried">
+        <h3>Pakora</h3>
+        <p>Battered and fried.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="aloo-ki-tikki" data-item="Aloo Ki Tikki" data-price="999" data-cat="fried">
+        <h3>Aloo Ki Tikki</h3>
+        <p>Spiced potato patty, fried.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="began-pakora" data-item="Began Pakora" data-price="999" data-cat="fried">
+        <h3>Began Pakora</h3>
+        <p>Brinjal, battered and fried.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="mirch-pakora" data-item="Mirch Pakora" data-price="999" data-cat="fried">
+        <h3>Mirch Pakora</h3>
+        <p>Chilli, battered and fried.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="fried-naan" data-item="Fried Naan" data-price="999" data-cat="fried">
+        <h3>Fried Naan</h3>
+        <p>Fried bread.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>999</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+    </div>
+  </div>
+  </section><section id="about" class="sect" aria-labelledby="about-h">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg> About Us</p>
+      <h2 id="about-h">Our story</h2>
+    </header>
+  </div>
+  </section><section id="contact" class="sect" aria-labelledby="contact-h">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Locations &amp; Contact</p>
+      <h2 id="contact-h">Find us</h2>
+      <p>One shopfront, open seven days. Call ahead for large orders.</p>
+    </header>
+
+    <div class="detail" style="grid-template-columns:1.1fr .9fr">
+      <div>
+        <div class="info-row">
+          <span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+          <div>
+            <h3>Address</h3>
+            <p>Shop 12, Mall Road<br>Sahiwal, Punjab 60050<br>Pakistan</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 6.2 2 2 0 0 1 6 3Z"/></svg></span>
+          <div>
+            <h3>Phone</h3>
+            <p><a href="tel:+923000000000">+92 300 0000000</a><br>
+               <a href="https://wa.me/923000000000" rel="noopener">WhatsApp us</a></p>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></span>
+          <div>
+            <h3>Email</h3>
+            <p><a href="mailto:hello@example.com">hello@example.com</a></p>
+          </div>
+        </div>
+        <a class="btn btn-wa" href="https://wa.me/923000000000" rel="noopener"
+           style="margin-top:24px">Order on WhatsApp</a>
+      </div>
+
+      <div>
+        <h3 class="col-head">Opening hours</h3>
+        <div class="hours" id="hours"></div>
+        <p class="note">Hours are rendered from
+          <code>SITE.hours</code> so they stay in step with the config.</p>
+      </div>
+    </div>
+  </div>
+  </section>
 </main>
 <footer class="site-foot">
   <div class="foot-in">
@@ -210,5 +435,24 @@
 <script src="/js/money.js"></script>
 <script src="/js/header.js"></script>
 <script src="/js/cart.js"></script>
+
+<script>
+/* Renders opening hours from config and marks today. */
+(function () {
+  var box = document.getElementById('hours');
+  if (!box) return;
+  var names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var today = new Date().getDay();
+  var t = window.SITE.hours;
+  var rows = [];
+  for (var i = 0; i < 7; i++) {
+    var d = t.filter(function (h) { return h.day === i; })[0];
+    var when = d ? (d.open + ' \u2013 ' + d.close) : 'Closed';
+    rows.push('<div class="' + (i === today ? 'is-today' : '') + '"><span>' + names[i] +
+      '</span><span>' + when + '</span></div>');
+  }
+  box.innerHTML = rows.join('');
+})();
+</script>
 </body>
 </html>

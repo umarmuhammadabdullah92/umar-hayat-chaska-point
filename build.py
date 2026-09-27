@@ -83,19 +83,26 @@ def social_markup(cls, extra=''):
 
 # ------------------------------------------------------------- chrome
 # Categories mirror SITE.categories in js/site-config.js.
+# Single page, so the nav jumps between sections rather than pages. There
+# is no "Home" link any more: you are always on the one page, so a link
+# back to it would be a no-op.
 NAV = [
-    ('Home',     '/'),
-    ('Menu',     '/menu'),
-    ('About Us', '/about'),
-    ('Contact',  '/contact'),
+    ('Menu',     '#menu'),
+    ('About Us', '#about'),
+    ('Contact',  '#contact'),
 ]
 
-def nav_links(active):
+def nav_links(active=''):
     """Primary nav. Used in the topbar AND the mobile drawer, so the two
-    can never disagree about what the current page is."""
+    can never disagree.
+
+    No aria-current here. With one page there is no current page to speak
+    of, and the section you are reading is marked by the scroll spy in
+    js/header.js instead, which can actually be right rather than always
+    pointing at the same thing.
+    """
     return '\n'.join(
-        f'      <a href="{href}" data-nav="page"'
-        + (' aria-current="page"' if href == active else '') + f'>{lbl}</a>'
+        f'      <a href="{href}" data-nav="section">{lbl}</a>'
         for lbl, href in NAV)
 
 def header(active):
@@ -157,7 +164,7 @@ def header(active):
   <nav class="mainnav" aria-label="Primary">
     <div class="mainnav-in">
 {nav_links(active)}
-      <a class="nav-cta" href="/contact">Order Now</a>
+      <a class="nav-cta" href="#contact">Order Now</a>
     </div>
   </nav>
 </header>'''
@@ -421,10 +428,11 @@ HOME = '''  <section class="wrap">
   </section>
 '''
 
-MENU = f'''  <div class="wrap">
+MENU = f'''<section id="menu" class="sect" aria-labelledby="menu-h">
+  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['bag']} Menu</p>
-      <h1>The menu</h1>
+      <h2 id="menu-h">The menu</h2>
     </header>
 
     <div class="filters" role="group" aria-label="Filter by category">
@@ -435,19 +443,23 @@ MENU = f'''  <div class="wrap">
     <div class="grid grid--menu">
 {MENU_CARDS}
     </div>
-  </div>'''
+  </div>
+  </section>'''
 
-ABOUT = f'''  <div class="wrap">
+ABOUT = f'''<section id="about" class="sect" aria-labelledby="about-h">
+  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['user']} About Us</p>
-      <h1>Our story</h1>
+      <h2 id="about-h">Our story</h2>
     </header>
-  </div>'''
+  </div>
+  </section>'''
 
-CONTACT = f'''  <div class="wrap">
+CONTACT = f'''<section id="contact" class="sect" aria-labelledby="contact-h">
+  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['pin']} Locations &amp; Contact</p>
-      <h1>Find us</h1>
+      <h2 id="contact-h">Find us</h2>
       <p>One shopfront, open seven days. Call ahead for large orders.</p>
     </header>
 
@@ -480,13 +492,14 @@ CONTACT = f'''  <div class="wrap">
       </div>
 
       <div>
-        <h2 style="font-size:1.4rem;margin-bottom:18px">Opening hours</h2>
+        <h3 class="col-head">Opening hours</h3>
         <div class="hours" id="hours"></div>
         <p class="note">Hours are rendered from
           <code>SITE.hours</code> so they stay in step with the config.</p>
       </div>
     </div>
-  </div>'''
+  </div>
+  </section>'''
 
 HOURS_JS = '''
 <script>
@@ -509,16 +522,15 @@ HOURS_JS = '''
 </script>
 '''
 
+# One page, three sections, in the order a visitor wants them: what you
+# sell, then who you are, then how to reach you.
+BODY = ('  <h1 class="vh">Umar Hayat Chaska Point</h1>\n'
+        + MENU + ABOUT + CONTACT)
+
 PAGES = [
-  ('index.html',   'Umar Hayat Chaska Point — Nashta, Barbecue &amp; Fried',
-   'Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal.', HOME, '/'),
-  ('menu.html',    'Menu — Umar Hayat Chaska Point',
-   'Nashta, charcoal barbecue and fried items, cooked to order.', MENU, '/menu'),
-  ('about.html',   'About Us — Umar Hayat Chaska Point',
-   'Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal.', ABOUT, '/about'),
-  ('contact.html', 'Locations &amp; Contact — Umar Hayat Chaska Point',
-   'Find us in Sahiwal. Opening hours, address and WhatsApp ordering.',
-   CONTACT, '/contact'),
+  ('index.html', 'Umar Hayat Chaska Point — Nashta, Barbecue &amp; Fried',
+   'Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal. '
+   'Menu, opening hours, address and WhatsApp ordering.', BODY, '/'),
 ]
 
 FAVICON = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -531,8 +543,7 @@ FAVICON = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 if __name__ == '__main__':
     for fn, title, desc, body, active in PAGES:
         html = page(fn, title, desc, body, active)
-        if fn == 'contact.html':
-            html = html.replace('</body>', HOURS_JS + '</body>')
+        html = html.replace('</body>', HOURS_JS + '</body>')
         with open(os.path.join(ROOT, fn), 'w', encoding='utf-8') as f:
             f.write(html)
         print('  %-13s %6d bytes' % (fn, len(html.encode())))
@@ -541,9 +552,22 @@ if __name__ == '__main__':
         f.write(FAVICON)
     print('  %-13s %6d bytes' % ('favicon.svg', len(FAVICON.encode())))
 
-    # Guard against the drift this generator exists to prevent.
-    heads = [re.search(r'<header class="site-hdr">.*?</header>', open(os.path.join(ROOT, p[0]), encoding='utf-8').read(), re.S).group(0) for p in PAGES]
-    norm = lambda h: re.sub(r'\s+', ' ', re.sub(r'\s*aria-current="page"', '', h))
-    same = len({norm(h) for h in heads}) == 1
-    print('\n  header identical across all %d pages: %s' % (len(PAGES), 'YES' if same else 'NO — DRIFT'))
-    sys.exit(0 if same else 1)
+    # The multi-page header-drift guard is gone with the other pages. What
+    # matters now is that every section the nav links to actually exists,
+    # because a dead anchor is invisible until someone clicks it.
+    out = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+
+    # Every local file the page asks for must exist on disk. A 404 for a
+    # stylesheet or favicon still renders a usable page, so it is easy to
+    # miss by eye and only shows up in the console.
+    refs = set(re.findall(r'(?:href|src)="((?!https?:|#|data:|tel:|mailto:)[^"]+)"', out))
+    refs |= set(re.findall(r"(?:href|src)='((?!https?:|#|data:|tel:|mailto:)[^']+)'", out))
+    gone = sorted(r for r in refs
+                  if not r.startswith('/') and not os.path.exists(os.path.join(ROOT, r)))
+    print('  local assets: %d referenced, %d missing%s'
+          % (len(refs), len(gone), (': ' + ', '.join(gone)) if gone else ''))
+    targets = re.findall(r'href="#([\w-]+)"', out)
+    missing = sorted({t for t in targets if 'id="%s"' % t not in out})
+    print('\n  anchor targets: %d found, %d missing%s'
+          % (len(targets), len(missing), (': ' + ', '.join(missing)) if missing else ''))
+    sys.exit(0 if (not missing and not gone) else 1)

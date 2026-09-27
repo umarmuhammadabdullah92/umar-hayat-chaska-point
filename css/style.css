@@ -74,6 +74,15 @@ html[data-theme="dark"]{
   --shadow-lift:0 2px 10px rgba(0,0,0,.5), 0 18px 40px rgba(0,0,0,.55);
 }
 
+/* ------------------------------------------------------------- sections
+   One page, so the nav is anchor links. scroll-margin-top keeps a
+   section's heading clear of the sticky header when you jump to it, and
+   --hdr-h is measured from the real header rather than guessed, because
+   the header is 140px on a laptop and 120px on a phone. */
+.sect{scroll-margin-top:calc(var(--hdr-h,132px) + 18px);}
+.sect + .sect{border-top:1px solid var(--line);}
+#contact{background:var(--bg-deep);}
+
 /* ---------------------------------------------------------------- focus
    A visible gold ring. The default outline is a pale grey that all but
    disappears against a white ground. */
@@ -537,7 +546,11 @@ main{flex:1 0 auto;}
   display:flex;align-items:center;justify-content:center;
 }
 .info-ico svg{width:19px;height:19px;}
-.info-row h3{font-family:var(--body);font-size:.7rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:5px;}
+.info-row h3,
+.col-head{font-family:var(--body);font-size:.7rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:5px;}
+/* the two columns of the contact grid are labelled the same way, so the
+   hours column does not read as a second section heading */
+.col-head{margin-bottom:14px;}
 .info-row p,.info-row a{font-size:.92rem;line-height:1.7;}
 .info-row a{color:var(--accent);font-weight:600;display:inline-block;min-height:26px;padding:2px 0;}
 .info-row a:hover{text-decoration:underline;}
