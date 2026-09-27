@@ -1,13 +1,17 @@
 # Umar Hayat Chaska Point
 
-Static site. Four pages, one shared header, no build step and no framework.
+Static site. **One page**, no build step and no framework.
 
 ```
-index.html    Homepage
-menu.html     Menu
-about.html    About Us
-contact.html  Locations & Contact
+index.html    The whole site, as three sections:
+              #menu  #about  #contact
 ```
+
+The nav is in-page anchors, not links to separate documents, so there is
+no page to load between sections. The old `/menu`, `/about` and
+`/contact` URLs are kept alive as 301s in `vercel.json`, each pointing at
+its section, so links shared before the collapse still land in the right
+place.
 
 ---
 
@@ -135,8 +139,9 @@ generated. After editing, run:
 python3 build.py
 ```
 
-It rewrites all four pages and then verifies the header markup is still
-byte-identical across them.
+It rewrites `index.html`, then fails the build if a nav anchor has no
+matching section, or if the page references a local file that is not on
+disk. Both of those render a usable page, so neither is obvious by eye.
 
 ### Do not hand-edit the HTML
 `build.py` is the source of truth for the shared header, footer and
@@ -146,7 +151,9 @@ into each page and the copies silently drifted apart.
 
 ### Colours and typefaces
 The palette is in `:root` at the top of `css/style.css`. The gold accent
-(`--accent: #DDC491`) was sampled from the logo artwork.
+was sampled from the logo artwork, but the logo's own gold (`#DDC491`) only
+works on black: on white it measures about 1.6:1. The default light theme
+therefore darkens it to `#8A6634`, the same hue at a usable contrast.
 
 Fonts are self-hosted and subset to Latin in `fonts/`. Drop in four new
 `woff2` files and update the `@font-face` rules. Nothing loads from
@@ -166,18 +173,27 @@ replaced by a drawer below 860px.
 - **Prices are PKR-authoritative**, formatted by `js/money.js`.
 - **Overlays** (search, account, drawer, cart) are focus-trapped, close on
   Escape, and restore focus to the button that opened them.
-- Exactly one nav item claims `aria-current="page"`. Category links share
-  the `/menu` path, so they are matched on the hash instead.
+- The scroll spy marks the section you are reading with
+  `aria-current="true"`, in both copies of the nav. With one page there is
+  no "current page", so nothing claims `aria-current="page"`.
+- Section ids carry a `scroll-margin-top` measured from the real header
+  height, so jumping to `#contact` never hides its heading under the
+  sticky bar.
 
 ---
 
 ## Testing
 
-`/tmp/opencode/header-test.js` runs 274 checks in headless Chrome:
-geometry and accessibility on all four pages at five widths, cart
-arithmetic, currency switching and persistence, search, the mobile drawer,
-category filters, deep links, WCAG contrast in both themes, and a check
-that the site makes no third-party requests.
+`/tmp/opencode/header-test.js` runs 257 checks in headless Chrome:
+geometry and accessibility at five widths, cart arithmetic, currency
+switching and persistence, search, the mobile drawer, category filters,
+deep links, WCAG contrast in both themes, the anchor navigation and scroll
+spy, the heading outline, and a check that the site makes no third-party
+requests.
+
+It also asserts the three deleted page files are still gone and that no
+`.html` link survives anywhere in the source, which is the failure mode
+that would otherwise only show up as a 404 in a browser console.
 
 Not covered: real visual review, real payment, and behaviour in Safari or
 Firefox — only Chrome was tested.
