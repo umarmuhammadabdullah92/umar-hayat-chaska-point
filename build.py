@@ -129,11 +129,11 @@ def header(active):
 
     <a class="logo" href="/">
       <picture>
-        <source type="image/webp" srcset="/logo-120.webp 120w, /logo.webp 252w"
-                sizes="(max-width: 700px) 62px, 84px">
+        <source type="image/webp" srcset="/logo-120.webp 120w, /logo.webp 252w, /logo-426.webp 426w"
+                sizes="(max-width: 600px) 74px, 110px">
         <img class="logo-img" src="/logo-min.png"
-             srcset="/logo-min.png 252w" sizes="84px"
-             alt="Umar Hayat Chaska Point" width="252" height="164"
+             srcset="/logo-min.png 252w" sizes="110px"
+             alt="Umar Hayat Chaska Point" width="426" height="278"
              decoding="async" fetchpriority="high">
       </picture>
     </a>
@@ -318,13 +318,13 @@ og_image = '/img/' + OG_IMAGE if OG_IMAGE else '/umarhayatchaskapoint-trimmed.pn
 
 def page(path, title, desc, body, active):
     return f'''<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<meta name="theme-color" content="#0E0B08">
+<meta name="theme-color" content="#F7F4EF">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="website">
@@ -576,6 +576,7 @@ FAVICON = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 <rect width="64" height="64" rx="14" fill="#0E0B08"/>
 <circle cx="32" cy="32" r="17" fill="none" stroke="#DDC491" stroke-width="3"/>
 <path d="M32 19v26M22 27h20" stroke="#DDC491" stroke-width="3" stroke-linecap="round"/>
+
 </svg>
 '''
 

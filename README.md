@@ -48,8 +48,13 @@ Until then the logo is used, which renders poorly in a share preview.
 ## Theming
 
 White is the default. Rebrand by editing the `:root` block at the top of
-`css/style.css` only. The dark palette is still there under
+`css/style.css` only. The Eerie Black palette is still there under
 `html[data-theme="dark"]` for anyone who sets it, but nothing links to it.
+
+The page ground is a warm off-white (`#F7F4EF`) and the dish cards are pure
+white (`#FFFFFF`), not the other way round. On a pure white page the white
+cards would have nothing but a hairline between them and the grid would
+read as one flat sheet. Keep the two grounds distinct if you rebrand.
 
 The accent is the logo's gold, darkened from `#DDC491` to `#8A6634` so it
 carries text contrast on a white ground. The original only worked on a
@@ -57,12 +62,24 @@ dark background.
 
 Two things to know if you edit the palette:
 
-- On white, the page and the cards are the same colour, so `--shadow-1`
-  and `--line` are what separate them. If the menu ever looks like flat
-  text, those two are the reason.
+- The page and the card grounds are close in value (`#F7F4EF` against
+  `#FFFFFF`), so `--shadow-1` and `--line` are what separate them, on top
+  of the difference between the grounds themselves. If the menu ever looks
+  like flat text, those are the reason.
 - Body copy sits at about 5.2:1 and muted text at the same, against a
   4.5:1 requirement. There is not much headroom, so lightening `--fg`
   further will fail the contrast check.
+
+## The logo
+
+`logo-120.webp`, `logo.webp` (252w) and `logo-426.webp` are the same
+artwork at three widths, generated from `umarhayatchaskapoint-trimmed.png`.
+The header logo is 72px tall, which is 110px wide and 331 real pixels on a
+3x screen, so the `srcset` has to reach 426w. `logo-min.png` is the
+fallback for browsers without WebP. The 426w file is lossy at q92 (41KB
+rather than 77KB lossless); the two smaller ones are lossless. Regenerate
+all four with PIL if the artwork changes, and keep the `sizes` attribute in
+`build.py` in step with the CSS height.
 
 ## Placeholder data
 
@@ -167,7 +184,8 @@ Google, so the site makes zero third-party requests.
 
 ## The header
 
-`js/header.js`. Centred logo in a `1fr auto 1fr` grid, utility icons
+`js/header.js`. Centred logo in a `1fr auto 1fr` grid over a separate nav
+row, utility icons
 (search, account, currency, cart) on the right, category nav beneath,
 replaced by a drawer below 860px.
 
