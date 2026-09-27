@@ -162,7 +162,7 @@ def overlays(active):
   <div class="sheet-in">
     <div class="sfield">
       {ICON['search']}
-      <input type="search" id="searchInput" placeholder="Search chasha, chaat, drinks&hellip;"
+      <input type="search" id="searchInput" placeholder="Search nashta, barbecue, fried&hellip;"
              autocomplete="off" spellcheck="false" aria-label="Search the menu">
     </div>
     <p class="results-hint" id="searchHint">Popular right now</p>
@@ -211,7 +211,7 @@ def overlays(active):
     <nav class="social" aria-label="Social media">
 {social_markup('soc')}
     </nav>
-    <small>Nashta, barbecue and fried items, cooked to order.<br>Placeholder details &mdash; see README.</small>
+    <small>Nashta, barbecue and fried items, cooked to order.</small>
   </div>
 </aside>
 
@@ -403,17 +403,6 @@ HOME = f'''  <section class="wrap" style="text-align:center">
       <a class="btn btn-accent" href="/menu">See the menu</a>
       <a class="btn btn-ghost" href="/contact">Find us</a>
     </div>
-  </section>
-
-  <section class="band">
-    <h2>This is a static demo</h2>
-    <p>The header, navigation, search, currency selector and cart all work,
-      but there is no server behind them. Menu items and prices are
-      placeholders.</p>
-    <div class="band-cta">
-      <a class="btn btn-ghost" href="/about">About Us</a>
-      <a class="btn btn-ghost" href="/menu">Menu</a>
-    </div>
   </section>'''
 
 MENU = f'''  <div class="wrap">
@@ -430,13 +419,6 @@ MENU = f'''  <div class="wrap">
       <span class="price-note" id="filterCount" style="align-self:center;margin-left:auto"></span>
     </div>
 
-    <div class="todo" style="margin-bottom:32px">
-      <h2>Placeholder data</h2>
-      <p>The {len(ITEMS)} items below are <strong>invented</strong> so the layout has
-        something to render. Names, descriptions and prices are not real and
-        must be replaced before launch &mdash; see <code>README.md</code>.</p>
-    </div>
-
     <div class="grid grid--menu">
 {MENU_CARDS}
     </div>
@@ -448,13 +430,6 @@ ABOUT = f'''  <div class="wrap">
       <h1>Our story</h1>
       <p>A roadside nashta stall that grew into a proper barbecue kitchen.</p>
     </header>
-
-    <div class="todo" style="margin-bottom:40px">
-      <h2>Placeholder copy</h2>
-      <p>This page is an empty frame. The real story, the founder&rsquo;s name,
-        the years in business and the kitchen photographs all still need to be
-        written. See <code>README.md</code>.</p>
-    </div>
 
     <div class="detail" style="grid-template-columns:1fr 1fr">
       <div>
@@ -470,8 +445,6 @@ ABOUT = f'''  <div class="wrap">
       </div>
       <div>
         <h2>How we cook</h2>
-        <p>Placeholder. The charcoal, the marinades and the sourcing notes are
-          all still to be written.</p>
         <ul class="list">
           <li>Chicken and meat marinated overnight, never the same day</li>
           <li>Live charcoal, skewers turned by hand</li>
@@ -488,14 +461,6 @@ CONTACT = f'''  <div class="wrap">
       <h1>Find us</h1>
       <p>One shopfront, open seven days. Call ahead for large orders.</p>
     </header>
-
-    <div class="todo" style="margin-bottom:40px">
-      <h2>Placeholder details</h2>
-      <p>The address, phone number, opening hours and map below are
-        <strong>invented</strong>. Every one of them is a single edit in
-        <code>js/site-config.js</code>. Run <code>SITE.todos()</code> in the
-        console to list what is still outstanding.</p>
-    </div>
 
     <div class="detail" style="grid-template-columns:1.1fr .9fr">
       <div>
