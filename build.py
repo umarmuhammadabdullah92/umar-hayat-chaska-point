@@ -19,14 +19,9 @@ IMG_DIR = os.path.join(ROOT, 'img')
 # Drop a file in and it appears; leave it out and an empty frame renders in
 # its place, so the page never shows a broken image icon and the layout
 # never reflows when the photo arrives.
+# Only the menu carries photos. Slots elsewhere on the site were removed
+# on request, so keep this table to the menu plus the social share card.
 SLOTS = {
-    'hero':      ('21/9', 'The grill, mid-service'),
-    'gallery-1': ('4/3',  'Gallery photo 1'),
-    'gallery-2': ('4/3',  'Gallery photo 2'),
-    'gallery-3': ('4/3',  'Gallery photo 3'),
-    'story':     ('16/9', 'The shopfront or the counter'),
-    'kitchen-1': ('4/3',  'Kitchen photo 1'),
-    'kitchen-2': ('4/3',  'Kitchen photo 2'),
     'nashta':    ('16/9', 'Nashta'),
     'barbecue':  ('16/9', 'Barbecue'),
     'fried':     ('16/9', 'Fried items'),
@@ -41,7 +36,7 @@ def find_image(key):
             return key + ext
     return None
 
-def fig(key, cls='', eager=False):
+def fig(key, cls='', eager=False, cap=''):
     """Render one image slot.
 
     A real file becomes a <img> with the alt text from SLOTS. A missing
@@ -61,8 +56,10 @@ def fig(key, cls='', eager=False):
         '<path d="m4 17 5-4 4 3 3-2 4 3" stroke-linecap="round" stroke-linejoin="round"/>'
         '</svg></span>'
         '<span class="fig-slot-txt">img/%s</span></span>' % key)
+    label = '<figcaption class="fig-cap">%s</figcaption>' % cap if cap else ''
     return ('<figure class="fig %s" style="--fig-ar:%s">'
-            '<div class="fig-frame">%s</div></figure>' % (cls, ratio, inner))
+            '<div class="fig-frame">%s</div>%s</figure>'
+            % (cls, ratio, inner, label))
 
 # ---------------------------------------------------------------- icons
 ICON = {
@@ -461,19 +458,7 @@ HOME = f'''  <section class="wrap" style="text-align:center">
       <a class="btn btn-ghost" href="/contact">Find us</a>
     </div>
   </section>
-
-  <section class="wrap">
-    {fig('hero', eager=True)}
-  </section>
-
-  <section class="band">
-    <h2>The gallery</h2>
-    <div class="grid grid--3">
-{fig('gallery-1')}
-{fig('gallery-2')}
-{fig('gallery-3')}
-    </div>
-  </section>'''
+'''
 
 MENU = f'''  <div class="wrap">
     <header class="page-head">
@@ -490,9 +475,9 @@ MENU = f'''  <div class="wrap">
     </div>
 
     <div class="grid grid--3" style="margin-bottom:44px">
-{fig('nashta')}
-{fig('barbecue')}
-{fig('fried')}
+{fig('nashta', 'fig--cat', cap='Nashta')}
+{fig('barbecue', 'fig--cat', cap='Barbecue')}
+{fig('fried', 'fig--cat', cap='Fried Items')}
     </div>
 
     <div class="grid grid--menu">
@@ -506,8 +491,6 @@ ABOUT = f'''  <div class="wrap">
       <h1>Our story</h1>
       <p>A roadside nashta stall that grew into a proper barbecue kitchen.</p>
     </header>
-
-    {fig('story')}
 
     <div class="detail" style="grid-template-columns:1fr 1fr">
       <div>
@@ -530,11 +513,6 @@ ABOUT = f'''  <div class="wrap">
         </ul>
         <a class="btn btn-ghost" href="/contact">Find us</a>
       </div>
-    </div>
-
-    <div class="grid grid--2" style="margin-top:48px">
-{fig('kitchen-1')}
-{fig('kitchen-2')}
     </div>
   </div>'''
 

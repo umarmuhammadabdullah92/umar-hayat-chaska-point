@@ -461,7 +461,6 @@ main{flex:1 0 auto;}
 
 .grid{display:grid;gap:18px;}
 .grid--menu{grid-template-columns:repeat(auto-fill,minmax(272px,1fr));}
-.grid--2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
 
 .card{
   border:1.5px solid var(--line);border-radius:var(--r-l);
@@ -594,7 +593,7 @@ main{flex:1 0 auto;}
    ratio, so the layout is identical before and after a photo is added. */
 .fig{margin:0;}
 .fig + .fig{margin-top:20px;}
-.grid .fig + .fig, .grid--2 .fig + .fig, .grid--3 .fig + .fig{margin-top:0;}
+.grid .fig + .fig{margin-top:0;}
 .fig-frame{
   position:relative;overflow:hidden;
   aspect-ratio:var(--fig-ar,16/9);
@@ -620,9 +619,9 @@ main{flex:1 0 auto;}
   background:var(--bg-deep);border:1px solid var(--line);
   border-radius:var(--r-s);padding:3px 8px;
 }
-.band .grid--3{margin-top:28px;}
-.band .fig-frame{border-radius:var(--r-m);}
-
-@media (max-width:700px){
-  .fig-frame{border-radius:var(--r-m);}
+.fig--cat .fig-frame{border-radius:var(--r-m);}
+.fig-cap{
+  margin-top:11px;font-size:.68rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);text-align:center;
 }
+

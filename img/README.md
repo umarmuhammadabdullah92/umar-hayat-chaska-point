@@ -20,19 +20,18 @@ first one listed wins:
 
 ## The slots
 
+Photos live on the menu only. The home and about pages deliberately have
+no image slots.
+
 | File | Goes on | Ratio | Subject |
 |---|---|---|---|
-| `hero.jpg` | Home | 21:9 | The grill, mid-service |
-| `gallery-1.jpg` | Home | 4:3 | Gallery photo 1 |
-| `gallery-2.jpg` | Home | 4:3 | Gallery photo 2 |
-| `gallery-3.jpg` | Home | 4:3 | Gallery photo 3 |
-| `story.jpg` | About | 16:9 | The shopfront or the counter |
-| `kitchen-1.jpg` | About | 4:3 | Kitchen photo 1 |
-| `kitchen-2.jpg` | About | 4:3 | Kitchen photo 2 |
 | `nashta.jpg` | Menu | 16:9 | Nashta |
 | `barbecue.jpg` | Menu | 16:9 | Barbecue |
 | `fried.jpg` | Menu | 16:9 | Fried items |
 | `social.jpg` | — | 1200x630 | Social share card |
+
+Each of the three menu photos is captioned with its category name, so they
+read as the menu's three sections.
 
 ## Notes
 
@@ -40,9 +39,8 @@ first one listed wins:
 `og:image` falls back to the logo, which renders as a small square in a link
 preview. 1200x630 is the size every platform expects.
 
-**The hero is the only eagerly loaded image** — it is almost certainly your
-largest contentful paint, so it gets `fetchpriority="high"` and does not wait
-for the lazy loader. Everything else is lazy.
+**All three menu photos are lazy loaded**, so they never delay the page.
+There is no eager image on the site now that the hero is gone.
 
 **Before launch, no slot should be empty.** Run:
 
@@ -50,6 +48,11 @@ for the lazy loader. Everything else is lazy.
 
 and look for a slot left showing a filename instead of a photo. `git status`
 will also list any image files you have not committed yet.
+
+**Menu items have no photo slots yet.** If you want a picture on each of
+the 23 dishes rather than one per category, that is a change to
+`item_card()` in `build.py` and a per-item `img` field on `ITEMS` — say the
+word and it can be added.
 
 **Keep files small.** These are displayed at most 1200px wide, so anything
 larger is wasted upload on a phone connection. Target under 300KB each.
