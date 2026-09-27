@@ -29,7 +29,15 @@ behind it.
 If you need real commerce, this needs to move to Shopify (or another
 platform) — the theme there is Liquid and shares no structure with this.
 
-### Placeholder data
+### Images
+
+The site has no images in its pages. The only image the build looks for is
+`img/social.jpg`, which becomes the `og:image` used for link previews on
+WhatsApp, Facebook and X. Drop a 1200x630 file there and run
+`python3 build.py`. Until then the logo is used, which renders poorly in a
+share preview. See `img/README.md`.
+
+## Placeholder data
 
 These are **invented**, not real, and must be replaced before launch:
 

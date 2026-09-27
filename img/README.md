@@ -1,58 +1,32 @@
 # Images
 
-Drop photo files in this folder. The filename is what wires them up — there
-is nothing else to edit.
+**The site currently shows no images in its pages.** The image sections
+were built, then removed on request, so this folder is empty apart from
+this file.
 
-## How it works
+## The one image that still matters
 
-`build.py` looks for each slot by name and extension. A file that exists
-becomes an `<img>`; a file that does not exist becomes an empty frame of the
-same aspect ratio, labelled with the filename to drop in. So you can see
-exactly where each photo goes before you have it, and the layout does not
-change when the photo arrives.
+`og:image` is what WhatsApp, Facebook, X and iMessage show when someone
+shares a link to the site. It currently points at the logo, which is
+426x258 and renders as a small, badly cropped square in a link preview.
 
-Run `python3 build.py` after adding files.
+Drop a **1200x630** image here as:
 
-Accepted extensions, in priority order — if two files share a name, the
-first one listed wins:
+    img/social.jpg
 
-    .jpg   .jpeg   .png   .webp   .avif
+and run `python3 build.py`. It is picked up automatically, with no other
+edit. `.jpg`, `.jpeg`, `.png`, `.webp` and `.avif` all work.
 
-## The slots
+Until that file exists the logo is used, which is better than a broken
+preview but not good. This is the highest-value image on the site.
 
-Photos live on the menu only. The home and about pages deliberately have
-no image slots.
+## If images come back
 
-| File | Goes on | Ratio | Subject |
-|---|---|---|---|
-| `nashta.jpg` | Menu | 16:9 | Nashta |
-| `barbecue.jpg` | Menu | 16:9 | Barbecue |
-| `fried.jpg` | Menu | 16:9 | Fried items |
-| `social.jpg` | — | 1200x630 | Social share card |
+The machinery for drop-in image slots was removed along with the
+sections. Rebuilding it means adding a `fig()` helper to `build.py` that
+looks for `img/<name>.<ext>` and renders either an `<img>` or an empty
+frame of a fixed aspect ratio, so a photo can be added later without
+touching any markup.
 
-Each of the three menu photos is captioned with its category name, so they
-read as the menu's three sections.
-
-## Notes
-
-**`social.jpg` is the one that matters most for sharing.** Until it exists,
-`og:image` falls back to the logo, which renders as a small square in a link
-preview. 1200x630 is the size every platform expects.
-
-**All three menu photos are lazy loaded**, so they never delay the page.
-There is no eager image on the site now that the hero is gone.
-
-**Before launch, no slot should be empty.** Run:
-
-    python3 build.py
-
-and look for a slot left showing a filename instead of a photo. `git status`
-will also list any image files you have not committed yet.
-
-**Menu items have no photo slots yet.** If you want a picture on each of
-the 23 dishes rather than one per category, that is a change to
-`item_card()` in `build.py` and a per-item `img` field on `ITEMS` — say the
-word and it can be added.
-
-**Keep files small.** These are displayed at most 1200px wide, so anything
-larger is wasted upload on a phone connection. Target under 300KB each.
+Do not simply paste `<img>` tags into the generated HTML. Every page is
+overwritten by `python3 build.py`, so hand edits do not survive a build.

@@ -15,18 +15,12 @@ import os, re, sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 IMG_DIR = os.path.join(ROOT, 'img')
 
-# Every image the site can show is a slot named by its filename in img/.
-# Drop a file in and it appears; leave it out and an empty frame renders in
-# its place, so the page never shows a broken image icon and the layout
-# never reflows when the photo arrives.
-# Only the menu carries photos. Slots elsewhere on the site were removed
-# on request, so keep this table to the menu plus the social share card.
-SLOTS = {
-    'nashta':    ('16/9', 'Nashta'),
-    'barbecue':  ('16/9', 'Barbecue'),
-    'fried':     ('16/9', 'Fried items'),
-    'social':    ('1200/630', 'Social share card'),
-}
+# The site shows no images in its pages. The image sections were built and
+# then removed on request, so the only image left in the build is the
+# og:image share card, which has to point at something real or a shared
+# link renders with no picture at all. Drop a 1200x630 file at
+# img/social.jpg and it is picked up on the next build; until then the
+# logo is used.
 EXTS = ('.jpg', '.jpeg', '.png', '.webp', '.avif')
 
 def find_image(key):
@@ -35,31 +29,6 @@ def find_image(key):
         if os.path.exists(path):
             return key + ext
     return None
-
-def fig(key, cls='', eager=False, cap=''):
-    """Render one image slot.
-
-    A real file becomes a <img> with the alt text from SLOTS. A missing
-    file becomes an empty frame of the same aspect ratio, labelled with
-    the filename to drop in, so the gap is obvious in the browser.
-    """
-    ratio, alt = SLOTS[key]
-    found = find_image(key)
-    inner = ('<img src="/img/%s" alt="%s" loading="%s" decoding="async"%s>'
-             % (found, alt, 'eager' if eager else 'lazy',
-                ' fetchpriority="high"' if eager else '')) if found else (
-        '<span class="fig-slot">'
-        '<span class="fig-slot-ico" aria-hidden="true">'
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">'
-        '<rect x="3" y="5" width="18" height="14" rx="2"/>'
-        '<circle cx="8.5" cy="10" r="1.6"/>'
-        '<path d="m4 17 5-4 4 3 3-2 4 3" stroke-linecap="round" stroke-linejoin="round"/>'
-        '</svg></span>'
-        '<span class="fig-slot-txt">img/%s</span></span>' % key)
-    label = '<figcaption class="fig-cap">%s</figcaption>' % cap if cap else ''
-    return ('<figure class="fig %s" style="--fig-ar:%s">'
-            '<div class="fig-frame">%s</div>%s</figure>'
-            % (cls, ratio, inner, label))
 
 # ---------------------------------------------------------------- icons
 ICON = {
@@ -472,12 +441,6 @@ MENU = f'''  <div class="wrap">
     <div class="filters" role="group" aria-label="Filter by category">
 {cat_buttons()}
       <span class="price-note" id="filterCount" style="align-self:center;margin-left:auto"></span>
-    </div>
-
-    <div class="grid grid--3" style="margin-bottom:44px">
-{fig('nashta', 'fig--cat', cap='Nashta')}
-{fig('barbecue', 'fig--cat', cap='Barbecue')}
-{fig('fried', 'fig--cat', cap='Fried Items')}
     </div>
 
     <div class="grid grid--menu">
