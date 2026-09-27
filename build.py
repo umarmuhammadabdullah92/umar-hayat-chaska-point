@@ -416,16 +416,14 @@ def cat_buttons():
 
 SITE_CATS = [('Nashta','nashta'),('Barbecue','barbecue'),('Fried Items','fried')]
 
-HOME = f'''  <section class="wrap" style="text-align:center">
-    <p class="eyebrow" style="color:var(--accent);font-size:.68rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;margin-bottom:18px">Nashta &middot; Barbecue &middot; Fried</p>
-    <h1 style="font-size:clamp(2.2rem,6vw,4rem);max-width:17ch;margin:0 auto 20px">Charcoal-grilled barbecue and nashta done properly</h1>
-    <p style="color:var(--fg-muted);max-width:52ch;margin:0 auto 32px;line-height:1.85">
-      Fried batter mixed by hand, malai boti marinated overnight, and
-      breakfast served from the time the shop opens.</p>
-    <div class="band-cta">
-      <a class="btn btn-accent" href="/menu">See the menu</a>
-      <a class="btn btn-ghost" href="/contact">Find us</a>
-    </div>
+# The homepage body was removed on request, so the front page is now just
+# the header and footer. It still needs exactly one h1: a document with no
+# h1 has no accessible name and search engines read the page as having no
+# topic. The heading is visually hidden, so nothing is shown, but the
+# "Skip to content" link still has somewhere to land and the accessibility
+# checks keep one h1 per page.
+HOME = '''  <section class="wrap">
+    <h1 class="vh">Umar Hayat Chaska Point</h1>
   </section>
 '''
 
