@@ -2,9 +2,42 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Logo</title>
+<style>
+  /* Centred logo page.
+     The logo is a wide wordmark (426x278), so it is sized on both axes and
+     centred by its own box rather than stretched to fill anything. */
+
+  :root{
+    --bg:#0C0B0F;
+    --logo-max-w:560px;   /* never wider than this                  */
+    --logo-max-h:70vh;    /* never taller than the viewport allows  */
+    --logo-pad:5vmin;     /* breathing room on small screens        */
+  }
+
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    display:grid;
+    place-items:center;
+    padding:var(--logo-pad);
+    box-sizing:border-box;
+  }
+
+  .logo{
+    display:block;
+    width:auto;
+    height:auto;
+    max-width:min(100%, var(--logo-max-w));
+    max-height:var(--logo-max-h);
+    object-fit:contain;
+  }
+</style>
 </head>
 <body>
+  <img class="logo" src="umarhayatchaskapoint-trimmed.png"
+       width="426" height="278" alt="Umar Hayat Chaska Point">
 </body>
 </html>
