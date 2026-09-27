@@ -37,6 +37,25 @@ WhatsApp, Facebook and X. Drop a 1200x630 file there and run
 `python3 build.py`. Until then the logo is used, which renders poorly in a
 share preview. See `img/README.md`.
 
+## Theming
+
+White is the default. Rebrand by editing the `:root` block at the top of
+`css/style.css` only. The dark palette is still there under
+`html[data-theme="dark"]` for anyone who sets it, but nothing links to it.
+
+The accent is the logo's gold, darkened from `#DDC491` to `#8A6634` so it
+carries text contrast on a white ground. The original only worked on a
+dark background.
+
+Two things to know if you edit the palette:
+
+- On white, the page and the cards are the same colour, so `--shadow-1`
+  and `--line` are what separate them. If the menu ever looks like flat
+  text, those two are the reason.
+- Body copy sits at about 5.2:1 and muted text at the same, against a
+  4.5:1 requirement. There is not much headroom, so lightening `--fg`
+  further will fail the contrast check.
+
 ## Placeholder data
 
 These are **invented**, not real, and must be replaced before launch:
