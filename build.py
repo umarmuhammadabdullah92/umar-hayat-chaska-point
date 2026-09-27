@@ -13,6 +13,56 @@ Run:  python3 build.py
 import os, re, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+IMG_DIR = os.path.join(ROOT, 'img')
+
+# Every image the site can show is a slot named by its filename in img/.
+# Drop a file in and it appears; leave it out and an empty frame renders in
+# its place, so the page never shows a broken image icon and the layout
+# never reflows when the photo arrives.
+SLOTS = {
+    'hero':      ('21/9', 'The grill, mid-service'),
+    'gallery-1': ('4/3',  'Gallery photo 1'),
+    'gallery-2': ('4/3',  'Gallery photo 2'),
+    'gallery-3': ('4/3',  'Gallery photo 3'),
+    'story':     ('16/9', 'The shopfront or the counter'),
+    'kitchen-1': ('4/3',  'Kitchen photo 1'),
+    'kitchen-2': ('4/3',  'Kitchen photo 2'),
+    'nashta':    ('16/9', 'Nashta'),
+    'barbecue':  ('16/9', 'Barbecue'),
+    'fried':     ('16/9', 'Fried items'),
+    'social':    ('1200/630', 'Social share card'),
+}
+EXTS = ('.jpg', '.jpeg', '.png', '.webp', '.avif')
+
+def find_image(key):
+    for ext in EXTS:
+        path = os.path.join(IMG_DIR, key + ext)
+        if os.path.exists(path):
+            return key + ext
+    return None
+
+def fig(key, cls='', eager=False):
+    """Render one image slot.
+
+    A real file becomes a <img> with the alt text from SLOTS. A missing
+    file becomes an empty frame of the same aspect ratio, labelled with
+    the filename to drop in, so the gap is obvious in the browser.
+    """
+    ratio, alt = SLOTS[key]
+    found = find_image(key)
+    inner = ('<img src="/img/%s" alt="%s" loading="%s" decoding="async"%s>'
+             % (found, alt, 'eager' if eager else 'lazy',
+                ' fetchpriority="high"' if eager else '')) if found else (
+        '<span class="fig-slot">'
+        '<span class="fig-slot-ico" aria-hidden="true">'
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">'
+        '<rect x="3" y="5" width="18" height="14" rx="2"/>'
+        '<circle cx="8.5" cy="10" r="1.6"/>'
+        '<path d="m4 17 5-4 4 3 3-2 4 3" stroke-linecap="round" stroke-linejoin="round"/>'
+        '</svg></span>'
+        '<span class="fig-slot-txt">img/%s</span></span>' % key)
+    return ('<figure class="fig %s" style="--fig-ar:%s">'
+            '<div class="fig-frame">%s</div></figure>' % (cls, ratio, inner))
 
 # ---------------------------------------------------------------- icons
 ICON = {
@@ -273,6 +323,12 @@ SCRIPTS = '''<script src="/js/site-config.js"></script>
 <script src="/js/header.js"></script>
 <script src="/js/cart.js"></script>'''
 
+# 1200x630 is what every platform renders a share card at, so prefer a real
+# social image. Falling back to the logo is better than shipping a broken
+# og:image, but a logo is a poor share card and worth replacing.
+OG_IMAGE = find_image('social')
+og_image = '/img/' + OG_IMAGE if OG_IMAGE else '/umarhayatchaskapoint-trimmed.png'
+
 def page(path, title, desc, body, active):
     return f'''<!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -285,7 +341,8 @@ def page(path, title, desc, body, active):
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="/umarhayatchaskapoint-trimmed.png">
+<meta property="og:image" content="{og_image}">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -403,6 +460,19 @@ HOME = f'''  <section class="wrap" style="text-align:center">
       <a class="btn btn-accent" href="/menu">See the menu</a>
       <a class="btn btn-ghost" href="/contact">Find us</a>
     </div>
+  </section>
+
+  <section class="wrap">
+    {fig('hero', eager=True)}
+  </section>
+
+  <section class="band">
+    <h2>The gallery</h2>
+    <div class="grid grid--3">
+{fig('gallery-1')}
+{fig('gallery-2')}
+{fig('gallery-3')}
+    </div>
   </section>'''
 
 MENU = f'''  <div class="wrap">
@@ -419,6 +489,12 @@ MENU = f'''  <div class="wrap">
       <span class="price-note" id="filterCount" style="align-self:center;margin-left:auto"></span>
     </div>
 
+    <div class="grid grid--3" style="margin-bottom:44px">
+{fig('nashta')}
+{fig('barbecue')}
+{fig('fried')}
+    </div>
+
     <div class="grid grid--menu">
 {MENU_CARDS}
     </div>
@@ -430,6 +506,8 @@ ABOUT = f'''  <div class="wrap">
       <h1>Our story</h1>
       <p>A roadside nashta stall that grew into a proper barbecue kitchen.</p>
     </header>
+
+    {fig('story')}
 
     <div class="detail" style="grid-template-columns:1fr 1fr">
       <div>
@@ -452,6 +530,11 @@ ABOUT = f'''  <div class="wrap">
         </ul>
         <a class="btn btn-ghost" href="/contact">Find us</a>
       </div>
+    </div>
+
+    <div class="grid grid--2" style="margin-top:48px">
+{fig('kitchen-1')}
+{fig('kitchen-2')}
     </div>
   </div>'''
 
