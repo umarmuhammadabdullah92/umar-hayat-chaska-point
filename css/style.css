@@ -120,19 +120,16 @@ main{flex:1 0 auto;}
 .topbar-side{display:flex;align-items:center;gap:10px;min-width:0;}
 .topbar-side--r{justify-content:flex-end;}
 
-/* left: quiet contact line */
-.hdr-contact{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:.76rem;font-weight:600;color:var(--fg-muted);
-  letter-spacing:.02em;white-space:nowrap;min-height:40px;
-  transition:color .18s;
+/* left: social links (the phone link and tagline were removed on request) */
+.social{display:flex;align-items:center;gap:2px;}
+.soc{
+  width:40px;height:40px;flex-shrink:0;border-radius:var(--r-s);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--fg-muted);
+  transition:color .2s,background .2s,transform .2s;
 }
-.hdr-contact:hover{color:var(--accent);}
-.hdr-contact svg{width:15px;height:15px;flex-shrink:0;}
-.hdr-tagline{
-  font-size:.66rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--fg-muted);white-space:nowrap;
-}
+.soc:hover{color:var(--accent);background:var(--tint);transform:translateY(-2px);}
+.soc svg{width:18px;height:18px;}
 
 /* centre: brand logo */
 .logo{
@@ -382,9 +379,8 @@ main{flex:1 0 auto;}
 }
 .seg button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
 .drawer-foot{margin-top:auto;padding-top:26px;}
-.drawer-foot a{display:inline-flex;align-items:center;gap:8px;font-weight:700;min-height:44px;}
-.drawer-foot svg{width:16px;height:16px;}
-.drawer-foot small{display:block;font-size:.72rem;color:var(--fg-muted);line-height:1.7;margin-top:4px;}
+.drawer-foot .social{margin-bottom:4px;}
+.drawer-foot small{display:block;font-size:.72rem;color:var(--fg-muted);line-height:1.7;margin-top:8px;}
 
 /* =====================================================================
    CART
@@ -578,7 +574,6 @@ main{flex:1 0 auto;}
    Responsive
    ===================================================================== */
 @media (max-width:1000px){
-  .hdr-contact,.hdr-tagline{display:none;}
   .mainnav a.nav-cta{display:none;}
 }
 @media (max-width:860px){
@@ -586,6 +581,7 @@ main{flex:1 0 auto;}
   .mainnav-in::-webkit-scrollbar{display:none;}
   .mainnav a{white-space:nowrap;}
   .uico-hide{display:none;}
+  .topbar-side--l .social{display:none;}
   .ham{display:flex;}
   .acct-grid{grid-template-columns:1fr;}
   .cart-fab{display:none;}

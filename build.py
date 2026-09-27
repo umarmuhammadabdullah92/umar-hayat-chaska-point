@@ -26,6 +26,45 @@ ICON = {
  'x':      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>',
 }
 
+# Social icons. The URLs live in js/site-config.js so there is still one
+# place to edit them; build.py reads them from there and bakes them into
+# the HTML, which keeps the links working with JavaScript disabled.
+SOCIAL_ICON = {
+ 'instagram': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.15" fill="currentColor" stroke="none"/></svg>',
+ 'facebook':  '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.27-.13-2.41-.13-2.39 0-4.02 1.46-4.02 4.13V9.9H7.5V13h2.77v8h3.23Z"/></svg>',
+ 'tiktok':    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 0 1 0-5.18c.27 0 .52.04.76.12V9.66a5.68 5.68 0 0 0-.76-.05A5.66 5.66 0 1 0 15.54 15.3V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.29 4.29 0 0 1-3.24-1.48Z"/></svg>',
+}
+
+def social_links():
+    """Read SITE.social out of js/site-config.js.
+
+    Raises rather than guessing if the block or an icon is missing, so a
+    broken edit fails the build instead of publishing an icon that links
+    nowhere.
+    """
+    path = os.path.join(ROOT, 'js', 'site-config.js')
+    src = open(path, encoding='utf-8').read()
+    block = re.search(r'social:\s*\{(.*?)\}', src, re.S)
+    if not block:
+        raise SystemExit('build.py: no social block found in js/site-config.js')
+    found = dict(re.findall(r"(\w+):\s*'([^']*)'", block.group(1)))
+    out = []
+    for key, url in found.items():
+        if not url.strip():
+            continue
+        if key not in SOCIAL_ICON:
+            raise SystemExit('build.py: no icon defined for social key "%s"' % key)
+        out.append((key, url.strip(), SOCIAL_ICON[key]))
+    if not out:
+        raise SystemExit('build.py: SITE.social has no filled-in URLs')
+    return out
+
+def social_markup(cls, extra=''):
+    return '\n'.join(
+        '        <a class="soc" href="%s" target="_blank" rel="noopener noreferrer" '
+        'aria-label="%s" title="%s"%s>%s</a>' % (url, key.capitalize(), key.capitalize(), extra, icon)
+        for key, url, icon in social_links())
+
 # ------------------------------------------------------------- chrome
 # Categories mirror SITE.categories in js/site-config.js.
 NAV = [
@@ -60,8 +99,9 @@ def header(active):
               aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
         <span></span><span></span><span></span>
       </button>
-      <a class="hdr-contact" href="tel:+923000000000">{ICON['phone']}<span>Order by phone</span></a>
-      <span class="hdr-tagline">Nashta &middot; Barbecue &middot; Fried</span>
+      <nav class="social" aria-label="Social media">
+{social_markup('soc')}
+      </nav>
     </div>
 
     <a class="logo" href="/">
@@ -168,7 +208,9 @@ def overlays(active):
 {nav_links(active)}
   </nav>
   <div class="drawer-foot">
-    <a href="/contact">{ICON['phone']} Order by phone</a>
+    <nav class="social" aria-label="Social media">
+{social_markup('soc')}
+    </nav>
     <small>Nashta, barbecue and fried items, cooked to order.<br>Placeholder details &mdash; see README.</small>
   </div>
 </aside>
