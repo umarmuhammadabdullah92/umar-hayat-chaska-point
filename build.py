@@ -128,14 +128,7 @@ def header(active):
     </div>
 
     <a class="logo" href="/">
-      <picture>
-        <source type="image/webp" srcset="/logo-120.webp 120w, /logo.webp 252w, /logo-426.webp 426w"
-                sizes="(max-width: 600px) 74px, 110px">
-        <img class="logo-img" src="/logo-min.png"
-             srcset="/logo-min.png 252w" sizes="110px"
-             alt="Umar Hayat Chaska Point" width="426" height="278"
-             decoding="async" fetchpriority="high">
-      </picture>
+      <span class="wordmark">Umar Hayat Chaska Point</span>
     </a>
 
     <div class="topbar-side topbar-side--r">
@@ -574,8 +567,8 @@ PAGES = [
 
 FAVICON = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 <rect width="64" height="64" rx="14" fill="#0E0B08"/>
-<circle cx="32" cy="32" r="17" fill="none" stroke="#DDC491" stroke-width="3"/>
-<path d="M32 19v26M22 27h20" stroke="#DDC491" stroke-width="3" stroke-linecap="round"/>
+<text x="32" y="45" font-family="Georgia,serif" font-size="38" font-weight="700"
+      text-anchor="middle" fill="#DDC491">U</text>
 
 </svg>
 '''
@@ -602,8 +595,20 @@ if __name__ == '__main__':
     # miss by eye and only shows up in the console.
     refs = set(re.findall(r'(?:href|src)="((?!https?:|#|data:|tel:|mailto:)[^"]+)"', out))
     refs |= set(re.findall(r"(?:href|src)='((?!https?:|#|data:|tel:|mailto:)[^']+)'", out))
+    # og:image lives in a content= attribute, not href/src, and a 404 there
+    # is invisible until somebody actually shares a link.
+    refs |= set(re.findall(r'content="(/[^"]+\.(?:png|jpg|jpeg|webp|avif|svg))"', out))
+    # Root-absolute paths are resolved against the project root and checked.
+    # This used to skip anything starting with "/", on the assumption that
+    # meant an absolute URL, but the regex above already filters http(s) and
+    # friends, and every asset on this site is root-absolute, so the check
+    # had never actually run.
+    # Only paths with a file extension. /about, /contact and /menu have none:
+    # they are the legacy routes in vercel.json, which redirect to the
+    # anchors, and they are not meant to exist on disk.
     gone = sorted(r for r in refs
-                  if not r.startswith('/') and not os.path.exists(os.path.join(ROOT, r)))
+                  if os.path.splitext(r)[1]
+                  and not os.path.exists(os.path.join(ROOT, r.lstrip('/'))))
     print('  local assets: %d referenced, %d missing%s'
           % (len(refs), len(gone), (': ' + ', '.join(gone)) if gone else ''))
     targets = re.findall(r'href="#([\w-]+)"', out)

@@ -70,16 +70,23 @@ Two things to know if you edit the palette:
   4.5:1 requirement. There is not much headroom, so lightening `--fg`
   further will fail the contrast check.
 
-## The logo
+## The brand mark
 
-`logo-120.webp`, `logo.webp` (252w) and `logo-426.webp` are the same
-artwork at three widths, generated from `umarhayatchaskapoint-trimmed.png`.
-The header logo is 72px tall, which is 110px wide and 331 real pixels on a
-3x screen, so the `srcset` has to reach 426w. `logo-min.png` is the
-fallback for browsers without WebP. The 426w file is lossy at q92 (41KB
-rather than 77KB lossless); the two smaller ones are lossless. Regenerate
-all four with PIL if the artwork changes, and keep the `sizes` attribute in
-`build.py` in step with the CSS height.
+There isn't one. The header shows the name as live text in the display
+face (`.wordmark` in `css/style.css`), which stays selectable, searchable
+and crisp at any zoom and cannot fail to load. Size is
+`clamp(17px, 2.15vw, 30px)`: 30px at the top so it carries the same
+visual weight as the 72px logo image it replaced, down to a 17px floor
+that still fits a 320px screen.
+
+`umarhayatchaskapoint-trimmed.png` is still in the repo for one reason
+only: it is the `og:image`, so a shared link has something to render. It
+is a poor share card. Drop a 1200x630 `img/social.jpg` in and that
+becomes the preview instead, at which point the PNG can go too.
+`umarhayatchaskapoint.png` is the untrimmed original, referenced by nothing.
+
+The favicon is a generated `U` monogram (`FAVICON` in `build.py`), not an
+image file.
 
 ## Placeholder data
 

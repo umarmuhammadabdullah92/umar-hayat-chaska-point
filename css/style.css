@@ -114,7 +114,7 @@ html[data-theme="dark"]{
 /* Long headings wrap to ragged edges by default. balance evens the lines
    within a heading, pretty does the same job across a paragraph's last
    line. Both are cheap and both are ignored where unsupported. */
-h1,h2,h3,.sect h2,.logo-img,.price{text-wrap:balance;}
+h1,h2,h3,.sect h2,.wordmark,.price{text-wrap:balance;}
 .card p,.card-foot,.filters,.sect p{text-wrap:pretty;}
 
 /* ---------------------------------------------------------------- focus
@@ -199,20 +199,28 @@ main{flex:1 0 auto;}
 .soc:hover{color:var(--accent);background:var(--tint);transform:translateY(-2px);}
 .soc svg{width:18px;height:18px;}
 
-/* centre: brand logo */
+/* centre: the brand wordmark */
 .logo{
   display:flex;align-items:center;justify-self:center;
-  min-width:0;padding:2px 6px;
+  min-width:0;padding:2px 6px;text-decoration:none;
 }
-/* The logo is the one thing on the page that has to be recognisable at a
-   glance, so it is deliberately oversized for a header. 72px tall is 110px
-   wide, which is a 331px image on a 3x phone; that is why the srcset goes
-   up to 426w. clamp() keeps it proportional in between rather than jumping
-   at a breakpoint. */
-.logo-img{
-  height:clamp(44px,5.2vw,72px);width:auto;
-  object-fit:contain;
+/* The brand is a name, not a mark, so this is live text: selectable,
+   searchable, translatable and crisp at any zoom, with no image to go soft
+   or fail to load. It sits in the middle column of the 1fr auto 1fr header
+   grid, above the nav row, so it cannot collide with the links. The size
+   is clamped rather than stepped at a breakpoint because the name is 24
+   characters wide and has to shrink smoothly as the side columns close in.
+   30px at the top, because the logo image this replaced was 72px tall and
+   a 15px name in the same slot reads as a caption rather than a brand. The
+   floor is 17px, which still fits 320px wide once the gutter is taken out
+   and the nav has moved to its own row. */
+.wordmark{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(17px,2.15vw,30px);line-height:1.15;
+  letter-spacing:-.012em;color:var(--fg);white-space:nowrap;
+  transition:color .2s;
 }
+.logo:hover .wordmark,.logo:focus-visible .wordmark{color:var(--accent);}
 
 /* right: utility icons */
 .utilities{display:flex;align-items:center;gap:6px;}
@@ -693,7 +701,6 @@ main{flex:1 0 auto;}
 @media (max-width:600px){
   :root{--gutter:4.5%;}
   .topbar{padding:11px var(--gutter);gap:8px;}
-  .logo-img{height:48px;}
   .utilities{gap:2px;}
   .uicon{width:42px;height:42px;}
   .grid--menu{grid-template-columns:1fr;}
@@ -703,7 +710,6 @@ main{flex:1 0 auto;}
   .cart-hd,.cart-items,.cart-sum,.cart-foot{padding-left:18px;padding-right:18px;}
 }
 @media (max-width:380px){
-  .logo-img{height:42px;}
   .uicon{width:40px;height:40px;}
   .uicon svg{width:19px;height:19px;}
 }

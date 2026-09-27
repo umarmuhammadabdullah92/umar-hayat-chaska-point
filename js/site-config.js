@@ -13,8 +13,6 @@
 window.SITE = {
   /* --- identity --- */
   name: 'Umar Hayat Chaska Point',        // kept as-is on request
-  logo: '/logo.webp',
-  logoAlt: 'Umar Hayat Chaska Point',
   /* What the kitchen actually serves. */
   tagline: 'Nashta, Barbecue &amp; Fried Items',
 
