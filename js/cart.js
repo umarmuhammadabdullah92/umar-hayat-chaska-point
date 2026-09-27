@@ -277,22 +277,6 @@
     }
   }
 
-  /* -------------------------------------------------------- account */
-  window.ACCOUNT = (function () {
-    const K = 'uhcp-account-v1';
-    const get = () => { try { return JSON.parse(localStorage.getItem(K) || 'null'); } catch (e) { return null; } };
-    return {
-      get,
-      save(email) {
-        try { localStorage.setItem(K, JSON.stringify({ email, at: Date.now() })); }
-        catch (e) {}
-        document.dispatchEvent(new CustomEvent('account:change'));
-      },
-      clear() { try { localStorage.removeItem(K); } catch (e) {} document.dispatchEvent(new CustomEvent('account:change')); },
-      orders() { const a = get(); return a && a.orders ? a.orders : []; }
-    };
-  })();
-
   /* ----------------------------------------------------------- boot */
   function init() {
     initDrawer();

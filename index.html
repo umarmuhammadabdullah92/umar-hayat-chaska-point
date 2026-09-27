@@ -34,8 +34,14 @@
     </div>
 
     <a class="logo" href="/">
-      <img class="logo-img" src="/umarhayatchaskapoint-trimmed.png"
-           alt="Umar Hayat Chaska Point" width="426" height="278" fetchpriority="high">
+      <picture>
+        <source type="image/webp" srcset="/logo-120.webp 120w, /logo.webp 252w"
+                sizes="(max-width: 700px) 62px, 84px">
+        <img class="logo-img" src="/logo-min.png"
+             srcset="/logo-min.png 252w" sizes="84px"
+             alt="Umar Hayat Chaska Point" width="252" height="164"
+             decoding="async" fetchpriority="high">
+      </picture>
     </a>
 
     <div class="topbar-side topbar-side--r">
@@ -479,14 +485,18 @@
     <small>&copy; 2026 Umar Hayat Chaska Point &middot; Static demo, no checkout</small>
   </div>
 </footer>
-<script src="/js/site-config.js"></script>
-<script src="/js/money.js"></script>
-<script src="/js/header.js"></script>
-<script src="/js/cart.js"></script>
+<script src="/js/site-config.js" defer></script>
+<script src="/js/money.js" defer></script>
+<script src="/js/account.js" defer></script>
+<script src="/js/header.js" defer></script>
+<script src="/js/cart.js" defer></script>
 
 <script>
-/* Renders opening hours from config and marks today. */
-(function () {
+/* Renders opening hours from config and marks today. Deferred, because
+   the script files below are deferred too, so window.SITE is not defined
+   yet while this runs during parsing. Deferred scripts have all executed
+   by the time DOMContentLoaded fires. */
+document.addEventListener('DOMContentLoaded', function () {
   var box = document.getElementById('hours');
   if (!box) return;
   var names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -500,7 +510,7 @@
       '</span><span>' + when + '</span></div>');
   }
   box.innerHTML = rows.join('');
-})();
+});
 </script>
 </body>
 </html>

@@ -100,6 +100,23 @@ html[data-theme="light"]{
 .sect + .sect{border-top:1px solid var(--line);}
 #contact{background:var(--bg-deep);}
 
+/* #about and #contact start below the fold on a laptop, so the browser
+   can skip laying out and painting them until they are scrolled near.
+   contain-intrinsic-size supplies the height we already know, which is
+   what keeps the scrollbar and the scroll-spy from jumping when the real
+   layout is swapped in. #menu is deliberately excluded: it is the
+   largest thing on the page and the one visitors see first. */
+#about,#contact{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 420px;
+}
+
+/* Long headings wrap to ragged edges by default. balance evens the lines
+   within a heading, pretty does the same job across a paragraph's last
+   line. Both are cheap and both are ignored where unsupported. */
+h1,h2,h3,.sect h2,.logo-img,.price{text-wrap:balance;}
+.card p,.card-foot,.filters,.sect p{text-wrap:pretty;}
+
 /* ---------------------------------------------------------------- focus
    A visible gold ring. The default outline is a pale grey that all but
    disappears against a white ground. */
@@ -154,8 +171,13 @@ main{flex:1 0 auto;}
 .site-hdr{
   position:sticky;top:0;z-index:100;
   background:color-mix(in srgb,var(--bg) 86%,transparent);
-  backdrop-filter:blur(18px) saturate(1.15);
-  -webkit-backdrop-filter:blur(18px) saturate(1.15);
+  /* Blur radius is the expensive part of a backdrop-filter: the cost
+     scales with the radius and it re-runs on every scroll frame, because
+     the header is sticky and sits over moving content. 12px reads the
+     same as 18px against a page this dark, and the saturate() call is
+     dropped since there is no colour behind the header to saturate. */
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line);
 }
 .topbar{
@@ -541,17 +563,39 @@ main{flex:1 0 auto;}
   background:#F1EDE6;border-bottom:1px solid rgba(27,21,14,.10);
 }
 .fig img{width:100%;height:100%;object-fit:cover;display:block;}
+/* Sixteen of these are the first thing on screen until real photos land, so
+   the empty state gets treated as a designed surface rather than a gap: a
+   fine 1px hatch at 11px reads as paper texture where a 10px band reads as
+   stripes, and a top-light gradient gives it a direction to catch light. */
 .fig--empty{
   display:flex;align-items:center;justify-content:center;
   background:
-    repeating-linear-gradient(45deg,rgba(138,102,52,.05) 0 10px,transparent 10px 20px),
+    linear-gradient(180deg,rgba(255,255,255,.85),rgba(241,237,230,.35)),
+    repeating-linear-gradient(45deg,rgba(138,102,52,.055) 0 1px,transparent 1px 11px),
     #F1EDE6;
+}
+/* a short gold rule above the label, so the placeholder is labelled like a
+   title rather than looking like a failed image */
+.fig--empty::before{
+  content:'';position:absolute;left:50%;top:calc(50% - 33px);
+  width:26px;height:1px;margin-left:-13px;background:rgba(138,102,52,.45);
 }
 .fig-ph{
   font-family:var(--body);font-size:.7rem;font-weight:800;letter-spacing:.16em;
   text-transform:uppercase;color:rgba(27,21,14,.34);padding:0 16px;text-align:center;
 }
 .card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow-lift);}
+
+/* A gold hairline draws across the top edge of a card on hover, the way a
+   printed rule would. overflow:hidden keeps it inside the rounded corner,
+   which is also why the cards can now be clipped safely. */
+.card--photo{position:relative;overflow:hidden;}
+.card--photo::before{
+  content:'';position:absolute;inset:0 0 auto;height:2px;z-index:1;
+  background:linear-gradient(90deg,var(--accent),var(--accent-deep));
+  transform:scaleX(0);transform-origin:left center;transition:transform .3s ease;
+}
+.card--photo:hover::before{transform:scaleX(1);}
 .card h3{font-size:1.18rem;margin-bottom:7px;}
 .card p{font-size:.85rem;color:var(--fg-muted);line-height:1.75;flex:1;}
 .card-foot{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);}
@@ -580,6 +624,8 @@ main{flex:1 0 auto;}
   width:100%;margin-top:16px;padding:14px;border-radius:var(--r-pill);
   background:var(--accent);color:var(--on-accent);font-weight:700;font-size:.82rem;
   letter-spacing:.06em;min-height:50px;transition:background .2s,color .2s;
+  /* a hairline lighter top edge, so the pill reads as raised on white */
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
 }
 .add:hover{background:var(--accent-deep);color:var(--fg);}
 .add.is-added{background:var(--success);color:#fff;}

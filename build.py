@@ -128,8 +128,14 @@ def header(active):
     </div>
 
     <a class="logo" href="/">
-      <img class="logo-img" src="/umarhayatchaskapoint-trimmed.png"
-           alt="Umar Hayat Chaska Point" width="426" height="278" fetchpriority="high">
+      <picture>
+        <source type="image/webp" srcset="/logo-120.webp 120w, /logo.webp 252w"
+                sizes="(max-width: 700px) 62px, 84px">
+        <img class="logo-img" src="/logo-min.png"
+             srcset="/logo-min.png 252w" sizes="84px"
+             alt="Umar Hayat Chaska Point" width="252" height="164"
+             decoding="async" fetchpriority="high">
+      </picture>
     </a>
 
     <div class="topbar-side topbar-side--r">
@@ -291,10 +297,18 @@ def footer():
   </div>
 </footer>'''
 
-SCRIPTS = '''<script src="/js/site-config.js"></script>
-<script src="/js/money.js"></script>
-<script src="/js/header.js"></script>
-<script src="/js/cart.js"></script>'''
+# defer keeps these off the critical path: they are four extra round trips
+# that a parser-blocking <script> would put in front of the first paint.
+# Classic deferred scripts still run in document order, so account.js has
+# defined window.ACCOUNT before header.js reads it at startup, and
+# site-config.js has defined window.SITE before cart.js reads it. All of
+# them have run before DOMContentLoaded, which is when the inline hours
+# script below and header.js's header measurement need them.
+SCRIPTS = '''<script src="/js/site-config.js" defer></script>
+<script src="/js/money.js" defer></script>
+<script src="/js/account.js" defer></script>
+<script src="/js/header.js" defer></script>
+<script src="/js/cart.js" defer></script>'''
 
 # 1200x630 is what every platform renders a share card at, so prefer a real
 # social image. Falling back to the logo is better than shipping a broken
@@ -525,8 +539,11 @@ CONTACT = f'''<section id="contact" class="sect" aria-labelledby="contact-h">
 
 HOURS_JS = '''
 <script>
-/* Renders opening hours from config and marks today. */
-(function () {
+/* Renders opening hours from config and marks today. Deferred, because
+   the script files below are deferred too, so window.SITE is not defined
+   yet while this runs during parsing. Deferred scripts have all executed
+   by the time DOMContentLoaded fires. */
+document.addEventListener('DOMContentLoaded', function () {
   var box = document.getElementById('hours');
   if (!box) return;
   var names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -540,7 +557,7 @@ HOURS_JS = '''
       '</span><span>' + when + '</span></div>');
   }
   box.innerHTML = rows.join('');
-})();
+});
 </script>
 '''
 
