@@ -447,31 +447,7 @@ ABOUT = f'''  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['user']} About Us</p>
       <h1>Our story</h1>
-      <p>A roadside nashta stall that grew into a proper barbecue kitchen.</p>
     </header>
-
-    <div class="detail" style="grid-template-columns:1fr 1fr">
-      <div>
-        <h2>What we cook</h2>
-        <p>Three things, done properly. Nashta in the morning, barbecue in the
-          evening, and fried items whenever the grill is between batches.</p>
-        <ul class="list">
-          <li>Halwa puri, choley bhature, samosa and sheermal to start the day</li>
-          <li>Malai boti, seekh kebab and tikka off the charcoal</li>
-          <li>Pakoras, wings, nuggets and fries battered and fried to order</li>
-        </ul>
-        <a class="btn btn-accent" href="/menu">See the menu</a>
-      </div>
-      <div>
-        <h2>How we cook</h2>
-        <ul class="list">
-          <li>Chicken and meat marinated overnight, never the same day</li>
-          <li>Live charcoal, skewers turned by hand</li>
-          <li>Batter mixed in small batches through the day</li>
-        </ul>
-        <a class="btn btn-ghost" href="/contact">Find us</a>
-      </div>
-    </div>
   </div>'''
 
 CONTACT = f'''  <div class="wrap">
@@ -545,7 +521,7 @@ PAGES = [
   ('menu.html',    'Menu — Umar Hayat Chaska Point',
    'Nashta, charcoal barbecue and fried items, cooked to order.', MENU, '/menu'),
   ('about.html',   'About Us — Umar Hayat Chaska Point',
-   'A roadside nashta stall that grew into a proper barbecue kitchen.', ABOUT, '/about'),
+   'Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal.', ABOUT, '/about'),
   ('contact.html', 'Locations &amp; Contact — Umar Hayat Chaska Point',
    'Find us in Sahiwal. Opening hours, address and WhatsApp ordering.',
    CONTACT, '/contact'),
