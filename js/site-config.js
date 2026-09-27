@@ -5,34 +5,49 @@
    rebrand the site.
 
    !! PLACEHOLDERS !!
-   The values marked TODO are invented so the layout has something real
-   to render. Replace them with the actual business details before this
-   goes live. See TODO COUNT at the bottom of this file.
+   Almost every value below marked TODO is invented, so the layout has
+   something real to render. Replace them with the actual business
+   details before this goes live. Run SITE.todos() in the browser console
+   to list what is still outstanding; it is generated from this file, so
+   it cannot drift out of step with it.
    ===================================================================== */
 
 window.SITE = {
-  /* --- identity --- */
-  name: 'Umar Hayat Chaska Point',        // kept as-is on request
-  /* What the kitchen actually serves. */
-  tagline: 'Nashta, Barbecue &amp; Fried Items',
+  /* --- identity ------------------------------------------------------- */
+  name: 'Umar Hayat Chaska Point',   // the real name, kept as given
+  /* What the room actually is. The old one described the categories. */
+  tagline: 'Charcoal Grill & Nashta House',
+  /* Shown under the hero wordmark and in the footer. TODO: real year. */
+  est: 'Est. 1974',
+  city: 'Sahiwal',
+  /* Above the hero headline. TODO: rewrite to whatever it really is. */
+  heroKicker: 'Charcoal, smoke and slow hours',
+  /* Under the hero headline, one sentence. TODO: rewrite. */
+  heroLede:
+    'A long table, a live coal fire and a kitchen that has been doing this ' +
+    'for three generations. Come hungry, stay late.',
 
-  /* --- contact --- */
-  /* TODO: replace with the real number, address and email. The tel:
-     link, the WhatsApp link and the footer all read from here. */
+  /* --- contact --------------------------------------------------------
+     TODO: replace with the real number, address and email. The tel:
+     link, the WhatsApp links, the reservation hand-off and the footer
+     all read from here, so this is the only place to edit them. */
   phone: '+92 300 0000000',
-  phoneHref: '+923000000000',              // TODO
-  whatsapp: '923000000000',                // TODO — country code + number, no +, no spaces
-  email: 'hello@example.com',              // TODO
+  phoneHref: '+923000000000',         // TODO — tel: target, no spaces
+  whatsapp: '923000000000',           // TODO — country code + number, no +, no spaces
+  email: 'hello@example.com',         // TODO
   address: {
-    line1: 'Shop 12, Mall Road',           // TODO
-    line2: 'Sahiwal, Punjab',              // TODO
-    city: 'Sahiwal',
+    line1: 'Shop 12, Mall Road',      // TODO
+    line2: 'Sahiwal, Punjab',         // TODO
+    city: 'Sahiwal',                  // TODO
     country: 'Pakistan',
-    postcode: '60050'                      // TODO
+    postcode: '60050'                 // TODO
   },
 
-  /* --- social --- */
-  /* TODO: fill in the real profiles, or delete the keys you don't use. */
+  /* --- social ---------------------------------------------------------
+     TODO: fill in the real profiles, or delete the keys you don't use.
+     build.py reads this block and bakes the links into the HTML, so the
+     icons still work with JavaScript disabled. Deleting a key removes
+     its icon. */
   social: {
     instagram: 'https://instagram.com/',   // TODO
     facebook:  'https://facebook.com/',    // TODO
@@ -41,7 +56,9 @@ window.SITE = {
 
   /* --- opening hours ---
      0 = Sunday … 6 = Saturday, matching Date.prototype.getDay().
-     null means closed. TODO: confirm real hours. */
+     Omit a day, or set both times to null, and it reads as closed.
+     TODO: confirm the real hours. The hero strip, the visit section and
+     the footer all render from this, so it only has to be right here. */
   hours: [
     { day: 0, open: '11:00', close: '23:00' },
     { day: 1, open: '11:00', close: '23:00' },
@@ -49,70 +66,203 @@ window.SITE = {
     { day: 3, open: '11:00', close: '23:00' },
     { day: 4, open: '11:00', close: '23:00' },
     { day: 5, open: '11:00', close: '23:00' },
-    { day: 6, open: '12:00', close: '00:00' }
+    { day: 6, open: '12:00', close: '00:30' }
   ],
 
-  /* --- categories ---
-     Drives the menu page filter buttons and the search index. The
-     category nav was removed from the header on request, so `path` is
-     only used for deep links like /menu#barbecue. */
+  /* --- menu categories ---
+     These ids are the data-cat on every dish in the ITEMS list in
+     build.py, so a dish whose category is not listed here is filtered
+     out of every view and can never be found. build.py checks this and
+     fails rather than publishing a dish nobody can reach.
+
+     `note` is the one line of copy under each category heading on the
+     menu. TODO: all three are placeholders. */
   categories: [
-    { id: 'nashta',   label: 'Nashta',   path: '/menu#nashta' },
-    { id: 'barbecue', label: 'Barbecue', path: '/menu#barbecue' },
-    { id: 'fried',    label: 'Fried Items', path: '/menu#fried' }
+    { id: 'nashta',   label: 'Nashta',   note: 'The morning counter. Slow-cooked, spiced the long way, served all day.' },
+    { id: 'barbecue', label: 'From the Coal', note: 'Marinated overnight, grilled over live charcoal, carried to the table hot.' },
+    { id: 'fried',    label: 'Fried',    note: 'Crushed by hand to order, never held, never reheated.' }
   ],
+
+  /* --- reservations ---
+     A reservation on this site is a REQUEST that opens WhatsApp with
+     the details filled in. Nothing is sent anywhere and nothing is
+     stored. The restaurant confirms by phone. That is deliberate: a
+     form that silently drops bookings is worse than a form that hands
+     the guest straight to WhatsApp, where a person actually sees it.
+
+     TODO: confirm the real service slots, the largest table and the
+     occasions worth offering. */
+  reservations: {
+    /* Bookings are for this month and the next. A restaurant taking
+       requests online is not taking bookings a year out. */
+    monthsAhead: 2,
+    /* Largest party the form will seat. TODO */
+    maxParty: 12,
+    /* Above this the hint tells the guest it has stopped being a table.
+       Below it, nothing: a party of four should not be warned about
+       anything. */
+    largeParty: 7,
+    /* Anything above maxParty is directed to WhatsApp instead, where
+       the restaurant can quote for a private room. */
+    slots: [
+      '12:00', '13:00', '14:00',
+      '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
+      '21:00', '21:30', '22:00', '22:30'
+    ],
+    occasions: [
+      'No occasion',
+      'Birthday',
+      'Anniversary',
+      'Business dinner',
+      'Family meal',
+      'Celebration'
+    ],
+    /* Under the submit button. This is the single most important line of
+       copy on the site, because it is the difference between a guest
+       believing they have a table and a guest believing they have a
+       request. Keep it. */
+    notice:
+      'This is a request, not a confirmed table. We confirm by phone, ' +
+      'usually within the hour between 12:00 and 23:00.'
+  },
+
+  /* --- private dining ---
+     TODO: confirm the real rooms, capacities and terms. `seats` and
+     `terms` are shown verbatim on the page, so make them the sentence
+     you would actually say to a guest on the phone. */
+  privateDining: [
+    {
+      id: 'private-room',
+      name: 'The Private Room',
+      seats: 'Seats 14',
+      terms: 'Set menu, three courses, agreed in advance. Minimum spend applies.',
+      body: 'A room of your own off the main hall, with its own charcoal ' +
+            'fire and a server who stays with the table all evening. The ' +
+            'most requested booking in the house, so it goes early.'
+    },
+    {
+      id: 'chefs-table',
+      name: "The Chef's Table",
+      seats: 'Seats 6',
+      terms: 'Six courses, served by the kitchen. Booked a week ahead.',
+      body: 'Six seats at the pass. Everything comes off the fire in front ' +
+            'of you, one course at a time, with whatever the coals decided ' +
+            'to be good that evening. It is not a performance and it is not ' +
+            'written down in advance.'
+    },
+    {
+      id: 'buyout',
+      name: 'A Whole Evening',
+      seats: 'Full house',
+      terms: 'From 40 guests. The kitchen closes to the public from 19:00.',
+      body: 'The whole room, the whole fire, and a menu written with you in ' +
+            'advance. Weddings, engagements, the annual dinner that nobody ' +
+            'wants to organise. Call, and we will send the floor plan.'
+    }
+  ],
+
+  /* --- the room, in four steps ---
+     Drives the numbered grid in the experience section. TODO: placeholder
+     copy, written to sound like a place rather than a process. */
+  experience: [
+    {
+      title: 'The fire',
+      body: 'Briquettes lit at eleven and buried under ash until the coals ' +
+            'settle. Nothing is grilled over gas on this site, ever.'
+    },
+    {
+      title: 'The night before',
+      body: 'Meat is marinated in the afternoon, not the morning, and never ' +
+            'in a rush. That is the whole difference between a skewer that ' +
+            'tastes of something and one that tastes of salt.'
+    },
+    {
+      title: 'The grill',
+      body: 'Cooked in small batches so every skewer gets the same heat, and ' +
+            'carried to the table the moment it leaves the grate.'
+    },
+    {
+      title: 'The last hour',
+      body: 'The kitchen stops at eleven. What is left is what was started ' +
+            'that evening, and the fire burns down slowly in an empty room.'
+    }
+  ],
+
+  /* --- the house, in four facts ---
+     The detail list beside the story. TODO: every value is invented. */
+  house: [
+    { label: 'The house',  value: 'Family run, three generations' },
+    { label: 'The grill',  value: 'Live charcoal, binchotan and hardwood' },
+    { label: 'The room',   value: 'Sixty covers, one long hall' },
+    { label: 'The service', value: 'Dinner from 18:00, last table 22:30' }
+  ],
+
+  /* --- the pull quote in the interlude band ---
+     TODO: replace with something the restaurant would actually stand
+     behind. A fabricated quote attributed to a real-sounding person is
+     the easiest thing on this site to get wrong, so leave the
+     attribution blank until there is a real person to attribute it to. */
+  quote: {
+    text: 'TODO — a sentence about the food or the room, in the owner\u2019s ' +
+          'own words. It is set large and attributed below, so it reads as ' +
+          'a quote from a person and had better be one.',
+    by: 'TODO — name and role, or leave blank to drop the attribution'
+  },
 
   /* --- currency ---
-     Prices are stored once, in PKR, as integers. Everything else is
-     derived, so there is only ever one number to edit per item. */
+     A restaurant menu quotes the currency of the room it is in. There is
+     no visitor-side conversion anywhere on this site, which is why this
+     is a symbol and a code rather than a table of exchange rates.
+     build.py reads it to format every price, so changing the symbol here
+     changes the whole menu. */
   currency: {
-    default: 'PKR',
-    /* TODO: this rate is a guess and will drift. It is display-only —
-       no payment is taken anywhere on this site, so it must never be
-       treated as a real conversion. Update it, or wire up a live feed. */
-    rate: { PKR: 1, USD: 0.0036 },
-    symbols: { PKR: 'Rs', USD: '$' },
-    /* How to round each currency, so USD never shows stray decimals. */
-    decimals: { PKR: 0, USD: 2 }
-  },
-
-  /* --- delivery --- */
-  /* TODO: confirm real fees and thresholds. */
-  delivery: {
-    fee: 150,            // PKR
-    freeOver: 3000,      // PKR
-    minOrder: 500        // PKR
-  },
-
-  /* --- commerce ---
-     This is a static site. There is no Shopify backend, no payment
-     processor and no server. The cart lives in the visitor's browser
-     and is lost if they clear site data. See README.md. */
-  commerce: {
-    live: false,
-    checkoutNote: 'Static demo — no checkout, no payment is taken.'
+    code: 'PKR',
+    /* The code rather than "Rs". On its own "Rs" is ambiguous outside
+       Pakistan, and a price a guest cannot identify is a price they will
+       ask about. Three characters wider, and worth it. */
+    symbol: 'PKR'
   }
 };
 
-/* Single place to count what still needs real data, so it can't be
-   quietly forgotten. Run: SITE.todos() */
+/* ---------------------------------------------------------------------
+   Single place to count what still needs real data, so it cannot be
+   quietly forgotten. Run: SITE.todos()
+   --------------------------------------------------------------------- */
 window.SITE.todos = function () {
   const t = [];
-  const flag = (label, value, isPlaceholder) => {
-    if (isPlaceholder(value)) t.push(label);
-  };
-  const ph = v => typeof v === 'string' && /example\.com|0000000|TODO/i.test(v);
+  const ph = v => typeof v === 'string' && /example\.com|0000000|\bTODO\b/i.test(v);
+  const flag = (label, value) => { if (ph(value)) t.push(label); };
 
-  flag('phone', SITE.phone, ph);
-  flag('whatsapp', SITE.whatsapp, ph);
-  flag('email', SITE.email, ph);
-  flag('address', SITE.address.line1, ph);
-  for (const k in SITE.social) flag('social.' + k, SITE.social[k], ph);
-  flag('currency.rate.USD (guess, drifts)', SITE.currency.rate.USD, () => true);
-  flag('opening hours (unconfirmed)', '', () => true);
-  flag('categories (unconfirmed)', '', () => true);
-  flag('delivery fees (unconfirmed)', '', () => true);
-  flag('menu items + prices (placeholder)', '', () => true);
-  flag('about copy (placeholder)', '', () => true);
+  flag('phone', SITE.phone);
+  flag('whatsapp', SITE.whatsapp);
+  flag('email', SITE.email);
+  flag('address', SITE.address.line1);
+  for (const k in SITE.social) flag('social.' + k, SITE.social[k]);
+  flag('establishing year', SITE.est);
+  flag('hero kicker', SITE.heroKicker);
+  flag('hero lede', SITE.heroLede);
+  SITE.categories.forEach(c => { if (ph(c.note)) t.push('menu category note: ' + c.label); });
+  SITE.house.forEach(h => { if (ph(h.value)) t.push('house detail: ' + h.label); });
+  SITE.experience.forEach(x => { if (ph(x.body)) t.push('experience step: ' + x.title); });
+  SITE.privateDining.forEach(p => {
+    if (ph(p.body)) t.push('private dining copy: ' + p.name);
+    if (ph(p.terms)) t.push('private dining terms: ' + p.name);
+  });
+  if (ph(SITE.reservations.notice)) t.push('reservation notice');
+  flag('interlude quote', SITE.quote.text);
+  flag('interlude attribution', SITE.quote.by);
+
+  /* Things with no value to match a regex against, so they are listed
+     here rather than flagged. */
+  t.push('opening hours (unconfirmed)');
+  t.push('menu prices (see the sentinel report from build.py)');
+  /* The menu is names and prices only, and so are the signature cards.
+     These descriptions and serving notes are written but not rendered
+     anywhere, and search matches on the dish name alone. They are listed
+     here because the real copy still has to be written and approved
+     before any of it is put back on the page. */
+  t.push('dish descriptions and serving notes (written, not displayed anywhere)');
+  t.push('story, signature and experience copy (placeholder)');
+  t.push('dish photography (none in the repo — see img/README.md)');
   return t;
 };
