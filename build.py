@@ -557,7 +557,7 @@ HOURS_JS = '''
 
 PAGES = [
   ('index.html',   'Umar Hayat Chaska Point — Nashta, Barbecue &amp; Fried',
-   'Nashta, charcoal barbecue and fried items, cooked to order. Order by phone or WhatsApp.', HOME, '/'),
+   'Nashta, charcoal barbecue and fried items, cooked to order in Sahiwal.', HOME, '/'),
   ('menu.html',    'Menu — Umar Hayat Chaska Point',
    'Nashta, charcoal barbecue and fried items, cooked to order.', MENU, '/menu'),
   ('about.html',   'About Us — Umar Hayat Chaska Point',
