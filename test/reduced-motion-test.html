@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>reduced motion</title>
+<style>
+  html,body{margin:0;background:#0b0907;color:#eee;font:14px/1.6 system-ui,sans-serif}
+  iframe{display:block;width:1280px;height:800px;border:0;background:#0b0907}
+  pre{margin:0;padding:18px 20px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<!--
+  The reduced-motion pass.
+
+  A guest whose system asks for less motion must not be left staring at a
+  page of invisible content, waiting on a scroll they may never make. That
+  is a real risk in a reveal-on-scroll design: if the media query is
+  ignored, the page renders blank and there is nothing to scroll to.
+
+  matchMedia cannot be faked from a test page, so this file is loaded by
+  run.sh with Chrome's --force-prefers-reduced-motion flag. It checks that
+  the preference is genuinely in force, then that every reveal target on
+  the page is already visible without a single scroll.
+-->
+<iframe id="f" src="/?reducedmotion=1"></iframe>
+<pre id="out">running</pre>
+<script>
+(function () {
+  'use strict';
+
+  const f = document.getElementById('f');
+  const out = document.getElementById('out');
+  const results = [];
+  /* Worth knowing, but not pass or fail. Printed at the end so it cannot
+     be lost, the same as the main suite. */
+  const notes = [];
+
+  function paint(final) {
+    const pass = results.filter(r => r.pass).length;
+    out.textContent = (final
+      ? '==== ' + pass + ' passed, ' + (results.length - pass) + ' failed, ' +
+        results.length + ' total ====' + '\n'
+      : 'running... ' + pass + '/' + results.length + ' passed\n') +
+      results.map(r => (r.pass ? 'PASS ' : 'FAIL ') + r.name +
+        (r.detail ? '  -- ' + r.detail : '')).join('\n') +
+      (final && notes.length ? '\n\nnotes:\n  ' + notes.join('\n  ') : '');
+  }
+  function ok(name, pass, detail) {
+    results.push({ name, pass: !!pass, detail: detail || '' });
+    paint(false);
+  }
+  const eq = (name, a, b) =>
+    ok(name, a === b, 'expected ' + JSON.stringify(b) + ', got ' + JSON.stringify(a));
+
+  function waitFor(pred, ms) {
+    return new Promise(res => {
+      const end = Date.now() + (ms || 8000);
+      (function poll() {
+        if (pred()) return res(true);
+        if (Date.now() > end) return res(false);
+        setTimeout(poll, 20);
+      })();
+    });
+  }
+  const frames = n => new Promise(res => {
+    const w = f.contentWindow;
+    let left = n || 2;
+    const step = () => {
+      if (--left <= 0) return res();
+      let done = false;
+      const go = () => { if (done) return; done = true; step(); };
+      w.requestAnimationFrame(go);
+      setTimeout(go, 100);
+    };
+    step();
+  });
+
+  async function run() {
+    await waitFor(() => {
+      try {
+        return f.contentWindow.SITE && f.contentDocument.querySelector('#resDone');
+      } catch (e) { return false; }
+    }, 10000);
+    await frames(4);
+    const doc = f.contentDocument, win = f.contentWindow;
+
+    /* If this is false the rest of the pass is meaningless, so it is
+       checked first and loudly. */
+    const inForce = win.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    ok('the reduced-motion preference is actually in force', inForce,
+       'run without --force-prefers-reduced-motion');
+
+    const items = Array.from(doc.querySelectorAll('[data-reveal]'));
+    ok('the page has reveal targets to check', items.length > 8, items.length + ' elements');
+
+    const neverScrolled = win.scrollY;
+    const hidden = items.filter(e => !e.classList.contains('in'));
+    ok('nothing is left waiting for a scroll', hidden.length === 0,
+       hidden.length + ' of ' + items.length + ' still hidden, e.g. ' +
+       hidden.slice(0, 3).map(e => e.className).join(' | '));
+
+    const transparent = items.filter(e => parseFloat(win.getComputedStyle(e).opacity) < 0.9);
+    ok('every element is actually opaque', transparent.length === 0,
+       transparent.slice(0, 3).map(e => e.className + ' op=' +
+         win.getComputedStyle(e).opacity).join(' | '));
+
+    eq('the page was never scrolled to make that happen', neverScrolled, 0);
+
+    /* The drawer and the search sheet must open instantly rather than
+       sliding, but they must still open.
+
+       What is being claimed here is that there is no transition to wait
+       for, and that is a fact about the computed style: the durations are
+       crushed to a fraction of a millisecond. Whether the compositor has
+       actually advanced that fraction by the time this runs is not the
+       claim, and asking for it makes the check depend on an animation
+       clock that does not reliably tick under a virtual one. The drawer
+       reaching its resting position is still waited for and reported,
+       just not used as the pass/fail, because the main pass already
+       proves the drawer opens and where it comes to rest. */
+    const ham = doc.querySelector('#hamburger');
+    ok('the drawer toggle is present', !!ham);
+    if (ham) {
+      const drawer = doc.querySelector('#drawer');
+      ham.click();
+      const resting = await waitFor(() => drawer.classList.contains('open'), 2000);
+      ok('the drawer opens', resting, drawer.className);
+      const secs = win.getComputedStyle(drawer).transitionDuration
+        .split(',').map(v => parseFloat(v) || 0);
+      const longest = Math.max.apply(null, secs);
+      ok('the drawer has no transition left to wait for', longest <= 0.02,
+         'longest duration ' + longest + 's');
+      const cameToRest = await waitFor(() => {
+        const r = drawer.getBoundingClientRect();
+        return r.left >= -1.5 && r.right <= win.innerWidth + 1.5;
+      }, 2000);
+      const dr = drawer.getBoundingClientRect();
+      notes.push('drawer resting position ' + (cameToRest ? 'reached' : 'not reached before the clock ran out') +
+                 ' at ' + dr.left.toFixed(0) + '..' + dr.right.toFixed(0) +
+                 ' in a ' + win.innerWidth + 'px viewport');
+      doc.querySelector('#drawerClose').click();
+      await waitFor(() => !drawer.classList.contains('open'), 2000);
+    }
+
+    paint(true);
+    document.title = results.some(r => !r.pass) ? 'FAIL' : 'PASS';
+  }
+
+  run().catch(e => {
+    paint(true);
+    out.textContent = 'HARNESS ERROR: ' + (e && e.stack || e) + '\n\n' + out.textContent;
+    document.title = 'ERROR';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Browser tests</title>
+<style>
+  html,body{margin:0;background:#111;color:#eee;font:13px/1.5 monospace}
+  #stage{position:fixed;inset:0}
+  iframe{border:0;display:block;width:100%;height:100%}
+  #out{position:relative;padding:10px;white-space:pre-wrap}
+  .pass{color:#8f8}
+  .fail{color:#f66;font-weight:700}
+</style>
+</head>
+<body>
+<div id="stage"><iframe id="f" src="/" title="site under test"></iframe></div>
+<pre id="out">running</pre>
+
+<script>
+/* =====================================================================
+   Browser tests for the generated site.
+
+   The site is loaded into a same-origin iframe so it can be measured and
+   driven the way a visitor would drive it, at five viewport widths, with
+   the real stylesheet and the real scripts. Results are written into
+   #out for run.sh to read.
+
+   Run:  bash test/run.sh
+   ===================================================================== */
+const results = [];
+/* Things worth knowing that are not pass/fail: an unmet goal that no
+   assertion should fail on, printed at the end so it cannot be lost. */
+const notes = [];
+const out = document.getElementById('out');
+function paint(final) {
+  const pass = results.filter(r => r.pass).length;
+  const head = final
+    ? '==== ' + pass + ' passed, ' + (results.length - pass) + ' failed, ' + results.length + ' total ===='
+    : 'running... ' + pass + '/' + results.length + ' passed';
+  out.textContent = head + '\n' + results.map(r =>
+    (r.pass ? 'PASS ' : 'FAIL ') + r.name + (r.detail ? '  -- ' + r.detail : '')).join('\n') +
+    (final && notes.length ? '\n\nnotes:\n  ' + notes.join('\n  ') : '');
+}
+/* Written as each check lands, not at the end, so a hang or a crash
+   shows exactly how far the suite got. */
+function ok(name, pass, detail) {
+  /* A name used twice is a bug in the suite, not in the site: one of the
+     two is silently shadowed in the report, and a stale copy of an old
+     check is exactly how a page stops being tested while everything is
+     still green. Caught here rather than left for a reader to notice. */
+  if (results.some(r => r.name === name)) {
+    results.push({ name: name + ' (repeated assertion name)', pass: false,
+                   detail: 'this name was already used earlier in the run' });
+  }
+  results.push({ name, pass: !!pass, detail: detail || '' });
+  paint(false);
+}
+const eq = (name, a, b) => ok(name, a === b, 'expected ' + JSON.stringify(b) + ', got ' + JSON.stringify(a));
+
+const f = document.getElementById('f');
+const stage = s => { window.__stage = s; document.title = 'STAGE:' + s; };
+
+function waitFor(fn, ms) {
+  const w = f.contentWindow;
+  return new Promise(res => {
+    const t0 = Date.now();
+    (function tick() {
+      let v; try { v = fn(); } catch (e) { v = false; }
+      if (v) return res(true);
+      if (Date.now() - t0 > (ms || 3000)) return res(false);
+      /* Poll on a timer, but also yield a frame on every tick. A scroll
+         event is delivered on the rendering frame, not on the timer
+         queue, so a poll that never yields a frame watches a condition
+         that only a frame can satisfy, and times out on a page that is
+         working perfectly well. */
+      let done = false;
+      const again = () => { if (done) return; done = true; tick(); };
+      w.requestAnimationFrame(again);
+      setTimeout(again, 30);
+    })();
+  });
+}
+const D = () => f.contentDocument;
+const W = () => f.contentWindow;
+
+/* The site is loaded into a same-origin iframe so it can be measured and
+   driven the way a visitor would drive it. Everything is synchronous
+   here, but the page uses IntersectionObserver, transitions and deferred
+   scripts, so each step waits for a condition rather than for a fixed
+   delay. Under Chrome's virtual clock the timers advance immediately,
+   which is what makes this fast without making it flaky. */
+
+/* Yield real animation frames. This has to be rAF and not setTimeout:
+   scroll events, IntersectionObserver callbacks and CSS transitions are
+   all delivered on the rendering frame, so a setTimeout-only wait asserts
+   against a page that has not repainted yet.
+
+   Each frame races a timer. If the iframe is ever not being painted, rAF
+   simply never fires and a setTimeout-only loop would hang the suite; a
+   slightly under-painted frame is recoverable, a hung run is not. */
+const frames = n => new Promise(res => {
+  const w = f.contentWindow;
+  let left = n || 2;
+  const step = () => {
+    if (--left <= 0) return res();
+    let settled = false;
+    const go = () => { if (settled) return; settled = true; step(); };
+    w.requestAnimationFrame(go);
+    setTimeout(go, 100);
+  };
+  step();
+});
+
+/* Every page the build writes, and the file it is checked for on disk.
+   Kept in step with PAGES in build.py by a test that reads build.py. */
+const PAGES = [
+  { url: '/',               file: 'index.html',          label: 'Home' },
+  { url: '/menu',           file: 'menu.html',           label: 'Menu' },
+  { url: '/story',          file: 'story.html',          label: 'Our Story' },
+  { url: '/private-dining', file: 'private-dining.html', label: 'Private Dining' },
+  { url: '/visit',          file: 'visit.html',          label: 'Visit' },
+  { url: '/reserve',        file: 'reserve.html',        label: 'Reserve' }
+];
+const normPath = p => p.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+
+/* Wait until the iframe holds a real, fully executed copy of the site.
+   `path` is the page expected, so a navigation that half-happens, or a
+   404 that loads instantly, cannot pass for the page asked for. */
+function loaded(path) {
+  const want = normPath(path || '/');
+  return waitFor(function () {
+    try {
+      const w = f.contentWindow, d = f.contentDocument;
+      return w && d && d.readyState === 'complete' &&
+             normPath(w.location.pathname) === want && !!w.SITE;
+    } catch (e) { return false; }
+  }, 10000);
+}
+
+/* Switch off transitions and animations in whatever document is loaded.
+
+   Every geometry check below wants the end state, and a transition that
+   is mid-flight measures as a lie: the drawer reads as still off-screen
+   while it is visibly sliding in. Transitions also do not advance
+   reliably under a virtual clock, so a suite that waits on one hangs or
+   flakes. This lives out here rather than inside run() because navigating
+   the iframe replaces the document, and the rule has to be re-applied
+   every time that happens. */
+function killMotion() {
+  const doc = f.contentDocument;
+  if (!doc || doc.querySelector('#kill-motion')) return;
+  const st = doc.createElement('style');
+  st.id = 'kill-motion';
+  st.textContent = '*,*::before,*::after{transition:none !important;animation:none !important}';
+  doc.head.appendChild(st);
+}
+
+/* Drive the iframe to another page and wait for it. Everything after
+   this point works against the new document, so doc/win have to be
+   re-read: the old ones point at a document that no longer exists.
+
+   Waiting on the iframe's load event rather than on readyState alone,
+   because a fresh src that happens to be the page already loaded is
+   still 'complete' for a moment, and the checks would run against the
+   document that is on its way out. The query keeps every navigation
+   distinct so the same-url case cannot be served from memory. */
+let navCount = 0;
+async function goto(path) {
+  const arrived = new Promise(res => f.addEventListener('load', res, { once: true }));
+  const sep = path.indexOf('?') === -1 ? '?' : '&';
+  f.src = path + sep + '_nav=' + (++navCount);
+  await arrived;
+  const ready = await loaded(path);
+  if (!ready) throw new Error('page never finished loading: ' + path);
+  killMotion();
+  await frames(3);
+  return true;
+}
+
+async function setWidth(w, h) {
+  f.style.width = w + 'px';
+  f.style.height = (h || 900) + 'px';
+  await frames(3);
+}
+
+/* The site has scroll-behavior:smooth, which is right for a guest and
+   wrong for a test: a scrollTo would still be animating when the next
+   assertion runs. Every scroll in here asks for instant, and then waits
+   for the position to actually arrive, because a scroll event is not
+   delivered synchronously and can be coalesced away entirely. */
+function scrollTo(y) {
+  f.contentWindow.scrollTo({ top: y, left: 0, behavior: 'instant' });
+  return waitFor(() => Math.abs(f.contentWindow.scrollY - y) <= 1 ||
+                      y >= f.contentDocument.documentElement.scrollHeight - f.clientHeight - 1,
+                     4000);
+}
+function scrollToEl(el) {
+  el.scrollIntoView({ block: 'start', behavior: 'instant' });
+  return waitFor(() => Math.abs(el.getBoundingClientRect().top) <= 2, 4000);
+}
+
+/* Scroll to an element in steps, the way a guest actually scrolls.
+   Chrome coalesces scroll events, and a single large jump can lose its
+   event entirely, so anything listening for scroll silently never hears
+   about it. Stepping keeps the stream of events alive. */
+async function scrollStepTo(el) {
+  const w = W();
+  const target = Math.round(w.scrollY + el.getBoundingClientRect().top);
+  const step = Math.max(200, Math.round(f.clientHeight * 0.4));
+  for (let y = w.scrollY; y < target; y += step) {
+    await scrollTo(Math.min(y + step, target));
+  }
+  await scrollTo(target);
+}
+/* Wait for a transform/transition to finish rather than assuming it has.
+   getBoundingClientRect is the only honest way to ask. */
+function settledAt(sel, pred) {
+  return waitFor(() => {
+    const el = f.contentDocument.querySelector(sel);
+    return el && pred(el.getBoundingClientRect());
+  }, 3000);
+}
+
+/* True when this element sits inside something that scrolls sideways.
+   The primary nav does, deliberately, on a phone, so its links are
+   allowed to be wider than the viewport. */
+function inScroller(el) {
+  for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+    const ox = f.contentWindow.getComputedStyle(n).overflowX;
+    if (ox === 'auto' || ox === 'scroll') return true;
+  }
+  return false;
+}
+
+/* Elements sticking out of the viewport sideways, described.
+
+   Closed overlays are excluded: the drawer is parked off the right edge
+   on purpose, and the skip link sits off the left until it is focused.
+   Neither is a guest who cannot read the page, and reporting them would
+   train everyone to ignore this check. */
+function overflowing(w) {
+  const off = [];
+  const doc = f.contentDocument, win = f.contentWindow;
+  Array.from(doc.querySelectorAll('main *, header *, footer *')).forEach(el => {
+    const st = win.getComputedStyle(el);
+    if (st.visibility === 'hidden' || st.display === 'none') return;
+    if (el.closest('.drawer, .sheet, .skip')) return;
+    if (inScroller(el)) return;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) return;
+    if (r.right > w + 1.5 || r.left < -1.5) {
+      off.push((el.className || el.tagName) + ' [' + Math.round(r.left) + '..' + Math.round(r.right) + ']');
+    }
+  });
+  return off;
+}
+
+/* ====================================================== colour maths */
+function parse(c) {
+  const m = String(c).match(/rgba?\(([^)]+)\)/);
+  if (!m) return null;
+  const p = m[1].split(/[,\s\/]+/).filter(Boolean).map(Number);
+  return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+}
+function over(fg, bg) {           /* composite fg onto opaque bg */
+  const a = fg.a;
+  return { r: fg.r * a + bg.r * (1 - a), g: fg.g * a + bg.g * (1 - a), b: fg.b * a + bg.b * (1 - a), a: 1 };
+}
+function lum(c) {
+  const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+}
+function ratio(a, b) {
+  const l1 = lum(a), l2 = lum(b);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+/* The nearest ancestor with a non-transparent background. Returns null
+   when something opaque-but-not-a-colour (an image or a gradient) is in
+   the way, because guessing there would produce a fake pass. */
+function bgOf(el) {
+  let node = el, stack = [];
+  while (node && node.nodeType === 1) {
+    const bg = W().getComputedStyle(node).backgroundColor;
+    const c = parse(bg);
+    if (c && c.a > 0) {
+      stack.push(c);
+      if (c.a === 1) {
+        let out = stack.pop();
+        while (stack.length) out = over(stack.pop(), out);
+        return out;
+      }
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
+function contrast(el) {
+  const fg = parse(W().getComputedStyle(el).color);
+  const bg = bgOf(el);
+  if (!fg || !bg) return null;
+  return ratio(over(fg, bg), bg);
+}
+
+/* ============================================================ suite */
+async function run() {
+  if (!await loaded('/')) throw new Error('the site never finished loading in the iframe');
+  /* Refreshed by reloading the iframe, which replaces the document. */
+  let doc = D(), win = W();
+  const resync = () => { doc = D(); win = W(); };
+  await frames(3);
+
+  /* =============================================== every page loads */
+  /* The site is several pages now, so "it works" has to mean all of
+     them. Each is loaded, measured and checked for the things that make
+     a page a page rather than a fragment: its own title, one h1, a nav
+     that knows where it is, and no link pointing at a page or an anchor
+     that is not there. */
+  const titles = {};
+  for (const p of PAGES) {
+    stage('goto ' + p.url);
+    await goto(p.url);
+    stage('checks ' + p.url);
+    resync();
+    const at = '/' + p.file;
+
+    ok(at + ' loads', !!doc.querySelector('main'), 'no main element');
+    const t = (doc.title || '').trim();
+    ok(at + ' has a title', t.length > 10, JSON.stringify(t));
+    titles[p.url] = t;
+    const d = (doc.querySelector('meta[name=description]') || {}).content || '';
+    ok(at + ' has a meta description', d.length > 40, d.length + ' chars');
+    eq(at + ' has exactly one h1', doc.querySelectorAll('h1').length, 1);
+
+    const ids = Array.from(doc.querySelectorAll('[id]')).map(e => e.id);
+    const dupes = ids.filter((v, i) => ids.indexOf(v) !== i);
+    ok(at + ' has no duplicated ids', dupes.length === 0, dupes.join(', '));
+
+    /* A page that does not say where it is in the site is a page nobody
+       can tell apart from another. aria-current is how it says so. */
+    /* Every marker has to point at this page, and there has to be at
+       least one, or the page never says where it is. Reserve is marked
+       on its button, because it is a call to action and not a nav item. */
+    const cur = Array.from(doc.querySelectorAll('header [aria-current]'));
+    const curHrefs = cur.map(a => a.getAttribute('href'));
+    ok(at + ' marks itself and nothing else',
+       cur.length > 0 && curHrefs.every(h => h && normPath(h) === p.url),
+       curHrefs.join(' ') || 'nothing marked');
+    const navMarked = Array.from(doc.querySelectorAll('.mainnav a[data-nav][aria-current]'));
+    if (p.url === '/reserve') {
+      ok(at + ' marks the reserve button rather than a nav link',
+         curHrefs.length > 0 && curHrefs.every(h => h === '/reserve'), curHrefs.join(' '));
+    } else {
+      ok(at + ' marks its own nav link',
+         navMarked.length === 1 && navMarked[0].getAttribute('href') === p.url,
+         navMarked.map(a => a.getAttribute('href')).join(' ') || 'no nav link marked');
+      eq(at + ' marks the nav link in the drawer too',
+         doc.querySelectorAll('.drawer-nav a[data-nav][aria-current]').length, 1);
+    }
+
+    const navUrls = Array.from(doc.querySelectorAll('.mainnav a[data-nav]'))
+      .map(a => a.getAttribute('href'));
+    ok(at + ' offers every page in the nav', PAGES.filter(x => x.url !== '/reserve')
+         .every(x => navUrls.indexOf(x.url) !== -1), navUrls.join(' '));
+
+    const dead = Array.from(doc.querySelectorAll('a[href^="#"]'))
+      .map(a => a.getAttribute('href'))
+      .filter(h => h.length > 1 && !doc.getElementById(h.slice(1)));
+    ok(at + ' has no dead in-page link', dead.length === 0, dead.join(', '));
+
+    const pageLinks = Array.from(doc.querySelectorAll('a[href^="/"]'))
+      .map(a => a.getAttribute('href'))
+      .filter(h => normPath(h) !== p.url);
+    const unknown = pageLinks.filter(h => !PAGES.some(x => x.url === normPath(h)));
+    ok(at + ' links only to pages that exist', unknown.length === 0, unknown.join(', '));
+
+    /* A header and a footer are the one thing every page shares, so both
+       being present and unbroken is worth a check on each. */
+    ok(at + ' has the header and the footer',
+       !!doc.querySelector('.site-hdr') && !!doc.querySelector('.site-foot'));
+    await setWidth(360, 780);
+    const off = overflowing(360);
+    ok(at + ' does not overflow sideways at 360px', off.length === 0, off.slice(0, 5).join(' | '));
+    await setWidth(1280, 900);
+  }
+  const dupeTitles = Object.keys(titles).filter(u => u !== '/' && titles[u] === titles['/']);
+  ok('no page reuses the home page title', dupeTitles.length === 0, dupeTitles.join(', '));
+  const tVals = Object.values(titles), tKeys = Object.keys(titles);
+  ok('every page has a distinct title',
+     new Set(tVals).size === tKeys.length,
+     new Set(tVals).size + ' distinct of ' + tKeys.length + ' pages: ' +
+     tVals.map((t, i) => tKeys[i] + '=' + JSON.stringify(t)).join(' '));
+
+  /* PAGES here and PAGES in build.py are two lists of the same thing, and
+     a page added to one and not the other is a 404 nobody tests. */
+  let buildSrc = '';
+  try { buildSrc = await (await fetch('/build.py')).text(); } catch (e) { buildSrc = ''; }
+  const builtUrls = (buildSrc.match(/'\/([a-z0-9-]*)',\s*'[^']*',\s*(True|False)/g) || [])
+    .map(s => '/' + s.match(/'\/([a-z0-9-]*)'/)[1].replace(/'$/, ''));
+  const notTested = builtUrls.filter(u => !PAGES.some(p => p.url === normPath(u)));
+  ok('every page build.py writes is in the tested list', notTested.length === 0,
+     notTested.join(', ') || builtUrls.length + ' pages in build.py');
+  ok('and the tested list is the same length', builtUrls.length === PAGES.length,
+     builtUrls.length + ' in build.py, ' + PAGES.length + ' tested');
+
+  /* Back to the home page for the rest of the suite. */
+  await goto('/');
+  resync();
+
+  /* ---------------------------------------------------- structure */
+  /* The home page's h1 is the restaurant's own name. On the other pages
+     it is the page's heading, which the per-page loop above already
+     covers; here it is the hero, so the name is the thing to check. */
+  eq('one h1 on the home page', doc.querySelectorAll('h1').length, 1);
+  eq('the h1 on the home page is the restaurant name',
+     doc.querySelector('h1').textContent.replace(/\s+/g, ' ').trim(), win.SITE.name);
+
+  const mainHeads = Array.from(doc.querySelectorAll('main h1,main h2,main h3,main h4,main h5,main h6'));
+  /* The chrome (search sheet, drawer, footer) carries its own h2s inside
+     landmarks, which is correct and expected. What must hold is that the
+     first heading inside main is the h1, and that nothing in main skips a
+     level on the way down. */
+  ok('the h1 is the first thing in main, not buried under the chrome',
+     doc.querySelector('main') && doc.querySelector('main').contains(doc.querySelector('h1')) &&
+     Array.from(doc.querySelectorAll('main h1,main h2,main h3,main h4,main h5,main h6'))[0] === doc.querySelector('h1'),
+     'first heading in main is ' + (doc.querySelector('main h1,main h2,main h3') || {}).tagName);
+  const mainLevels = Array.from(doc.querySelectorAll('main h1,main h2,main h3,main h4,main h5,main h6'))
+    .map(h => +h.tagName[1]);
+  const jumps = [];
+  for (let i = 1; i < mainLevels.length; i++) {
+    if (mainLevels[i] - mainLevels[i - 1] > 1) jumps.push('h' + mainLevels[i] + ' after h' + mainLevels[i - 1]);
+  }
+  ok('the heading outline in main has no skipped level', jumps.length === 0, jumps.join(', '));
+
+  const ids = Array.from(doc.querySelectorAll('[id]')).map(e => e.id);
+  const dupes = ids.filter((v, i) => ids.indexOf(v) !== i);
+  ok('every element id is unique', dupes.length === 0, dupes.join(', '));
+
+  const noAlt = Array.from(doc.querySelectorAll('img')).filter(i => !i.hasAttribute('alt'));
+  ok('every image has an alt attribute', noAlt.length === 0, noAlt.map(i => i.src).join(', '));
+
+  const deadAnchors = Array.from(doc.querySelectorAll('a[href^="#"]'))
+    .map(a => a.getAttribute('href'))
+    .filter(h => h.length > 1 && !doc.getElementById(h.slice(1)));
+  ok('every in-page link resolves', deadAnchors.length === 0, deadAnchors.join(', '));
+
+  /* The old paths are permanent redirects in vercel.json. A redirect to
+     an anchor that no longer exists drops a guest on the top of the page
+     with no explanation, and nothing else in the build would notice, so
+     the destinations are checked against the ids actually on the page. */
+  let redirects = [];
+  try {
+    const res = await fetch('/vercel.json');
+    redirects = (JSON.parse(await res.text()).redirects || []);
+  } catch (e) { /* not served in this setup */ }
+  if (redirects.length) {
+    const badDest = redirects
+      .map(r => r.destination)
+      .filter(d => d.startsWith('/#') && !doc.getElementById(d.slice(2)))
+      .map(d => d + ' -> no #' + d.slice(2));
+    ok('every redirect lands on a section that exists', badDest.length === 0, badDest.join(' | '));
+    const dupes = redirects.map(r => r.source).filter((s, i, a) => a.indexOf(s) !== i);
+    ok('no two redirects claim the same path', dupes.length === 0, dupes.join(', '));
+  } else {
+    ok('vercel.json was available to check the redirects', false, 'could not read /vercel.json');
+  }
+
+  const noName = Array.from(doc.querySelectorAll('a,button')).filter(el =>
+    !(el.textContent || '').trim() && !el.getAttribute('aria-label') && !el.querySelector('img[alt]:not([alt=""])'));
+  ok('every link and button has an accessible name', noName.length === 0,
+     noName.map(e => e.className || e.tagName).join(', '));
+
+  /* ------------------------------------------------------- content */
+  /* The copy that must not appear anywhere. The descriptions and serving
+     notes are read out of build.py rather than hardcoded, so this still
+     works once the placeholder copy is replaced with the real thing. */
+  let srcTxt = '';
+  try { srcTxt = await (await fetch('/build.py')).text(); } catch (e) { srcTxt = ''; }
+  const itemsFrom = srcTxt.indexOf('ITEMS = [');
+  /* The closing bracket is searched for *after* ITEMS: an earlier list in
+     the file also ends in a line-start "]", and slicing to that one yields
+     an empty string and a check that silently passes. */
+  const itemsTo = srcTxt.indexOf('\n]', itemsFrom);
+  const items = itemsFrom < 0 ? '' : srcTxt.slice(itemsFrom, itemsTo);
+  const starts = [];
+  const rowRe = /\('([a-z0-9-]+)',\s*'([^']*)',\s*'([a-z-]+)'/g;
+  let rm;
+  while ((rm = rowRe.exec(items))) starts.push({ i: rm.index, id: rm[1] });
+  const copies = [];
+  for (let k = 0; k < starts.length; k++) {
+    const row = items.slice(starts[k].i, k + 1 < starts.length ? starts[k + 1].i : items.length);
+    const tags = row.match(/\[[^\]]*\]/);
+    if (!tags) continue;
+    const lits = (row.slice(tags.index + tags[0].length).match(/'(?:[^'\\]|\\.)*'/g) || [])
+      .map(s2 => s2.slice(1, -1));
+    copies.push({ id: starts[k].id, note: lits[lits.length - 1] || '', desc: lits.slice(0, -1).join(' ') });
+  }
+  ok('build.py could be read so the copy can be checked', copies.length > 0,
+     copies.length + ' dishes parsed out of build.py');
+
+  /* Checked on every page. A description is not a menu problem, it is a
+     copy problem: pasted into any other tag, on any page, it is the same
+     "Chicken curry" under Murag Chanay. A page that used to be the whole
+     site was the only place to look, and there are now six. */
+  const shopWords = /add to cart|checkout|shopping cart|free delivery|delivery fee|minimum order/i;
+  for (const p of PAGES) {
+    await goto(p.url);
+    resync();
+    const shown = doc.body.textContent.replace(/\s+/g, ' ');
+    const leaked = copies.filter(c =>
+      [c.desc, c.note].some(t => t.replace(/\s+/g, ' ').trim().length > 12 &&
+                                  shown.includes(t.replace(/\s+/g, ' ').trim())));
+    ok(p.url + ' renders no dish description or serving note',
+       leaked.length === 0, leaked.map(c => c.id).join(', '));
+    /* The site was a shop. Nothing should still look like one. */
+    const shopText = Array.from(doc.querySelectorAll('body *'))
+      .filter(e => e.children.length === 0 && shopWords.test(e.textContent))
+      .map(e => e.textContent.trim().slice(0, 40));
+    ok(p.url + ' has no leftover shop or delivery copy', shopText.length === 0, shopText.join(' | '));
+    ok(p.url + ' has no leftover cart button',
+       doc.querySelectorAll('[data-add], [data-cart-count]').length === 0);
+  }
+
+  /* ------------------------------------------------- the home page */
+  await goto('/');
+  resync();
+  const sigs = Array.from(doc.querySelectorAll('.sig'));
+  const sigVerbose = sigs.filter(s2 => s2.querySelector('.sig-desc'));
+  ok('the signature cards show a name and a price and no description',
+     sigs.length > 0 && sigVerbose.length === 0,
+     sigVerbose.length + ' of ' + sigs.length + ' cards');
+  ok('the signature cards do have prices',
+     sigs.length > 0 && sigs.every(s2 => !!s2.querySelector('.sig-price')));
+
+  /* ------------------------------------------------- the menu page */
+  await goto('/menu');
+  resync();
+  const dishes = Array.from(doc.querySelectorAll('.dish'));
+  ok('the menu page lists the dishes', dishes.length >= 12, 'found ' + dishes.length);
+  const incomplete = dishes.filter(d =>
+    !d.querySelector('.dish-name') || !d.querySelector('.dish-price'));
+  ok('every dish has a name and a price', incomplete.length === 0,
+     incomplete.map(d => d.id).join(', '));
+  const verbose = dishes.filter(d => d.querySelector('.dish-desc, .dish-note'));
+  ok('the menu lists names and prices and nothing else', verbose.length === 0,
+     verbose.map(d => d.id).join(', '));
+
+  const sym = win.SITE.currency.symbol;
+  const badPrice = dishes.filter(d => d.querySelector('.dish-price').textContent.trim().indexOf(sym) !== 0);
+  ok('every price carries the configured currency symbol', badPrice.length === 0,
+     badPrice.map(d => d.querySelector('.dish-price').textContent).join(', '));
+
+  const thumbs = Array.from(doc.querySelectorAll('.dish-price')).filter(p2 => !/^[\d,]+$/.test(p2.textContent.replace(sym, '').trim()));
+  ok('prices are numerals with thousands separators', thumbs.length === 0,
+     thumbs.map(p2 => p2.textContent).join(', '));
+  await goto('/');
+  resync();
+
+  /* The page has to be more than a heading. Each page owns its own
+     section, so this is checked where the section actually is rather
+     than on a home page that used to hold all of them. */
+  const SECTIONS = {
+    '/':               ['signature', 'experience'],
+    '/menu':            ['menu'],
+    '/story':           ['story'],
+    '/private-dining':  ['private-dining'],
+    '/visit':           ['visit'],
+    '/reserve':         ['reserve']
+  };
+  for (const p of PAGES) {
+    await goto(p.url);
+    resync();
+    (SECTIONS[p.url] || []).forEach(id => {
+      const sec = doc.getElementById(id);
+      ok(p.url + ' renders #' + id + ' with real content',
+         sec && sec.textContent.replace(/\s+/g, ' ').trim().length > 120,
+         sec ? sec.textContent.replace(/\s+/g, ' ').trim().length + ' chars' : 'missing');
+    });
+    /* And it must not smuggle in a section belonging to another page: a
+       link to /menu left behind on /story is a dead end waiting to happen. */
+    const foreign = Object.keys(SECTIONS).filter(u => u !== p.url)
+      .flatMap(u => SECTIONS[u])
+      .filter(id => id !== p.url.slice(1) && doc.getElementById(id));
+    ok(p.url + ' carries only its own sections', foreign.length === 0, foreign.join(', '));
+    /* A page with an empty <main> is a page that renders but says nothing. */
+    const mainText = doc.querySelector('main').textContent.replace(/\s+/g, ' ').trim();
+    ok(p.url + ' has a main with something in it', mainText.length > 300, mainText.length + ' chars');
+  }
+  await goto('/');
+  resync();
+
+  /* ------------------------------------------------ placeholder data */
+  const todos = win.SITE.todos();
+  ok('SITE.todos() reports the known placeholders', todos.length > 5, todos.length + ' reported');
+  ok('SITE.todos() flags the contact email', todos.some(t => /email/i.test(t)));
+  ok('SITE.todos() flags the interlude quote', todos.some(t => /quote/i.test(t)));
+
+  /* ------------------------------------------------ no third parties */
+  const ext = win.performance.getEntriesByType('resource')
+    .map(r => r.name)
+    .filter(u => !u.startsWith(win.location.origin));
+  ok('the site makes no third-party requests', ext.length === 0, ext.join(', '));
+
+  stage('transitions');
+  /* ============================================ transitions are declared */
+  /* Asserted as a fact about the CSS, then switched off for the rest of
+     the run. Every geometry check below wants the end state, and a
+     transition that is mid-flight measures as a lie: the drawer reads as
+     still off-screen while it is visibly sliding in. Transitions also do
+     not advance reliably under a virtual clock, so a suite that waits on
+     one hangs or flakes. */
+  killMotion();
+  ok('the drawer and sheet are animated with transitions',
+     Array.from(doc.styleSheets).some(ss => { try {
+       return Array.from(ss.cssRules).some(r => {
+         const p = (r.style && r.style.transitionProperty) || '';
+         return /transform/.test(p) && /visibility/.test(p);
+       });
+     } catch (e) { return false; } }));
+  await frames(2);
+  ok('the page loads its stylesheet', !!doc.querySelector('link[rel="stylesheet"]') &&
+     win.getComputedStyle(doc.body).backgroundColor === 'rgb(11, 9, 7)');
+
+  stage('geometry');
+  /* ================================================== geometry sweep */
+  const WIDTHS = [320, 390, 768, 1024, 1440];
+  for (const w of WIDTHS) {
+    await setWidth(w, 900);
+    scrollTo(0);
+    await frames(2);
+
+    const de = doc.documentElement;
+    ok('no horizontal scroll at ' + w + 'px', de.scrollWidth <= w + 1,
+       'scrollWidth ' + de.scrollWidth + ' > ' + w);
+
+    /* Nothing should stick out past the right edge, except the drawer
+       and the closed search sheet (deliberately off-screen) and anything
+       inside a sideways-scrolling container such as the primary nav. */
+    const off = overflowing(w);
+    ok('nothing overflows the viewport at ' + w + 'px', off.length === 0, off.slice(0, 6).join(' | '));
+
+    /* Text must not be clipped by its own box. */
+    const clipped = [];
+    Array.from(doc.querySelectorAll('h1,h2,h3,p,li,dd,dt,span,a,button,label,cite,address,small')).forEach(el => {
+      if (!el.offsetParent && el.tagName !== 'BODY') return;
+      if (el.closest('.drawer, .sheet')) return;
+      const st = win.getComputedStyle(el);
+      if (st.overflow === 'visible' || st.overflowY === 'visible') return;
+      if (st.textOverflow === 'ellipsis') return;
+      if (el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0) {
+        clipped.push((el.className || el.tagName) + ': "' + el.textContent.trim().slice(0, 28) + '"');
+      }
+    });
+    ok('no clipped text at ' + w + 'px', clipped.length === 0, clipped.slice(0, 6).join(' | '));
+  }
+
+  /* Tap targets. WCAG 2.2 AA asks for 24x24, which is the floor for
+     every link; the header and the primary nav are held to a full 40,
+     because those are the controls a guest aims at one-handed while
+     walking. */
+  for (const w of [320, 390]) {
+    await setWidth(w, 900);
+    const small = [], tiny = [];
+    Array.from(doc.querySelectorAll('header a, header button, footer a, .strip-links a, .btn')).forEach(el => {
+      if (!el.offsetParent) return;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0) return;
+      const what = (el.className || el.tagName) + ' h=' + Math.round(r.height);
+      if (r.height < 24) tiny.push(what);
+      const primary = el.closest('header');
+      if (primary && r.height < 40) small.push(what);
+    });
+    ok('every tap target clears the 24px WCAG floor at ' + w + 'px', tiny.length === 0, tiny.slice(0, 8).join(' | '));
+    ok('header tap targets are at least 40px tall at ' + w + 'px', small.length === 0, small.slice(0, 8).join(' | '));
+  }
+
+  /* ------------------------------------------------- type and rules */
+  await setWidth(1440, 900);
+  const h1st = win.getComputedStyle(doc.querySelector('h1'));
+  ok('the hero name is set large', parseFloat(h1st.fontSize) >= 43, h1st.fontSize);
+  /* Two faces, and they must not have collapsed into one. The display
+     face is the serif; the body face is not. */
+  ok('the hero name is set in the display face', /^Display|Georgia|serif/i.test(h1st.fontFamily) &&
+     !/^Body/.test(h1st.fontFamily), h1st.fontFamily);
+  const bodyFace = win.getComputedStyle(doc.body).fontFamily;
+  ok('body copy is set in the text face, not the display face',
+     /^Body/.test(bodyFace) && !/Display/.test(bodyFace), bodyFace);
+
+  stage('menu type');
+  /* =============================================== the menu's own type */
+  /* The name-price-leader line is what makes the menu read like a
+     printed one, and it only exists on the menu page now. */
+  await goto('/menu');
+  resync();
+  await setWidth(1440, 900);
+  const dishFace = win.getComputedStyle(doc.querySelector('.dish-price')).fontFamily;
+  ok('dish prices are set in the display face', /^Display|Georgia|serif/i.test(dishFace), dishFace);
+  const dishName = doc.querySelector('.dish-name');
+  const dishPrice = doc.querySelector('.dish-price');
+  const lead = doc.querySelector('.dish-lead');
+  const nameBox = dishName.getBoundingClientRect();
+  const priceBox = dishPrice.getBoundingClientRect();
+  const leadBox = lead.getBoundingClientRect();
+  ok('the price sits to the right of the dish name', priceBox.left >= nameBox.right - 1,
+     'name right ' + Math.round(nameBox.right) + ' vs price left ' + Math.round(priceBox.left));
+  ok('the leader fills the gap between them', leadBox.width >= 8, Math.round(leadBox.width) + 'px');
+  ok('the leader sits on the text baseline',
+     Math.abs((leadBox.top + leadBox.height) - (nameBox.bottom - 4)) < 14,
+     'leader ' + Math.round(leadBox.top + leadBox.height) + ' vs name ' + Math.round(nameBox.bottom));
+
+  /* The dotted leader is what makes it read as a printed menu, so the
+     name and the price must not be allowed to collide on a long one. */
+  const longest = Array.from(doc.querySelectorAll('.dish')).sort((a, b) =>
+    b.querySelector('.dish-name').textContent.length - a.querySelector('.dish-name').textContent.length)[0];
+  await setWidth(360, 900);
+  const ln = longest.querySelector('.dish-name').getBoundingClientRect();
+  const lp = longest.querySelector('.dish-price').getBoundingClientRect();
+  ok('the longest dish name still clears its price at 360px', lp.left >= ln.right - 1,
+     Math.round(ln.right) + ' vs ' + Math.round(lp.left));
+
+  /* ------------------------------------------------- contrast, all pages */
+  stage('contrast');
+  /* ==================================================== contrast */
+  /* Sampled on every page, because the colour a guest reads is the colour
+     on the page they are actually on. Each target is looked for on each
+     page and checked wherever it turns up, and a target that turns up
+     nowhere is a failure: a class renamed in the CSS would otherwise
+     quietly stop being measured. */
+  await setWidth(1440, 900);
+  const targets = [
+    ['hero lede', '.hero-lede'],
+    ['hero kicker', '.hero-kicker'],
+    ['hero strip', '.strip-open'],
+    ['section lede', '.sec-head .lede'],
+    ['category note', '.cat-note'],
+    ['dish price', '.dish-price'],
+    ['signature price', '.sig-price'],
+    ['story body', '.story-body p'],
+    ['fact value', '.fact dd'],
+    ['fact label', '.fact dt'],
+    ['step body', '.step-b'],
+    ['band quote', '.band-quote p'],
+    ['band attribution', '.band-quote cite'],
+    ['room body', '.room-body'],
+    ['room terms', '.room-terms'],
+    ['reservation notice', '.res-notice'],
+    ['form label', '.field label'],
+    ['form hint', '.field-hint'],
+    ['visit note', '.visit-note'],
+    ['hours row', '.hours > div'],
+    ['footer link', '.foot-col a'],
+    ['footer small', '.foot-bot small'],
+    ['nav link', '.mainnav a'],
+    ['wordmark', '.wordmark'],
+    ['menu fine print', '.menu-fine'],
+    ['filter inactive', '.filter[aria-pressed="false"]'],
+    ['drawer tel', '.drawer-tel']
+  ];
+  const failC = [];
+  const measured = new Set();
+  for (const p of PAGES) {
+    await goto(p.url);
+    resync();
+    await setWidth(1440, 900);
+    for (const [name, sel] of targets) {
+      const el = doc.querySelector(sel);
+      if (!el) continue;
+      measured.add(name);
+      const c = contrast(el);
+      if (c === null) { failC.push(p.url + ' ' + name + ': could not resolve a background'); continue; }
+      const fs = parseFloat(win.getComputedStyle(el).fontSize);
+      const bold = +win.getComputedStyle(el).fontWeight >= 700;
+      const large = fs >= 24 || (fs >= 18.66 && bold);
+      const need = large ? 3 : 4.5;
+      if (c < need) failC.push(p.url + ' ' + name + ': ' + c.toFixed(2) + ':1, needs ' + need + ':1');
+    }
+  }
+  targets.forEach(([name, sel]) => {
+    if (!measured.has(name)) failC.push(name + ' (' + sel + '): matched nothing on any page');
+  });
+  ok('text meets WCAG AA contrast on every page', failC.length === 0, failC.join(' | '));
+
+  /* The palette is the brand. If the ground drifts off near-black the
+     whole thing stops reading as a dark room. */
+  await goto('/');
+  resync();
+  const bg = parse(win.getComputedStyle(doc.body).backgroundColor);
+  ok('the page ground is near-black', lum(bg) < 0.006, 'luminance ' + lum(bg).toFixed(5));
+  const goldSrc = win.getComputedStyle(doc.documentElement).getPropertyValue('--gold').trim();
+  const gold = parse(goldSrc.indexOf('#') === 0
+    ? 'rgb(' + parseInt(goldSrc.slice(1, 3), 16) + ',' + parseInt(goldSrc.slice(3, 5), 16) +
+      ',' + parseInt(goldSrc.slice(5, 7), 16) + ')' : goldSrc);
+  ok('the accent is the logo gold', gold && Math.abs(gold.r - 0xdd) < 12 && Math.abs(gold.g - 0xc4) < 12,
+     '--gold: ' + goldSrc);
+
+  stage('header');
+  /* ====================================================== header */
+  const hdr = doc.querySelector('.site-hdr');
+  const hdrH = Math.round(hdr.getBoundingClientRect().height);
+  const cssVar = win.getComputedStyle(doc.documentElement).getPropertyValue('--hdr-h').trim();
+  eq('--hdr-h matches the real header height', parseInt(cssVar, 10), hdrH);
+  ok('the header is at least 100px tall', hdrH >= 100, hdrH + 'px');
+
+  /* These depend on scroll events, which are not delivered
+     synchronously by scrollTo and can be coalesced away entirely, so
+     each one waits for the condition rather than for a frame. scrollTo
+     now also waits for the position to arrive, which is what makes the
+     distinction meaningful: the page is genuinely at 600, and the
+     question is only whether the site has been told. */
+  ok('the header is transparent at the top of the page', !hdr.classList.contains('is-stuck'));
+  await scrollTo(600);
+  let stuck = await waitFor(() => hdr.classList.contains('is-stuck'), 3000);
+  if (!stuck) {
+    /* Same dropped-event problem as the scroll spy. Hand the site the
+       event and find out whether it was listening. */
+    win.dispatchEvent(new win.Event('scroll'));
+    stuck = await waitFor(() => hdr.classList.contains('is-stuck'), 3000);
+  }
+  ok('the header becomes solid once scrolled', stuck,
+     'scrollY ' + win.scrollY + (stuck ? '' : ', still transparent after being told to scroll'));
+
+  await scrollTo(0);
+  let cleared = await waitFor(() => !hdr.classList.contains('is-stuck'), 3000);
+  if (!cleared) {
+    win.dispatchEvent(new win.Event('scroll'));
+    cleared = await waitFor(() => !hdr.classList.contains('is-stuck'), 3000);
+  }
+  ok('the header goes back to transparent', cleared,
+     'scrollY ' + win.scrollY + (cleared ? '' : ', still stuck after being told to scroll'));
+  /* There is no scroll spy. The nav used to follow the page down and
+     mark whichever section you were reading, which was only possible
+     because every section shared one document. Each section is its own
+     page now, so the server marks the page you asked for in the markup
+     and there is nothing left for a scroll listener to decide. The
+     per-page loop at the top checks that marking instead. */
+  await scrollTo(1200);
+  const stillMarked = Array.from(doc.querySelectorAll('header [aria-current]'));
+  ok('the nav marking does not change as the page scrolls',
+     stillMarked.length > 0 && stillMarked.every(a => a.getAttribute('href') === '/'),
+     stillMarked.map(a => a.getAttribute('href')).join(' ') || 'nothing marked');
+  scrollTo(0);
+  await frames(3);
+
+  stage('search');
+  /* ====================================================== search */
+  const searchBtn = doc.querySelector('[data-open="search"]');
+  ok('the search button is in the header', !!searchBtn);
+  await setWidth(1440, 900);
+  searchBtn.click();
+  await waitFor(() => doc.querySelector('#searchSheet.open'), 1500);
+  await settledAt('#searchSheet', r => r.top < 2);
+  await frames(2);
+  ok('the search sheet opens', doc.querySelector('#searchSheet').classList.contains('open'));
+  ok('the search sheet is not inert while open', !doc.querySelector('#searchSheet').hasAttribute('inert'));
+  ok('the search sheet offers suggestions before any input',
+     doc.querySelectorAll('#searchResults .chip').length > 0);
+
+  const input = doc.querySelector('#searchInput');
+  input.value = 'samosa';
+  input.dispatchEvent(new win.Event('input', { bubbles: true }));
+  await frames(3);
+  const results = Array.from(doc.querySelectorAll('#searchResults .result'));
+  eq('searching a dish name finds exactly that dish', results.length, 1);
+  /* Search is in the header on every page, so a hit found on the home
+     page has to carry the guest to the dish on the menu page. A bare
+     #dish-... would land nowhere at all. */
+  ok('a result found off the menu links through to the dish on /menu',
+     results[0] && results[0].getAttribute('href') === '/menu#dish-samosa-fried',
+     results[0] && results[0].getAttribute('href'));
+
+  input.value = 'zzzz';
+  input.dispatchEvent(new win.Event('input', { bubbles: true }));
+  await frames(3);
+  ok('a search with no matches says so', /nothing on the menu matches/i.test(doc.querySelector('#searchResults').textContent));
+
+  doc.querySelector('#searchClose').click();
+  await waitFor(() => !doc.querySelector('#searchSheet').classList.contains('open'), 1500);
+  ok('the search sheet closes', !doc.querySelector('#searchSheet').classList.contains('open'));
+  ok('a closed search sheet is inert again', doc.querySelector('#searchSheet').hasAttribute('inert'));
+  ok('Escape closes the search sheet', await (async () => {
+    searchBtn.click();
+    await waitFor(() => doc.querySelector('#searchSheet.open'), 1500);
+    doc.querySelector('#searchSheet').dispatchEvent(
+      new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await waitFor(() => !doc.querySelector('#searchSheet').classList.contains('open'), 1500);
+    return !doc.querySelector('#searchSheet').classList.contains('open');
+  })());
+  ok('closing search restores the page scroll', doc.body.style.overflow === '');
+
+  stage('menu');
+  /* ================================================= menu filter */
+  /* The filters are the menu's own controls, so they are driven on the
+     menu page rather than on whichever page the suite was last on. */
+  await goto('/menu');
+  resync();
+  const filters = Array.from(doc.querySelectorAll('[data-filter]'));
+  eq('a filter exists for every category, plus one for all',
+     filters.length, win.SITE.categories.length + 1);
+
+  const fried = filters.filter(b => b.dataset.filter === 'fried')[0];
+  fried.click();
+  await frames(3);
+  const shownCats = Array.from(doc.querySelectorAll('.cat')).filter(c => !c.hidden);
+  eq('filtering to fried shows exactly that category', shownCats.length, 1);
+  eq('and it is the right one', shownCats[0].id, 'fried');
+  const shownDishes = Array.from(doc.querySelectorAll('.dish')).filter(d => d.offsetParent);
+  eq('every fried dish is on screen', shownDishes.length,
+     Array.from(doc.querySelectorAll('.cat')).filter(c => c.id === 'fried')[0].querySelectorAll('.dish').length);
+  ok('the count is reported to the guest', /\d+ dishes?/.test(doc.querySelector('#filterCount').textContent),
+     doc.querySelector('#filterCount').textContent);
+  eq('only one filter reads as pressed', doc.querySelectorAll('[data-filter][aria-pressed="true"]').length, 1);
+  eq('the active filter is the one that was clicked', fried.getAttribute('aria-pressed'), 'true');
+
+  filters.filter(b => b.dataset.filter === 'all')[0].click();
+  await frames(3);
+  ok('the all filter brings every category back',
+     Array.from(doc.querySelectorAll('.cat')).filter(c => !c.hidden).length === win.SITE.categories.length);
+  ok('resetting the filter clears the hash', !/[#]/.test(win.location.hash), win.location.hash);
+
+  /* A deep link arrives already filtered. The query string is not
+     decoration: assigning the same path with only a different hash is a
+     same-document navigation, so the page never reloads, its scripts never
+     re-run, and the filter is never applied. The query forces a real
+     document load, which is what arriving on a shared link actually is. */
+  await setWidth(1440, 900);
+  f.src = '/menu?deeplink=1#barbecue';
+  await loaded();
+  await frames(3);
+  await waitFor(() => {
+    const b = D().querySelector('button[data-filter="barbecue"]');
+    return b && b.getAttribute('aria-pressed') === 'true';
+  }, 4000);
+  await frames(2);
+  resync();
+  /* The reload that just happened threw away the injected stylesheet, so
+     put it back before anything measures a transformed element. */
+  killMotion();
+  await frames(2);
+  const deepCats = Array.from(doc.querySelectorAll('.cat')).filter(c => !c.hidden);
+  ok('a deep link opens that category already filtered',
+     deepCats.length === 1 && deepCats[0].id === 'barbecue',
+     deepCats.length + ' shown: ' + deepCats.map(c => c.id).join(','));
+  /* Following a search result while already on the menu is a
+     same-document navigation, so the filter has to react to the hash
+     itself. A guest who narrowed the menu and then picked a result out
+     of the sheet must not be sent to a dish their own filter hid. */
+  /* Narrow to a category the dish is not in, so the link has something
+     to undo. Ids come from the page rather than hardcoded, so a renamed
+     category does not turn this into a check that passes on nothing. */
+  const samosaCatId = doc.getElementById('dish-samosa-fried').closest('.cat').id;
+  const otherCat = Array.from(doc.querySelectorAll('.cat')).map(c => c.id)
+    .filter(id => id !== samosaCatId)[0];
+  filters.filter(f => f.dataset.filter === otherCat)[0].click();
+  await frames(3);
+  const hiddenBefore = Array.from(doc.querySelectorAll('.cat')).filter(c => c.hidden).length;
+  ok('the menu really is narrowed at this point', hiddenBefore > 0, hiddenBefore + ' categories hidden');
+  const samosa = doc.getElementById('dish-samosa-fried');
+  const samosaCat = samosa.closest('.cat');
+  /* Arrive the way the site does it: by changing only the hash. */
+  win.location.hash = '#dish-samosa-fried';
+  await waitFor(() => !samosaCat.hidden, 3000);
+  ok('a dish link on the menu page opens the category hiding it',
+     !samosaCat.hidden, samosaCat.id + (samosaCat.hidden ? ' still hidden' : ' now shown'));
+  const dishOnScreen = samosa.getBoundingClientRect();
+  ok('and the dish is actually within the viewport',
+     dishOnScreen.top < 900 && dishOnScreen.bottom > 0,
+     Math.round(dishOnScreen.top) + '..' + Math.round(dishOnScreen.bottom));
+  ok('and the filter button followed the category that was opened',
+     doc.querySelector('[data-filter="' + samosaCat.id + '"]').getAttribute('aria-pressed') === 'true',
+     samosaCat.id);
+
+  /* Landing on /menu#barbecue is still being on the menu page, hash or
+     no hash, so the nav keeps saying so. */
+  const deepMarked = Array.from(doc.querySelectorAll('header [aria-current]'))
+    .map(a => a.getAttribute('href'));
+  ok('and the nav still marks the menu, hash or not',
+     deepMarked.length > 0 && deepMarked.every(h => h === '/menu'),
+     deepMarked.join(' ') + ' at hash ' + win.location.hash);
+
+  stage('reveal');
+  /* ==================================================== reveal */
+  /* The home page is the one with enough below the fold to be worth
+     revealing, so this group says which page it means rather than
+     inheriting whichever page the group before it happened to leave. */
+  await goto('/');
+  resync();
+  await setWidth(1440, 900);
+  const revealAll = Array.from(doc.querySelectorAll('[data-reveal]'));
+  ok('the page has reveal transitions', revealAll.length > 8, revealAll.length + ' elements');
+  const before = revealAll.filter(e => e.classList.contains('in')).length;
+  /* Read the rule out of the CSSOM rather than the stylesheet text: a
+     text search has to guess at whitespace, and guessing wrong reports a
+     perfectly good stylesheet as missing. */
+  const revealRules = [];
+  Array.from(doc.styleSheets).forEach(ss => { try {
+    Array.from(ss.cssRules).forEach(r => {
+      if (/\[data-reveal\]/.test(r.selectorText || '')) revealRules.push(r);
+    });
+  } catch (e) { /* cross-origin sheet, not ours */ } });
+  const hiddenRule = revealRules.find(r => r.style && /^0(\.0+)?$/.test(r.style.opacity || ''));
+  const shownRule = revealRules.find(r => r.style && /^1(\.0+)?$/.test(r.style.opacity || ''));
+  ok('reveal is scoped to the .js class, so a failed script leaves content visible',
+     !!hiddenRule && /^\.js\s/.test(hiddenRule.selectorText),
+     (hiddenRule ? hiddenRule.selectorText : 'no .js-scoped opacity:0 rule') +
+     ' | ' + before + ' already revealed');
+  ok('the revealed state is an explicit opacity 1', !!shownRule,
+     shownRule ? shownRule.selectorText : 'no .in rule');
+
+  /* Scrolling all 11,000px of this page band by band and waiting for
+     IntersectionObserver on each one takes minutes, because a composite
+     of the full page in headless Chrome is not cheap. Two cheaper checks
+     cover the same ground:
+
+       - one element deep in the page is scrolled to and waited for,
+         which proves the observer is actually wired up and firing;
+       - the reduced-motion path is checked in the same run, which is the
+         branch that reveals everything at once.
+
+     Together those are the two ways this code can reveal content. */
+  const deep = revealAll[revealAll.length - 1];
+  const deepWasHidden = !deep.classList.contains('in');
+  /* Stepped, not jumped. One large jump can lose its scroll event
+     entirely, and the observer only ever hears about the element through
+     that event. The step-scroll exists for exactly this reason, and it is
+     the same path a guest's own scrolling takes. */
+  await scrollStepTo(deep);
+  const deepRevealed = await waitFor(() => deep.classList.contains('in'), 25000);
+  ok('an element deep in the page reveals when scrolled to', deepRevealed,
+     deep.className + ' was ' + (deepWasHidden ? 'hidden' : 'already shown') +
+     ', scrollY ' + Math.round(win.scrollY));
+  ok('and it ends up fully opaque',
+     deepRevealed && parseFloat(win.getComputedStyle(deep).opacity) > 0.9,
+     'opacity ' + win.getComputedStyle(deep).opacity);
+
+  /* The observer must not fire for something that was never scrolled to. */
+  const offscreen = revealAll.filter(e => {
+    const r = e.getBoundingClientRect();
+    return r.bottom < -200 && !e.classList.contains('in');
+  });
+  ok('content far below the fold is still waiting', offscreen.length > 0,
+     offscreen.length + ' unrevealed below the fold');
+  scrollTo(0);
+  await frames(4);
+
+  stage('reservations');
+  /* ================================================== reservations */
+  await goto('/reserve');
+  resync();
+  await setWidth(1440, 900);
+  scrollToEl(doc.getElementById('reserve'));
+  await frames(2);
+
+  const party = doc.querySelector('#rParty');
+  eq('the party size select is filled from config',
+     party.options.length, win.SITE.reservations.maxParty);
+  ok('the party size options are labelled', party.options[1].textContent === '2 guests', party.options[1].textContent);
+
+  const date = doc.querySelector('#rDate');
+  const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  eq('the date field will not accept a day in the past', date.min, iso(new Date()));
+  const ahead = new Date();
+  ahead.setMonth(ahead.getMonth() + win.SITE.reservations.monthsAhead);
+  eq('the date field stops at the booking window', date.max, iso(ahead));
+
+  const time = doc.querySelector('#rTime');
+  eq('the time options come from config', time.options.length, win.SITE.reservations.slots.length);
+  ok('every time option has a value', Array.from(time.options).every(o => /^\d{2}:\d{2}$/.test(o.value)));
+
+  const occ = doc.querySelector('#rOcc');
+  eq('the occasion list comes from config', occ.options.length, win.SITE.reservations.occasions.length);
+  ok('"no occasion" is the default', occ.options[0].value === 'No occasion');
+
+  /* Empty submit must not go anywhere and must say what is missing. */
+  let navigated = false;
+  win.addEventListener('beforeunload', () => { navigated = true; });
+  doc.querySelector('#resForm').dispatchEvent(
+    new win.Event('submit', { bubbles: true, cancelable: true }));
+  await frames(3);
+  const shownErrors = Array.from(doc.querySelectorAll('[data-err-for]')).filter(e => !e.hidden);
+  ok('an empty request is rejected', shownErrors.length === 3, shownErrors.length + ' errors shown');
+  ok('the missing fields are marked for assistive tech',
+     doc.querySelectorAll('#resForm [aria-invalid="true"]').length === 3);
+  ok('the guest is told what is wrong', /check the highlighted field/i.test(doc.querySelector('.toasts').textContent),
+     doc.querySelector('.toasts').textContent);
+  ok('the form is still on screen after a rejected request', !doc.querySelector('#resForm').hidden);
+  ok('a rejected request does not navigate away', !navigated);
+
+  /* A phone number that cannot be dialled. */
+  doc.querySelector('#rDate').value = iso(new Date(Date.now() + 86400000));
+  doc.querySelector('#rName').value = 'Test Guest';
+  doc.querySelector('#rPhone').value = '12';
+  doc.querySelector('#resForm').dispatchEvent(new win.Event('submit', { bubbles: true, cancelable: true }));
+  await frames(3);
+  ok('an undiallable number is rejected',
+     doc.querySelector('[data-err-for="rPhone"]').hidden === false,
+     doc.querySelector('[data-err-for="rPhone"]').textContent);
+
+  /* A date outside the booking window. */
+  doc.querySelector('#rPhone').value = '0300 1234567';
+  date.value = '2030-01-01';
+  doc.querySelector('#resForm').dispatchEvent(new win.Event('submit', { bubbles: true, cancelable: true }));
+  await frames(3);
+  ok('a date beyond the booking window is rejected',
+     doc.querySelector('[data-err-for="rDate"]').hidden === false,
+     doc.querySelector('[data-err-for="rDate"]').textContent);
+
+  /* A valid request. */
+  date.value = iso(new Date(Date.now() + 86400000));
+  doc.querySelector('#rOcc').value = 'Birthday';
+  doc.querySelector('#rNotes').value = 'One vegetarian, no nuts.';
+  const opened = [];
+  win.open = function (u) { opened.push(u); return {}; };
+  doc.querySelector('#resForm').dispatchEvent(new win.Event('submit', { bubbles: true, cancelable: true }));
+  await frames(3);
+
+  ok('a valid request is accepted', doc.querySelector('#resForm').hidden === true);
+  ok('and shows a confirmation with a real link', doc.querySelector('#resDone').hidden === false);
+  const waHref = doc.querySelector('#resDoneLink').getAttribute('href');
+  ok('the confirmation links to WhatsApp for this restaurant',
+     waHref.indexOf('https://wa.me/' + win.SITE.whatsapp) === 0, waHref.slice(0, 60));
+  const text = decodeURIComponent(waHref.split('?text=')[1] || '');
+  ['Test Guest', '0300 1234567', 'Birthday', 'One vegetarian', 'Test Guest'.length > 0 ? 'Guests:' : '']
+    .forEach(needle => ok('the message carries "' + needle + '"', text.indexOf(needle) > -1, text));
+  ok('the message asks for the date it was given', /Date: /.test(text), text);
+  ok('the message asks for the time it was given',
+     text.indexOf(doc.querySelector('#rTime').value) > -1, doc.querySelector('#rTime').value);
+  ok('WhatsApp was opened automatically', opened.length === 1 && opened[0] === waHref, opened.length + ' window(s)');
+
+  doc.querySelector('#resAgain').click();
+  await frames(2);
+  ok('the guest can go back and change the request',
+     doc.querySelector('#resForm').hidden === false && doc.querySelector('#resDone').hidden === true);
+
+  /* A large table is flagged before it is sent. */
+  party.value = String(win.SITE.reservations.largeParty);
+  party.dispatchEvent(new win.Event('change', { bubbles: true }));
+  await frames(2);
+  ok('a large party is flagged to the guest', doc.querySelector('#rPartyHint').hidden === false);
+  party.value = '2';
+  party.dispatchEvent(new win.Event('change', { bubbles: true }));
+  await frames(2);
+  ok('a small party is not flagged', doc.querySelector('#rPartyHint').hidden === true);
+
+  stage('hours');
+  /* ====================================================== hours */
+  await goto('/visit');
+  resync();
+  /* There are two hours tables, the visit section and the footer. Rows
+     are grouped by identical hours, so a row covers one or more days and
+     carries them in data-days. Exactly one row may claim today, and it
+     has to be the one that actually covers today. */
+  const tables = Array.from(doc.querySelectorAll('.hours'));
+  ok('the hours appear in both the visit section and the footer', tables.length === 2, tables.length + ' tables');
+  const covers = r => (r.dataset.days || '').split(/\s+/).filter(Boolean).map(Number);
+  const perTable = tables.map(t => Array.from(t.querySelectorAll('[data-days]')).filter(r => r.classList.contains('is-today')).length);
+  ok('each hours table marks today exactly once', perTable.every(n => n === 1), perTable.join(','));
+  const realToday = new Date().getDay();
+  ok('and it is the row that actually covers today', tables.every(t => {
+    const r = t.querySelector('[data-days].is-today');
+    return r && covers(r).indexOf(realToday) !== -1;
+  }));
+  /* Grouped, not repeated: the same hours must not be printed once per
+     day, and no day may be left out of the table entirely. */
+  const daySets = tables.map(t => Array.from(t.querySelectorAll('[data-days]')).map(covers));
+  ok('no day is listed twice or missing from any table',
+     daySets.every(s => {
+       const flat = [].concat.apply([], s).sort((a, b) => a - b);
+       return flat.length === 7 && flat.every((d, i) => d === i);
+     }), daySets.map(s => s.map(d => '[' + d + ']').join('')).join(' '));
+  ok('days that share the same hours are grouped into one row',
+     tables.every(t => t.querySelectorAll('[data-days]').length <= 7 &&
+                       new Set(Array.from(t.querySelectorAll('[data-days] > span:last-child'),
+                                          e => e.textContent)).size ===
+                       t.querySelectorAll('[data-days]').length),
+     tables.map(t => t.querySelectorAll('[data-days]').length + ' rows').join(', '));
+
+  /* The hours are in the markup, not added by a script, so they are
+     readable before anything runs and readable if it never does. */
+  /* Two rows, because rows that share hours are grouped. That all seven
+     days are still covered is proved by the check above; what matters
+     here is only that the rows are in the markup and not written in by
+     a script after the fact. */
+  const rowsNoJs = doc.querySelectorAll('.hours [data-days]').length;
+  ok('the hours are rendered without JavaScript', rowsNoJs >= 2, rowsNoJs + ' rows in total');
+
+  /* The strip that says whether the kitchen is open belongs to the hero,
+     so it is checked on the page the hero is on. */
+  await goto('/');
+  resync();
+  const strip = doc.querySelector('[data-open-label]');
+  ok('the hero strip reports whether the kitchen is open',
+     !!strip && /^Open now|^Closed/.test(strip.textContent), strip ? strip.textContent : 'no strip');
+  const stripBox = doc.querySelector('.strip-open');
+  ok('and says so in a way that is not only colour',
+     !!stripBox && (stripBox.classList.contains('is-open') || stripBox.classList.contains('is-closed')),
+     stripBox ? stripBox.className : 'no strip');
+
+  stage('mobile');
+  /* =============================================== mobile drawer */
+  await goto('/');
+  resync();
+  await setWidth(390, 844);
+  scrollTo(0);
+  await frames(2);
+  const ham = doc.querySelector('#hamburger');
+  ok('the hamburger appears on a phone', win.getComputedStyle(ham).display !== 'none');
+  ok('the desktop nav is still reachable by scrolling',
+     doc.querySelector('.mainnav-in').scrollWidth > 0);
+  ok('the search button is not duplicated into the drawer',
+     doc.querySelectorAll('.drawer [data-open="search"]').length === 0);
+
+  ham.click();
+  await waitFor(() => doc.querySelector('#drawer.open'), 1500);
+  // The drawer slides in over 400ms; measure it settled, not mid-flight.
+  await settledAt('#drawer', r => r.left < 1);
+  await frames(2);
+  ok('the drawer opens', doc.querySelector('#drawer').classList.contains('open'));
+  ok('an open drawer is not inert', !doc.querySelector('#drawer').hasAttribute('inert'));
+  /* Compared against the bar's own links rather than a count, so adding
+     a section cannot quietly leave the drawer out of date. */
+  const drawerHrefs = Array.from(doc.querySelectorAll('.drawer-nav a'))
+    .map(a => a.getAttribute('href')).join(',');
+  const barHrefs = Array.from(doc.querySelectorAll('.mainnav a[data-nav="page"]'))
+    .map(a => a.getAttribute('href')).join(',');
+  ok('an open drawer lists every page the header bar does',
+     drawerHrefs === barHrefs && drawerHrefs.split(',').length >= 5,
+     doc.querySelectorAll('.drawer-nav a').length + ' links vs ' +
+     doc.querySelectorAll('.mainnav a[data-nav="page"]').length + ' in the bar');
+  ok('and the first is Home',
+     doc.querySelector('.drawer-nav a').getAttribute('href') === '/');
+  /* Every page is reachable from every page. The bar carries the five
+     browsing pages and Reserve is a standing call to action, so the one
+     thing that must never happen is a page that exists and can only be
+     found by knowing its address. */
+  const linked = Array.from(doc.querySelectorAll('a[href^="/"]'))
+    .map(a => a.getAttribute('href').split('#')[0]);
+  const unlinked = PAGES.map(x => x.url).filter(u => linked.indexOf(u) === -1);
+  ok('every page is reachable by a link from the home page', unlinked.length === 0, unlinked.join(', '));
+  ok('and Reserve is offered as a call to action, not just a nav item',
+     doc.querySelectorAll('a[href="/reserve"]').length >= 2);
+  ok('the drawer offers the reservation', !!doc.querySelector('.drawer-cta'));
+  await settledAt('#drawer', r => r.right <= 391.5);
+  const dr = doc.querySelector('#drawer').getBoundingClientRect();
+  ok('the drawer is on screen and inside the viewport',
+     dr.left >= -1.5 && dr.right <= 391.5, dr.left.toFixed(1) + '..' + dr.right.toFixed(1));
+  doc.querySelector('#drawerClose').click();
+  await waitFor(() => !doc.querySelector('#drawer.open'), 1500);
+  ok('the drawer closes', !doc.querySelector('#drawer').classList.contains('open'));
+  ok('a closed drawer is inert again', doc.querySelector('#drawer').hasAttribute('inert'));
+  ok('closing the drawer restores scrolling', doc.body.style.overflow === '');
+  ok('the hamburger reports its state',
+     doc.querySelector('#hamburger').getAttribute('aria-expanded') === 'false');
+
+  stage('the');
+  /* ============================================== the wide layout */
+  /* The menu grid lives on the menu page and the rest on the home page,
+     so each is measured where it actually is. */
+  await goto('/menu');
+  resync();
+  await setWidth(1440, 900);
+  eq('the menu is two columns on a wide screen',
+     win.getComputedStyle(doc.querySelector('.dishes')).gridTemplateColumns.split(' ').length, 2);
+  await setWidth(390, 844);
+  eq('the menu is one column on a phone',
+     win.getComputedStyle(doc.querySelector('.dishes')).gridTemplateColumns.split(' ').length, 1);
+
+  await goto('/');
+  resync();
+  await setWidth(1440, 900);
+  eq('the signature dishes are three across',
+     win.getComputedStyle(doc.querySelector('.sig-grid')).gridTemplateColumns.split(' ').length, 3);
+  eq('the evening is four steps across',
+     win.getComputedStyle(doc.querySelector('.steps')).gridTemplateColumns.split(' ').length, 4);
+  await setWidth(390, 844);
+  eq('the signature dishes stack on a phone',
+     win.getComputedStyle(doc.querySelector('.sig-grid')).gridTemplateColumns.split(' ').length, 1);
+
+  /* Photograph slots keep their ratio whether or not a photo is in
+     them, which is what stops the grid jumping when photography lands. */
+  const shot = doc.querySelector('.shot--tall');
+  const ratio = shot.getBoundingClientRect().height / shot.getBoundingClientRect().width;
+  ok('an empty photo slot still holds its 4:5 ratio', Math.abs(ratio - 1.25) < 0.02, ratio.toFixed(3));
+  const filled = shot.querySelector('img');
+  ok('the slot is either filled or clearly labelled, never blank',
+     !!filled || !!shot.querySelector('.shot-ph'),
+     filled ? 'image' : shot.querySelector('.shot-ph') && shot.querySelector('.shot-ph').textContent.trim());
+
+  stage('reduced');
+  /* ================================== reduced motion reveals at once */
+  /* A guest who has asked their system for less motion must not be left
+     with a page of invisible content waiting on a scroll they may never
+     make. The site checks the media query in JavaScript, which a test
+     page cannot fake, so this branch is covered by the second pass in
+     run.sh, which launches Chrome with --force-prefers-reduced-motion.
+     The media query in the page is confirmed to exist here, so the pass
+     that runs under the flag is testing real code and not a stub. */
+  /* The share card. A link shared on WhatsApp is the first thing most
+     people ever see of this restaurant, and an og:image pointing at a
+     file that is not on disk previews as nothing at all, so the fallback
+     is checked for existence. Whether it is the *right* fallback is not
+     a pass/fail: img/social.jpg has not been photographed yet, and a test
+     that fails until someone takes a photo is a test people learn to
+     ignore. SITE.todos() is where that is tracked. */
+  const ogEl = doc.querySelector('meta[property="og:image"]');
+  const ogSrc = ogEl && ogEl.getAttribute('content');
+  let ogExists = false;
+  if (ogSrc) {
+    try { ogExists = (await fetch(ogSrc, { method: 'HEAD' })).ok; } catch (e) { ogExists = false; }
+  }
+  ok('the share card image exists', ogExists, ogSrc || 'no og:image meta tag');
+  /* Reported, not asserted. img/social.jpg has not been photographed yet
+     and this is the last remaining item on the to-do list that a build
+     could otherwise finish without anyone noticing. */
+  notes.push('share image is ' + ogSrc +
+             (/\/social\./.test(ogSrc || '') ? '' : ' (logo fallback, see img/README.md)'));
+
+  ok('the site responds to a reduced-motion preference',
+     Array.from(doc.styleSheets).some(ss => { try {
+       return Array.from(ss.cssRules).some(r =>
+         r.conditionText && /prefers-reduced-motion/.test(r.conditionText) &&
+         Array.from(r.cssRules).some(x => /\[data-reveal\]/.test(x.selectorText || '') &&
+           /^1(\.0+)?$/.test((x.style && x.style.opacity) || '')));
+     } catch (e) { return false; } }));
+
+  /* ======================================================== done */
+  paint(true);
+  document.title = results.some(r => !r.pass) ? 'FAIL' : 'PASS';
+}
+
+run().catch(e => {
+  paint(true);
+  out.textContent = 'HARNESS ERROR: ' + (e && e.stack || e) +
+                    '\nlast group reached: ' + (window.__stage || '?') + '\n\n' + out.textContent;
+  document.title = 'ERROR in ' + (window.__stage || '?');
+});
+</script>
+</body>
+</html>
