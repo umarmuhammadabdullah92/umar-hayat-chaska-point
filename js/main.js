@@ -1,11 +1,13 @@
 'use strict';
 (function(){
-  var WA='923466816902';
-  window.UHCP={WA:WA};
+  /* Business details come from js/site-config.js — edit it there. */
+  var CFG=window.SITE||{};
+  var WA=(CFG.phone||'').replace(/\D/g,'');
+  window.App={WA:WA};
   var isPhone=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>0&&window.matchMedia('(pointer:coarse)').matches);
 
   /* ---- Theme (light / dark) ---- */
-  var THEME_KEY='uhcp-theme';
+  var THEME_KEY='site-theme';
   function applyTheme(t){
     document.documentElement.setAttribute('data-theme',t);
     var btn=document.getElementById('themeToggle');
@@ -41,17 +43,47 @@
   })();
 
   /* ---- Mobile nav ---- */
+  var hdr=document.getElementById('siteHdr');
   var ham=document.getElementById('hamBtn');
   var mob=document.getElementById('mobNav');
-  var drawer=document.getElementById('drawerOverlay');
-  function openMob(){mob.classList.add('open');drawer.classList.add('open');ham.classList.add('open');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
-  function closeMob(){mob.classList.remove('open');drawer.classList.remove('open');ham.classList.remove('open');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  /* the template uses the shared .hdr-scrim; #drawerOverlay is kept as a
+     fallback so older markup still works */
+  var mobScrim=document.getElementById('mobScrim')||document.getElementById('drawerOverlay');
+  function toggleClass(el,cls,on){if(el)el.classList.toggle(cls,on);}
+  function openMob(){
+    toggleClass(mob,'open',true);
+    toggleClass(mobScrim,'open',true);
+    toggleClass(ham,'open',true);
+    if(ham)ham.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+  }
+  function closeMob(){
+    toggleClass(mob,'open',false);
+    toggleClass(mobScrim,'open',false);
+    toggleClass(ham,'open',false);
+    if(ham)ham.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+  function mobIsOpen(){return !!(mob&&mob.classList.contains('open'));}
+  /* Anchor the drawer just below the sticky header so the hamburger stays
+     visible and clickable while the drawer is open. The header can be more
+     than one row tall, so measure it rather than assuming a fixed height. */
+  function syncDrawerTop(){
+    var h=hdr?Math.round(hdr.getBoundingClientRect().bottom):0;
+    document.documentElement.style.setProperty('--drawer-top',h+'px');
+  }
+  syncDrawerTop();
+  window.addEventListener('resize',syncDrawerTop);
+  window.addEventListener('orientationchange',syncDrawerTop);
   window.closeMobNav=closeMob;
-  if(ham)ham.addEventListener('click',function(){mob.classList.contains('open')?closeMob():openMob();});
-  if(drawer)drawer.addEventListener('click',closeMob);
+  window.openMobNav=openMob;
+  if(ham)ham.addEventListener('click',function(){mobIsOpen()?closeMob():openMob();});
+  if(mobScrim)mobScrim.addEventListener('click',closeMob);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&mobIsOpen())closeMob();
+  });
 
   /* ---- Header scroll / progress bar ---- */
-  var hdr=document.getElementById('siteHdr');
   var bar=document.getElementById('scrollProgress');
   var toTop=document.getElementById('toTop');
   function onScroll(){
@@ -106,21 +138,29 @@
   });
 
   /* ---- WhatsApp links ---- */
-  var defaultMsg=encodeURIComponent("Hi! I'd like to place an order at Umar Hayat Chaska Point \uD83C\uDF7D\uFE0F\n\nCan you tell me what is available today?");
-  var defaultHref='https://api.whatsapp.com/send?phone='+WA+'&text='+defaultMsg;
+  var orderPrompt=CFG.orderPrompt||("Hi! I'd like to place an order at "+(CFG.name||'your business')+".");
+  var defaultHref=WA?'https://api.whatsapp.com/send?phone='+WA+'&text='+encodeURIComponent(orderPrompt):'';
   var heroWa=document.getElementById('heroWaBtn');
-  if(heroWa)heroWa.href=defaultHref;
+  if(heroWa&&defaultHref)heroWa.href=defaultHref;
   var waFloat=document.getElementById('waFloat');
-  if(waFloat)waFloat.href=defaultHref;
+  if(waFloat&&defaultHref)waFloat.href=defaultHref;
+  /* hide order affordances until a number is configured */
+  if(!WA||CFG.whatsappOrdering===false){
+    document.querySelectorAll('[data-order-cta],#heroWaBtn,#waFloat').forEach(function(el){
+      el.hidden=true;el.setAttribute('aria-hidden','true');
+    });
+  }
 
   /* warm WhatsApp links */
-  document.querySelectorAll('a[href*="api.whatsapp.com"],a[href*="wa.me"]').forEach(function(a){
-    a.addEventListener('pointerenter',function(){
-      if(a.dataset.warmed)return;
-      a.dataset.warmed='1';
-      try{fetch('https://api.whatsapp.com/send?phone='+WA,{mode:'no-cors',priority:'low'});}catch(e){}
-    },{passive:true});
-  });
+  if(WA){
+    document.querySelectorAll('a[href*="api.whatsapp.com"],a[href*="wa.me"]').forEach(function(a){
+      a.addEventListener('pointerenter',function(){
+        if(a.dataset.warmed)return;
+        a.dataset.warmed='1';
+        try{fetch('https://api.whatsapp.com/send?phone='+WA,{mode:'no-cors',priority:'low'});}catch(e){}
+      },{passive:true});
+    });
+  }
 
   /* mobile WhatsApp deep-link */
   document.addEventListener('click',function(e){
@@ -138,11 +178,9 @@
     setTimeout(function(){if(!document.hidden&&Date.now()-left<2500)location.href=a.href;},900);
   },true);
 
-  /* ---- Home page: highlight today in hours box ---- */
-  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var today=days[new Date().getDay()];
-  document.querySelectorAll('.hours-row').forEach(function(r){
-    if(r.dataset.day===today)r.classList.add('today');
+  /* ---- Footer year ---- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-year]'),function(el){
+    el.textContent=String(new Date().getFullYear());
   });
 
 })();

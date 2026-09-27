@@ -3,7 +3,7 @@
 # Run: ./auto-deploy.sh
 cd "$(dirname "$0")"
 
-echo "Auto-deploy running for Umar Hayat Chaska Point..."
+echo "Auto-deploy running..."
 echo "Watching for changes... (Ctrl+C to stop)"
 
 while true; do
