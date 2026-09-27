@@ -385,6 +385,25 @@ ITEMS = [
   'Fried bread.'),
 ]
 
+def dish_fig(sid, name):
+    """Photo slot for one dish.
+
+    The frame is a fixed 4:3 whatever happens, so dropping a photo in later
+    cannot reflow the grid or move the Add to cart button. Naming the file
+    after the dish id in ITEMS is all that is needed: img/<id>.jpg and the
+    .png/.webp/.avif/.jpeg variants are all picked up on the next build.
+    """
+    src = find_image(sid)
+    if src:
+        return ('        <figure class="fig fig--filled">'
+                '<img src="/img/%s" alt="%s" loading="lazy" decoding="async"'
+                ' width="800" height="600"></figure>' % (src, name))
+    # No photo yet. The dish name stands in, so an unfinished card still
+    # looks deliberate rather than broken.
+    return ('        <figure class="fig fig--empty">'
+            '<span class="fig-ph">%s</span></figure>' % name)
+
+
 def item_card(i):
     sid, name, cat, price, sizes, desc = i
     size_html = ''
@@ -396,15 +415,18 @@ def item_card(i):
                                % (first if k == 0 else '', 'true' if k == 0 else 'false', s)
                                for k, s in enumerate(sizes))
                      + '</div>')
-    return f'''      <article class="card" id="{sid}" data-item="{name}" data-price="{price}" data-cat="{cat}">
-        <h3>{name}</h3>
-        <p>{desc}</p>
-        {size_html}
-        <div class="card-foot">
-          <span class="price" data-price-of>{price}</span>
-          <span class="price-note">incl. tax</span>
+    return f'''      <article class="card card--photo" id="{sid}" data-item="{name}" data-price="{price}" data-cat="{cat}">
+{dish_fig(sid, name)}
+        <div class="card-body">
+          <h3>{name}</h3>
+          <p>{desc}</p>
+          {size_html}
+          <div class="card-foot">
+            <span class="price" data-price-of>{price}</span>
+            <span class="price-note">incl. tax</span>
+          </div>
+          <button class="add" type="button" data-add>Add to cart</button>
         </div>
-        <button class="add" type="button" data-add>Add to cart</button>
       </article>'''
 
 MENU_CARDS = '\n'.join(item_card(i) for i in ITEMS)

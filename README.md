@@ -35,11 +35,15 @@ platform) — the theme there is Liquid and shares no structure with this.
 
 ### Images
 
-The site has no images in its pages. The only image the build looks for is
-`img/social.jpg`, which becomes the `og:image` used for link previews on
-WhatsApp, Facebook and X. Drop a 1200x630 file there and run
-`python3 build.py`. Until then the logo is used, which renders poorly in a
-share preview. See `img/README.md`.
+Every dish has a photo slot above its name, price and Add to cart button.
+The frame is a fixed 4:3 whether or not a photo is in it, so the grid
+cannot reflow when the photos land. Drop a file named after the dish id
+into `img/` — `img/samosa-fried.jpg` fills the Samosa slot — and run
+`python3 build.py`. No markup to edit. See `img/README.md`.
+
+`img/social.jpg` is separate: it becomes the `og:image` used for link
+previews on WhatsApp, Facebook and X. Drop a 1200x630 file there too.
+Until then the logo is used, which renders poorly in a share preview.
 
 ## Theming
 
@@ -184,11 +188,11 @@ replaced by a drawer below 860px.
 
 ## Testing
 
-`/tmp/opencode/header-test.js` runs 257 checks in headless Chrome:
+`/tmp/opencode/header-test.js` runs 320 checks in headless Chrome:
 geometry and accessibility at five widths, cart arithmetic, currency
 switching and persistence, search, the mobile drawer, category filters,
 deep links, WCAG contrast in both themes, the anchor navigation and scroll
-spy, the heading outline, and a check that the site makes no third-party
+spy, the heading outline, the photo slots, and a check that the site makes no third-party
 requests.
 
 It also asserts the three deleted page files are still gone and that no
