@@ -4,33 +4,33 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/menu",
-      "destination": "/#menu",
-      "permanent": true
-    },
-    {
       "source": "/about",
-      "destination": "/#about",
-      "permanent": true
-    },
-    {
-      "source": "/contact",
-      "destination": "/#contact",
-      "permanent": true
-    },
-    {
-      "source": "/menu.html",
-      "destination": "/#menu",
+      "destination": "/story",
       "permanent": true
     },
     {
       "source": "/about.html",
-      "destination": "/#about",
+      "destination": "/story",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/visit",
       "permanent": true
     },
     {
       "source": "/contact.html",
-      "destination": "/#contact",
+      "destination": "/visit",
+      "permanent": true
+    },
+    {
+      "source": "/dining",
+      "destination": "/private-dining",
+      "permanent": true
+    },
+    {
+      "source": "/reservation",
+      "destination": "/reserve",
       "permanent": true
     }
   ],
