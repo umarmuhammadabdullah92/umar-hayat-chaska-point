@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Umar Hayat Chaska Point — Chashai &amp; Chaat</title>
-<meta name="description" content="Slow-cooked chasha and chaat. Order by phone or WhatsApp.">
+<title>About Us — Umar Hayat Chaska Point</title>
+<meta name="description" content="A family kitchen that grew into a neighbourhood chasha house.">
 <meta name="theme-color" content="#0E0B08">
-<meta property="og:title" content="Umar Hayat Chaska Point — Chashai &amp; Chaat">
-<meta property="og:description" content="Slow-cooked chasha and chaat. Order by phone or WhatsApp.">
+<meta property="og:title" content="About Us — Umar Hayat Chaska Point">
+<meta property="og:description" content="A family kitchen that grew into a neighbourhood chasha house.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/umarhayatchaskapoint-trimmed.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -65,9 +65,9 @@
 
   <nav class="catnav" aria-label="Categories">
     <div class="catnav-in">
-      <a href="/" data-nav="page" aria-current="page">Home</a>
+      <a href="/" data-nav="page">Home</a>
       <a href="/menu" data-nav="page">Menu</a>
-      <a href="/about" data-nav="page">About Us</a>
+      <a href="/about" data-nav="page" aria-current="page">About Us</a>
       <a href="/contact" data-nav="page">Contact</a>
       <a href="/menu#chasha" data-nav="cat" data-cat="chasha">Chasha</a>
       <a href="/menu#chaat" data-nav="cat" data-cat="chaat">Chaat</a>
@@ -136,9 +136,9 @@
     <div class="seg" id="drawerSeg" role="radiogroup" aria-label="Currency"></div>
   </div>
   <nav class="drawer-nav" aria-label="Mobile">
-      <a href="/" data-nav="page" aria-current="page">Home</a>
+      <a href="/" data-nav="page">Home</a>
       <a href="/menu" data-nav="page">Menu</a>
-      <a href="/about" data-nav="page">About Us</a>
+      <a href="/about" data-nav="page" aria-current="page">About Us</a>
       <a href="/contact" data-nav="page">Contact</a>
   </nav>
   <div class="drawer-foot">
@@ -187,28 +187,46 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg> <span>View cart</span> <b data-cart-count hidden>0</b>
 </button>
 <main id="main">
-  <section class="wrap" style="text-align:center">
-    <p class="eyebrow" style="color:var(--accent);font-size:.68rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;margin-bottom:18px">Chashai &amp; Chaat</p>
-    <h1 style="font-size:clamp(2.2rem,6vw,4rem);max-width:16ch;margin:0 auto 20px">Slow-cooked chasha, made the long way</h1>
-    <p style="color:var(--fg-muted);max-width:52ch;margin:0 auto 32px;line-height:1.85">
-      Mutton simmered overnight until it falls apart, poured over rice you
-      want to eat straight from the bowl.</p>
-    <div class="band-cta">
-      <a class="btn btn-accent" href="/menu">See the menu</a>
-      <a class="btn btn-ghost" href="/contact">Find us</a>
-    </div>
-  </section>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg> About Us</p>
+      <h1>Our story</h1>
+      <p>A family kitchen that grew into a neighbourhood chasha house.</p>
+    </header>
 
-  <section class="band">
-    <h2>This is a static demo</h2>
-    <p>The header, navigation, search, currency selector and cart all work,
-      but there is no server behind them. Menu items and prices are
-      placeholders.</p>
-    <div class="band-cta">
-      <a class="btn btn-ghost" href="/about">About Us</a>
-      <a class="btn btn-ghost" href="/menu">Menu</a>
+    <div class="todo" style="margin-bottom:40px">
+      <h2>Placeholder copy</h2>
+      <p>This page is an empty frame. The real story, the founder&rsquo;s name,
+        the years in business and the kitchen photographs all still need to be
+        written. See <code>README.md</code>.</p>
     </div>
-  </section>
+
+    <div class="detail" style="grid-template-columns:1fr 1fr">
+      <div>
+        <h2>What we cook</h2>
+        <p>Chasha is the centre of the menu &mdash; a whole pot of meat and
+          rice, finished with fried onion and ginger. It is not assembled to
+          order; it is one pot, and it is why we run out.</p>
+        <ul class="list">
+          <li>Mutton and chicken chasha, plus beef and vegetarian</li>
+          <li>Chaat built on the same dough, fried to order</li>
+          <li>Rolls, burgers and loaded fries for the younger crowd</li>
+        </ul>
+        <a class="btn btn-accent" href="/menu">See the menu</a>
+      </div>
+      <div>
+        <h2>How we cook</h2>
+        <p>Placeholder. The method, the sourcing and the equipment notes are
+          all still to be written.</p>
+        <ul class="list">
+          <li>Meat from a named local supplier</li>
+          <li>Rice washed and soaked the same morning</li>
+          <li>No shortcuts in the biryani masala</li>
+        </ul>
+        <a class="btn btn-ghost" href="/contact">Find us</a>
+      </div>
+    </div>
+  </div>
 </main>
 <footer class="site-foot">
   <div class="foot-in">

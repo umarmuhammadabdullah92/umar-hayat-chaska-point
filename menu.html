@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu — Umar Hayat Chaska Point</title>
+<meta name="description" content="Chasha, chaat, fast food and drinks, cooked to order.">
+<meta name="theme-color" content="#0E0B08">
+<meta property="og:title" content="Menu — Umar Hayat Chaska Point">
+<meta property="og:description" content="Chasha, chaat, fast food and drinks, cooked to order.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/umarhayatchaskapoint-trimmed.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-hdr">
+  <div class="topbar">
+    <div class="topbar-side topbar-side--l">
+      <button class="ham" type="button" id="hamburger"
+              aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="hdr-contact" href="tel:+923000000000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 6.2 2 2 0 0 1 6 3Z"/></svg><span>Order by phone</span></a>
+      <span class="hdr-tagline">Chashai &amp; Chaat</span>
+    </div>
+
+    <a class="logo" href="/">
+      <img class="logo-img" src="/umarhayatchaskapoint-trimmed.png"
+           alt="Umar Hayat Chaska Point" width="426" height="278" fetchpriority="high">
+    </a>
+
+    <div class="topbar-side topbar-side--r">
+      <div class="utilities">
+        <button class="uicon uico-hide" type="button" data-open="search"
+                aria-label="Search the menu" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+
+        <div class="uwrap">
+          <button class="uicon uico-hide" type="button" id="curBtn" data-open="currency"
+                  aria-label="Change currency" aria-haspopup="true" aria-expanded="false">
+            <span class="uicon-lbl" id="curLabel">PKR</span>
+          </button>
+          <div class="pop" id="curPop" role="menu" aria-labelledby="curBtn">
+            <p class="pop-hd">Currency</p>
+            <div id="curList"></div>
+            <p class="pop-note">Display only. Prices convert from PKR at a fixed
+              rate stored in <code>js/site-config.js</code> &mdash; no payment is taken.</p>
+          </div>
+        </div>
+
+        <button class="uicon uico-hide" type="button" data-open="account"
+                aria-label="Your account" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg></button>
+
+        <button class="uicon" type="button" data-open="cart"
+                aria-label="Open cart" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="uicon-badge" data-cart-count hidden>0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="catnav" aria-label="Categories">
+    <div class="catnav-in">
+      <a href="/" data-nav="page">Home</a>
+      <a href="/menu" data-nav="page" aria-current="page">Menu</a>
+      <a href="/about" data-nav="page">About Us</a>
+      <a href="/contact" data-nav="page">Contact</a>
+      <a href="/menu#chasha" data-nav="cat" data-cat="chasha">Chasha</a>
+      <a href="/menu#chaat" data-nav="cat" data-cat="chaat">Chaat</a>
+      <a href="/menu#fastfood" data-nav="cat" data-cat="fastfood">Fast Food</a>
+      <a href="/menu#beverages" data-nav="cat" data-cat="beverages">Beverages</a>
+      <a href="/menu#deals" data-nav="cat" data-cat="deals">Deals</a>
+      <a class="nav-cta" href="/contact">Order Now</a>
+    </div>
+  </nav>
+</header>
+
+<div class="scrim" id="sheetScrim"></div>
+<div class="scrim" id="mobScrim"></div>
+<div class="scrim cart-scrim" id="cartScrim"></div>
+
+<!-- search ------------------------------------------------------------ -->
+<section class="sheet" id="searchSheet" role="dialog" aria-modal="true"
+         aria-label="Search the menu" inert>
+  <div class="sheet-hd">
+    <h2>Search</h2>
+    <button class="icon-btn" type="button" id="searchClose" data-close aria-label="Close search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg></button>
+  </div>
+  <div class="sheet-in">
+    <div class="sfield">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="searchInput" placeholder="Search chasha, chaat, drinks&hellip;"
+             autocomplete="off" spellcheck="false" aria-label="Search the menu">
+    </div>
+    <p class="results-hint" id="searchHint">Popular right now</p>
+    <div class="results" id="searchResults"></div>
+  </div>
+</section>
+
+<!-- account ----------------------------------------------------------- -->
+<section class="sheet" id="acctSheet" role="dialog" aria-modal="true"
+         aria-label="Your account" inert>
+  <div class="sheet-hd">
+    <h2>Your account</h2>
+    <button class="icon-btn" type="button" id="acctClose" aria-label="Close account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg></button>
+  </div>
+  <div class="sheet-in">
+    <p class="acct-lede">This is a static demo. Your email is stored in this
+      browser only &mdash; there is no server, no login and no password reset.</p>
+
+    <form class="acct-grid" id="acctForm">
+      <div class="field">
+        <label for="acctEmail">Email</label>
+        <input type="email" id="acctEmail" placeholder="you@example.com" required>
+      </div>
+      <button class="btn btn-accent" type="submit" id="acctSubmit">Save</button>
+    </form>
+
+    <div id="acctSignedIn" hidden>
+      <p class="acct-lede">Signed in on this device as
+        <strong id="acctName" style="color:var(--fg)"></strong>.</p>
+      <div class="acct-orders" id="acctOrders"></div>
+      <button class="link-danger" type="button" id="acctSignOut">Clear from this device</button>
+    </div>
+  </div>
+</section>
+
+<!-- mobile drawer ----------------------------------------------------- -->
+<aside class="drawer" id="drawer" aria-label="Menu" inert>
+  <div class="drawer-utility">
+    <p class="pop-hd">Currency</p>
+    <div class="seg" id="drawerSeg" role="radiogroup" aria-label="Currency"></div>
+  </div>
+  <nav class="drawer-nav" aria-label="Mobile">
+      <a href="/" data-nav="page">Home</a>
+      <a href="/menu" data-nav="page" aria-current="page">Menu</a>
+      <a href="/about" data-nav="page">About Us</a>
+      <a href="/contact" data-nav="page">Contact</a>
+  </nav>
+  <div class="drawer-foot">
+    <a href="/contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 6.2 2 2 0 0 1 6 3Z"/></svg> Order by phone</a>
+    <small>Chashai &amp; chaat, made to order.<br>Placeholder details &mdash; see README.</small>
+  </div>
+</aside>
+
+<!-- cart -------------------------------------------------------------- -->
+<aside class="cart" id="cart" role="dialog" aria-modal="true" aria-label="Your cart" inert>
+  <div class="cart-hd">
+    <div>
+      <h2>Your cart</h2>
+      <p id="cartCount">0 items</p>
+    </div>
+    <button class="icon-btn" type="button" id="cartClose" aria-label="Close cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg></button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-sum">
+    <div class="sum-row"><span>Subtotal</span><span id="sumSub">Rs 0</span></div>
+    <div class="sum-row" id="sumDelivery"><span>Delivery</span><span id="sumDeliveryVal">Rs 150</span></div>
+    <div class="sum-row sum-row--total"><span>Total</span><b id="sumTotal">Rs 0</b></div>
+  </div>
+  <div class="cart-foot">
+    <p class="note" id="cartHint"></p>
+    <div class="cart-fields">
+      <div class="field">
+        <label for="cName">Name</label>
+        <input type="text" id="cName" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="cPhone">Phone</label>
+        <input type="tel" id="cPhone" placeholder="03XX XXXXXXX" autocomplete="tel">
+      </div>
+      <div class="field">
+        <label for="cAddr">Delivery address</label>
+        <textarea id="cAddr" rows="2" placeholder="Street, area, city"></textarea>
+      </div>
+    </div>
+    <button class="btn btn-accent" type="button" id="checkoutBtn">Checkout</button>
+    <button class="btn btn-ghost" type="button" id="cartClear" style="width:100%;margin-top:9px">Clear cart</button>
+  </div>
+</aside>
+
+<button class="cart-fab" type="button" data-open="cart" data-cart-fab hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg> <span>View cart</span> <b data-cart-count hidden>0</b>
+</button>
+<main id="main">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg> Menu</p>
+      <h1>The menu</h1>
+      <p>Everything is cooked to order, so allow a little time at busy hours.
+        Prices are shown in your selected currency.</p>
+    </header>
+
+    <div class="filters" role="group" aria-label="Filter by category">
+      <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="filter" type="button" data-filter="chasha" aria-pressed="false">Chasha</button>
+      <button class="filter" type="button" data-filter="chaat" aria-pressed="false">Chaat</button>
+      <button class="filter" type="button" data-filter="fastfood" aria-pressed="false">Fast Food</button>
+      <button class="filter" type="button" data-filter="beverages" aria-pressed="false">Beverages</button>
+      <button class="filter" type="button" data-filter="deals" aria-pressed="false">Deals</button>
+      <span class="price-note" id="filterCount" style="align-self:center;margin-left:auto"></span>
+    </div>
+
+    <div class="todo" style="margin-bottom:32px">
+      <h2>Placeholder data</h2>
+      <p>The 18 items below are <strong>invented</strong> so the layout has
+        something to render. Names, descriptions and prices are not real and
+        must be replaced before launch &mdash; see <code>README.md</code>.</p>
+    </div>
+
+    <div class="grid grid--menu">
+      <article class="card" id="chasha-classic" data-item="Chasha Classic" data-price="450" data-cat="chasha">
+        <h3>Chasha Classic</h3>
+        <p>Slow-cooked mutton, rice, fried onion and spices.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Chasha Classic"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>450</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chasha-special" data-item="Chasha Special" data-price="720" data-cat="chasha">
+        <h3>Chasha Special</h3>
+        <p>Mutton and chicken together, with a fried egg on top.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Chasha Special"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>720</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chasha-beef" data-item="Beef Chasha" data-price="520" data-cat="chasha">
+        <h3>Beef Chasha</h3>
+        <p>Beef shank, potato and rice.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Beef Chasha"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>520</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chasha-chicken" data-item="Chicken Chasha" data-price="480" data-cat="chasha">
+        <h3>Chicken Chasha</h3>
+        <p>Chicken, rice, ginger and fried onion.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Chicken Chasha"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>480</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chapati-roll" data-item="Chapati Roll" data-price="260" data-cat="chaat">
+        <h3>Chapati Roll</h3>
+        <p>Flaky chapati, raita, onion and chutney, rolled to order.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>260</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="papri-chaat" data-item="Papri Chaat" data-price="340" data-cat="chaat">
+        <h3>Papri Chaat</h3>
+        <p>Crisp papri, raita, tamarind and yoghurt drizzle.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>340</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="dahi-phulki" data-item="Dahi Phulki" data-price="290" data-cat="chaat">
+        <h3>Dahi Phulki</h3>
+        <p>Soft buns soaked in sweetened yoghurt.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>290</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="samosa-chaat" data-item="Samosa Chaat" data-price="320" data-cat="chaat">
+        <h3>Samosa Chaat</h3>
+        <p>Crushed samosa, chana, yoghurt and chutneys.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>320</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="zinger-burger" data-item="Zinger Burger" data-price="480" data-cat="fastfood">
+        <h3>Zinger Burger</h3>
+        <p>Crispy chicken fillet in a toasted bun.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Zinger Burger"><button type="button" class="size is-on" data-size aria-pressed="true">Single</button><button type="button" class="size" data-size aria-pressed="false">Double</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>480</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="club-sandwich" data-item="Club Sandwich" data-price="420" data-cat="fastfood">
+        <h3>Club Sandwich</h3>
+        <p>Chicken, cheese, salad and mayo, triple-decker.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>420</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="loaded-fries" data-item="Loaded Fries" data-price="350" data-cat="fastfood">
+        <h3>Loaded Fries</h3>
+        <p>Fries with cheese sauce, jalape&ntilde;os and herbs.</p>
+        
+        <div class="card-foot">
+          <span class="price" data-price-of>350</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chashai-pulao" data-item="Special Pulao" data-price="650" data-cat="deals">
+        <h3>Special Pulao</h3>
+        <p>Basmati rice with bone-in mutton.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Special Pulao"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>650</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="family-box" data-item="Family Feast Box" data-price="2450" data-cat="deals">
+        <h3>Family Feast Box</h3>
+        <p>Two chashas, two rolls, fries and two drinks.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Family Feast Box"><button type="button" class="size is-on" data-size aria-pressed="true">Serves 4</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>2450</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="doodh-patti" data-item="Doodh Patti" data-price="180" data-cat="beverages">
+        <h3>Doodh Patti</h3>
+        <p>Sweet thickened milk, served chilled.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Doodh Patti"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>180</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="lassi" data-item="Sweet Lassi" data-price="260" data-cat="beverages">
+        <h3>Sweet Lassi</h3>
+        <p>Yoghurt drink blended with ice.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Sweet Lassi"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button><button type="button" class="size" data-size aria-pressed="false">Large</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>260</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="mango-malai" data-item="Mango Malai" data-price="320" data-cat="beverages">
+        <h3>Mango Malai</h3>
+        <p>Mango pulp and cream.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Mango Malai"><button type="button" class="size is-on" data-size aria-pressed="true">Regular</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>320</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="soft-drink" data-item="Soft Drink" data-price="150" data-cat="beverages">
+        <h3>Soft Drink</h3>
+        <p>Chilled, ask for flavours.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Soft Drink"><button type="button" class="size is-on" data-size aria-pressed="true">Can</button><button type="button" class="size" data-size aria-pressed="false">Bottle</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>150</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+      <article class="card" id="chai" data-item="Masala Chai" data-price="120" data-cat="beverages">
+        <h3>Masala Chai</h3>
+        <p>Slow-boiled with whole spices.</p>
+        <div class="sizes" role="group" aria-label="Choose a size for Masala Chai"><button type="button" class="size is-on" data-size aria-pressed="true">Cup</button></div>
+        <div class="card-foot">
+          <span class="price" data-price-of>120</span>
+          <span class="price-note">incl. tax</span>
+        </div>
+        <button class="add" type="button" data-add>Add to cart</button>
+      </article>
+    </div>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="foot-in">
+    <nav aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/menu">Menu</a>
+      <a href="/about">About Us</a>
+      <a href="/contact">Locations &amp; Contact</a>
+    </nav>
+    <small>&copy; 2026 Umar Hayat Chaska Point &middot; Static demo, no checkout</small>
+  </div>
+</footer>
+<script src="/js/site-config.js"></script>
+<script src="/js/money.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/cart.js"></script>
+</body>
+</html>
