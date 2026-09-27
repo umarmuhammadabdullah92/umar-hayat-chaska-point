@@ -431,9 +431,6 @@ MENU = f'''  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['bag']} Menu</p>
       <h1>The menu</h1>
-      <p>Nashta from opening time, barbecue over charcoal in the evening, and
-        fried items to order throughout. Prices are shown in your selected
-        currency.</p>
     </header>
 
     <div class="filters" role="group" aria-label="Filter by category">
