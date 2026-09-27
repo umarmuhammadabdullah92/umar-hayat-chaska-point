@@ -12,9 +12,11 @@
 
 window.SITE = {
   /* --- identity --- */
-  name: 'Umar Hayat Chaska Point',        // TODO: confirm exact trading name
+  name: 'Umar Hayat Chaska Point',        // kept as-is on request
   logo: '/umarhayatchaskapoint-trimmed.png',
   logoAlt: 'Umar Hayat Chaska Point',
+  /* What the kitchen actually serves. */
+  tagline: 'Nashta, Barbecue &amp; Fried Items',
 
   /* --- contact --- */
   /* TODO: replace with the real number, address and email. The tel:
@@ -53,15 +55,13 @@ window.SITE = {
   ],
 
   /* --- categories ---
-     Drives the category nav, the mobile drawer, the menu page filters
-     and the search index. The `path` is only used to deep-link from the
-     nav; the filter works on the menu page. TODO: real categories. */
+     Drives the menu page filter buttons and the search index. The
+     category nav was removed from the header on request, so `path` is
+     only used for deep links like /menu#barbecue. */
   categories: [
-    { id: 'chasha',   label: 'Chasha',   path: '/menu#chasha' },
-    { id: 'chaat',    label: 'Chaat',    path: '/menu#chaat' },
-    { id: 'fastfood', label: 'Fast Food',path: '/menu#fastfood' },
-    { id: 'beverages',label: 'Beverages',path: '/menu#beverages' },
-    { id: 'deals',    label: 'Deals',    path: '/menu#deals' }
+    { id: 'nashta',   label: 'Nashta',   path: '/menu#nashta' },
+    { id: 'barbecue', label: 'Barbecue', path: '/menu#barbecue' },
+    { id: 'fried',    label: 'Fried Items', path: '/menu#fried' }
   ],
 
   /* --- currency ---

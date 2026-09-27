@@ -61,7 +61,7 @@ def header(active):
         <span></span><span></span><span></span>
       </button>
       <a class="hdr-contact" href="tel:+923000000000">{ICON['phone']}<span>Order by phone</span></a>
-      <span class="hdr-tagline">Chashai &amp; Chaat</span>
+      <span class="hdr-tagline">Nashta &middot; Barbecue &middot; Fried</span>
     </div>
 
     <a class="logo" href="/">
@@ -169,7 +169,7 @@ def overlays(active):
   </nav>
   <div class="drawer-foot">
     <a href="/contact">{ICON['phone']} Order by phone</a>
-    <small>Chashai &amp; chaat, made to order.<br>Placeholder details &mdash; see README.</small>
+    <small>Nashta, barbecue and fried items, cooked to order.<br>Placeholder details &mdash; see README.</small>
   </div>
 </aside>
 
@@ -266,42 +266,57 @@ def page(path, title, desc, body, active):
 # real menu, with real prices, before launch.
 
 ITEMS = [
- ('chasha-classic','Chasha Classic','chasha',450,['Regular','Large'],
-  'Slow-cooked mutton, rice, fried onion and spices.'),
- ('chasha-special','Chasha Special','chasha',720,['Regular','Large'],
-  'Mutton and chicken together, with a fried egg on top.'),
- ('chasha-beef','Beef Chasha','chasha',520,['Regular','Large'],
-  'Beef shank, potato and rice.'),
- ('chasha-chicken','Chicken Chasha','chasha',480,['Regular','Large'],
-  'Chicken, rice, ginger and fried onion.'),
- ('chapati-roll','Chapati Roll','chaat',260,[],
-  'Flaky chapati, raita, onion and chutney, rolled to order.'),
- ('papri-chaat','Papri Chaat','chaat',340,[],
-  'Crisp papri, raita, tamarind and yoghurt drizzle.'),
- ('dahi-phulki','Dahi Phulki','chaat',290,[],
-  'Soft buns soaked in sweetened yoghurt.'),
- ('samosa-chaat','Samosa Chaat','chaat',320,[],
-  'Crushed samosa, chana, yoghurt and chutneys.'),
- ('zinger-burger','Zinger Burger','fastfood',480,['Single','Double'],
-  'Crispy chicken fillet in a toasted bun.'),
- ('club-sandwich','Club Sandwich','fastfood',420,[],
-  'Chicken, cheese, salad and mayo, triple-decker.'),
- ('loaded-fries','Loaded Fries','fastfood',350,[],
-  'Fries with cheese sauce, jalape&ntilde;os and herbs.'),
- ('chashai-pulao','Special Pulao','deals',650,['Regular','Large'],
-  'Basmati rice with bone-in mutton.'),
- ('family-box','Family Feast Box','deals',2450,['Serves 4'],
-  'Two chashas, two rolls, fries and two drinks.'),
- ('doodh-patti','Doodh Patti','beverages',180,['Regular','Large'],
-  'Sweet thickened milk, served chilled.'),
- ('lassi','Sweet Lassi','beverages',260,['Regular','Large'],
-  'Yoghurt drink blended with ice.'),
- ('mango-malai','Mango Malai','beverages',320,['Regular'],
-  'Mango pulp and cream.'),
- ('soft-drink','Soft Drink','beverages',150,['Can','Bottle'],
-  'Chilled, ask for flavours.'),
- ('chai','Masala Chai','beverages',120,['Cup'],
-  'Slow-boiled with whole spices.'),
+ # --- nashta ---
+ ('halwa-puri','Halwa Puri','nashta',180,['Regular','Large'],
+  'Hot puri, sweet halwa and chana, served with a spoon of ghee.'),
+ ('choley-bhature','Choley Bhature','nashta',320,['Single','Pair'],
+  'Punjabi chickpeas with a fried bread. Breakfast of champions.'),
+ ('samosa-puri','Samosa (2 pc)','nashta',120,[],
+  'Crushed inside, aloo and peas, with chutney.'),
+ ('aloo-paratha','Aloo Paratha','nashta',130,['Single','Pair'],
+  'Flaky paratha with spiced potato filling.'),
+ ('sheermal','Sheermal','nashta',150,['1 pc','2 pc'],
+  'Saffron-tinted milk bread, best with chai.'),
+ ('bun-maska','Bun Maska','nashta',110,[],
+  'Butter-fried bun with butter, straight off the tawa.'),
+ ('dahi-bhalla','Dahi Bhalla','nashta',180,[],
+  'Soft lentil dumplings in thick yoghurt.'),
+ ('nihari','Nihari','nashta',420,['Regular'],
+  'Shank stew simmered overnight with ginger and achar.'),
+
+ # --- barbecue ---
+ ('malai-boti','Chicken Malai Boti','barbecue',480,['4 pc','8 pc'],
+  'Cream and cheese marinade, skewered and grilled over charcoal.'),
+ ('seekh-kebab','Chicken Seekh Kebab','barbecue',520,['4 pc','8 pc'],
+  'Hand-minced chicken with coriander and green chilli.'),
+ ('chicken-tikka','Chicken Tikka','barbecue',550,['Half','Full'],
+  'Yoghurt-marinated thigh meat, charred at the edges.'),
+ ('mutton-seekh','Mutton Seekh Kebab','barbecue',850,['4 pc','8 pc'],
+  'Minced mutton seekh, spiced with raw papaya.'),
+ ('beef-boti','Beef Boti','barbecue',780,['4 pc','8 pc'],
+  'Tender beef boti with onion and black pepper.'),
+ ('grilled-chicken','Grilled Chicken','barbecue',950,['Half','Full'],
+  'Whole bird marinated overnight, grilled to order.'),
+ ('bbq-platter-two','BBQ Platter for Two','barbecue',2400,['Serves 2'],
+  'Malai boti, seekh kebab, tikka, naan, salad and chutney.'),
+
+ # --- fried ---
+ ('chicken-pakora','Chicken Pakora','fried',380,['250g','500g'],
+  'Gram-flour battered chicken, fried to order.'),
+ ('fried-wings','Fried Chicken Wings','fried',420,['6 pc','12 pc'],
+  'Crisp wings with a choice of buffalo or BBQ glaze.'),
+ ('nuggets','Chicken Nuggets','fried',350,['6 pc','12 pc'],
+  'Breading made in-house, with dip.'),
+ ('fries','French Fries','fried',200,['Regular','Large'],
+  'Double-cooked, salted on request.'),
+ ('loaded-fries','Loaded Fries','fried',380,[],
+  'Cheese sauce, jalape&ntilde;os and coriander.'),
+ ('egg-fried','Fried Egg','fried',80,['1 pc','2 pc'],
+  'Crisp edges, any way you like it.'),
+ ('fried-chicken-piece','Fried Chicken (2 pc)','fried',480,[],
+  'Buttermilk-brisketed, fried to order.'),
+ ('shami-kebab-fried','Fried Shami Kebab','fried',390,[],
+  'Shami kebab flattened and fried, with chutney.'),
 ]
 
 def item_card(i):
@@ -334,15 +349,14 @@ def cat_buttons():
         out.append(f'      <button class="filter" type="button" data-filter="{c[1]}" aria-pressed="false">{c[0]}</button>')
     return '\n'.join(out)
 
-SITE_CATS = [('Chasha','chasha'),('Chaat','chaat'),('Fast Food','fastfood'),
-             ('Beverages','beverages'),('Deals','deals')]
+SITE_CATS = [('Nashta','nashta'),('Barbecue','barbecue'),('Fried Items','fried')]
 
 HOME = f'''  <section class="wrap" style="text-align:center">
-    <p class="eyebrow" style="color:var(--accent);font-size:.68rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;margin-bottom:18px">Chashai &amp; Chaat</p>
-    <h1 style="font-size:clamp(2.2rem,6vw,4rem);max-width:16ch;margin:0 auto 20px">Slow-cooked chasha, made the long way</h1>
+    <p class="eyebrow" style="color:var(--accent);font-size:.68rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;margin-bottom:18px">Nashta &middot; Barbecue &middot; Fried</p>
+    <h1 style="font-size:clamp(2.2rem,6vw,4rem);max-width:17ch;margin:0 auto 20px">Charcoal-grilled barbecue and nashta done properly</h1>
     <p style="color:var(--fg-muted);max-width:52ch;margin:0 auto 32px;line-height:1.85">
-      Mutton simmered overnight until it falls apart, poured over rice you
-      want to eat straight from the bowl.</p>
+      Fried batter mixed by hand, malai boti marinated overnight, and
+      breakfast served from the time the shop opens.</p>
     <div class="band-cta">
       <a class="btn btn-accent" href="/menu">See the menu</a>
       <a class="btn btn-ghost" href="/contact">Find us</a>
@@ -364,8 +378,9 @@ MENU = f'''  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['bag']} Menu</p>
       <h1>The menu</h1>
-      <p>Everything is cooked to order, so allow a little time at busy hours.
-        Prices are shown in your selected currency.</p>
+      <p>Nashta from opening time, barbecue over charcoal in the evening, and
+        fried items to order throughout. Prices are shown in your selected
+        currency.</p>
     </header>
 
     <div class="filters" role="group" aria-label="Filter by category">
@@ -389,7 +404,7 @@ ABOUT = f'''  <div class="wrap">
     <header class="page-head">
       <p class="eyebrow">{ICON['user']} About Us</p>
       <h1>Our story</h1>
-      <p>A family kitchen that grew into a neighbourhood chasha house.</p>
+      <p>A roadside nashta stall that grew into a proper barbecue kitchen.</p>
     </header>
 
     <div class="todo" style="margin-bottom:40px">
@@ -402,24 +417,23 @@ ABOUT = f'''  <div class="wrap">
     <div class="detail" style="grid-template-columns:1fr 1fr">
       <div>
         <h2>What we cook</h2>
-        <p>Chasha is the centre of the menu &mdash; a whole pot of meat and
-          rice, finished with fried onion and ginger. It is not assembled to
-          order; it is one pot, and it is why we run out.</p>
+        <p>Three things, done properly. Nashta in the morning, barbecue in the
+          evening, and fried items whenever the grill is between batches.</p>
         <ul class="list">
-          <li>Mutton and chicken chasha, plus beef and vegetarian</li>
-          <li>Chaat built on the same dough, fried to order</li>
-          <li>Rolls, burgers and loaded fries for the younger crowd</li>
+          <li>Halwa puri, choley bhature, samosa and sheermal to start the day</li>
+          <li>Malai boti, seekh kebab and tikka off the charcoal</li>
+          <li>Pakoras, wings, nuggets and fries battered and fried to order</li>
         </ul>
         <a class="btn btn-accent" href="/menu">See the menu</a>
       </div>
       <div>
         <h2>How we cook</h2>
-        <p>Placeholder. The method, the sourcing and the equipment notes are
+        <p>Placeholder. The charcoal, the marinades and the sourcing notes are
           all still to be written.</p>
         <ul class="list">
-          <li>Meat from a named local supplier</li>
-          <li>Rice washed and soaked the same morning</li>
-          <li>No shortcuts in the biryani masala</li>
+          <li>Chicken and meat marinated overnight, never the same day</li>
+          <li>Live charcoal, skewers turned by hand</li>
+          <li>Batter mixed in small batches through the day</li>
         </ul>
         <a class="btn btn-ghost" href="/contact">Find us</a>
       </div>
@@ -500,12 +514,12 @@ HOURS_JS = '''
 '''
 
 PAGES = [
-  ('index.html',   'Umar Hayat Chaska Point — Chashai &amp; Chaat',
-   'Slow-cooked chasha and chaat. Order by phone or WhatsApp.', HOME, '/'),
+  ('index.html',   'Umar Hayat Chaska Point — Nashta, Barbecue &amp; Fried',
+   'Nashta, charcoal barbecue and fried items, cooked to order. Order by phone or WhatsApp.', HOME, '/'),
   ('menu.html',    'Menu — Umar Hayat Chaska Point',
-   'Chasha, chaat, fast food and drinks, cooked to order.', MENU, '/menu'),
+   'Nashta, charcoal barbecue and fried items, cooked to order.', MENU, '/menu'),
   ('about.html',   'About Us — Umar Hayat Chaska Point',
-   'A family kitchen that grew into a neighbourhood chasha house.', ABOUT, '/about'),
+   'A roadside nashta stall that grew into a proper barbecue kitchen.', ABOUT, '/about'),
   ('contact.html', 'Locations &amp; Contact — Umar Hayat Chaska Point',
    'Find us in Sahiwal. Opening hours, address and WhatsApp ordering.',
    CONTACT, '/contact'),

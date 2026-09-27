@@ -136,7 +136,7 @@
       if (!hits.length) {
         hint.hidden = true;
         results.innerHTML = '<p class="result-empty">Nothing matches &ldquo;' + esc(input.value.trim()) +
-          '&rdquo;.<br>The menu is still placeholder text, so try a broad word like <em>chasha</em>.</p>';
+          '&rdquo;.<br>The menu is still placeholder text, so try a broad word like <em>chicken</em>.</p>';
         return;
       }
       hint.hidden = true;
