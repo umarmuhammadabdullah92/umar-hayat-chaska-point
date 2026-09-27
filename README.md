@@ -41,19 +41,39 @@ share preview. See `img/README.md`.
 
 These are **invented**, not real, and must be replaced before launch:
 
-- **Every menu item, description and price** (`build.py`, the `ITEMS` list)
+- **Every barbecue and fried item, its description and its price**
+  (`build.py`, the `ITEMS` list)
 - Address, phone, WhatsApp number, email
 - All social profile URLs
 - Opening hours
 - Category names
 - Delivery fee, free-delivery threshold, minimum order
 - The USD exchange rate (a guess, and it will drift)
-- All About Us copy
 
 To see what is still outstanding, open the browser console on any page:
 
 ```js
 SITE.todos()
+```
+
+### The nashta dishes are real
+
+`Murag Chanay`, `Anday Chanay` and `Haleem Chawal` were supplied by the
+owner, and the spellings are theirs rather than normalised. Two things
+about them are still placeholders:
+
+- **Prices are `999`, used as a sentinel for "not a real price yet".**
+  Grep the `ITEMS` list for `999` to find every one of them. The value is
+  deliberately higher than the minimum order so the cart behaves, and
+  deliberately round so it is obviously not a price anyone charged.
+- **Descriptions are one-line definitions** ("Egg curry."), not copy.
+  They describe what the dish is without claiming anything about how it
+  is made, because nothing is known yet.
+
+To find all outstanding prices at once:
+
+```sh
+grep -n "999" build.py
 ```
 
 ---

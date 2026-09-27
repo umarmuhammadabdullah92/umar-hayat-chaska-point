@@ -332,22 +332,16 @@ def page(path, title, desc, body, active):
 
 ITEMS = [
  # --- nashta ---
- ('halwa-puri','Halwa Puri','nashta',180,['Regular','Large'],
-  'Hot puri, sweet halwa and chana, served with a spoon of ghee.'),
- ('choley-bhature','Choley Bhature','nashta',320,['Single','Pair'],
-  'Punjabi chickpeas with a fried bread. Breakfast of champions.'),
- ('samosa-puri','Samosa (2 pc)','nashta',120,[],
-  'Crushed inside, aloo and peas, with chutney.'),
- ('aloo-paratha','Aloo Paratha','nashta',130,['Single','Pair'],
-  'Flaky paratha with spiced potato filling.'),
- ('sheermal','Sheermal','nashta',150,['1 pc','2 pc'],
-  'Saffron-tinted milk bread, best with chai.'),
- ('bun-maska','Bun Maska','nashta',110,[],
-  'Butter-fried bun with butter, straight off the tawa.'),
- ('dahi-bhalla','Dahi Bhalla','nashta',180,[],
-  'Soft lentil dumplings in thick yoghurt.'),
- ('nihari','Nihari','nashta',420,['Regular'],
-  'Shank stew simmered overnight with ginger and achar.'),
+ # REAL dishes, supplied by the owner. Spellings are theirs and were not
+ # normalised: "murag", "anday" and "haleem" are how the shop writes them.
+ # TODO prices are 999 as a sentinel meaning "not a real price yet", and the
+ # descriptions are one-line definitions, not copy. Both need replacing.
+ ('murag-chanay','Murag Chanay','nashta',999,[],
+  'Chicken curry.'),
+ ('anday-chanay','Anday Chanay','nashta',999,[],
+  'Egg curry.'),
+ ('haleem-chawal','Haleem Chawal','nashta',999,[],
+  'Haleem with rice.'),
 
  # --- barbecue ---
  ('malai-boti','Chicken Malai Boti','barbecue',480,['4 pc','8 pc'],
