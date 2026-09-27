@@ -41,8 +41,9 @@ share preview. See `img/README.md`.
 
 These are **invented**, not real, and must be replaced before launch:
 
-- **Every barbecue and fried item, its description and its price**
-  (`build.py`, the `ITEMS` list)
+- **Every barbecue item, its description and its price** (`build.py`, the
+  `ITEMS` list). The nashta and fried lists are real dishes but their
+  prices and descriptions are not, see below.
 - Address, phone, WhatsApp number, email
 - All social profile URLs
 - Opening hours
@@ -56,19 +57,33 @@ To see what is still outstanding, open the browser console on any page:
 SITE.todos()
 ```
 
-### The nashta dishes are real
+### The nashta and fried dishes are real
 
-`Murag Chanay`, `Anday Chanay` and `Haleem Chawal` were supplied by the
-owner, and the spellings are theirs rather than normalised. Two things
-about them are still placeholders:
+These were supplied by the owner, and the spellings are theirs rather than
+normalised, with one exception noted below.
+
+**Nashta** — Murag Chanay, Anday Chanay, Haleem Chawal
+
+**Fried** — Samosa, Pakora, Aloo Ki Tikki, Began Pakora, Mirch Pakora,
+Fried Naan
+
+Three spellings were changed, deliberately: the owner wrote "samosy",
+"pakory" and "pakore", which were respelled to the standard "Samosa" and
+"Pakora". "Began" and "Mirch" were left as written, since those are
+correct regional spellings rather than typos. This is the one place the
+owner's wording was not preserved verbatim.
+
+Two things about all nine dishes are still placeholders:
 
 - **Prices are `999`, used as a sentinel for "not a real price yet".**
-  Grep the `ITEMS` list for `999` to find every one of them. The value is
-  deliberately higher than the minimum order so the cart behaves, and
-  deliberately round so it is obviously not a price anyone charged.
-- **Descriptions are one-line definitions** ("Egg curry."), not copy.
-  They describe what the dish is without claiming anything about how it
-  is made, because nothing is known yet.
+  All nine real dishes carry it, so the menu total is 9 sentinels and 7
+  real-looking-but-invented barbecue prices. Grep the `ITEMS` list for
+  `999` to find every one. The value is deliberately higher than the
+  minimum order so the cart behaves, and deliberately round so it is
+  obviously not a price anyone charged.
+- **Descriptions are one-line definitions** ("Egg curry.", "Brinjal,
+  battered and fried."), not copy. They say what the dish is without
+  claiming anything about how it is made, because nothing is known yet.
 
 To find all outstanding prices at once:
 

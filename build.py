@@ -360,22 +360,22 @@ ITEMS = [
   'Malai boti, seekh kebab, tikka, naan, salad and chutney.'),
 
  # --- fried ---
- ('chicken-pakora','Chicken Pakora','fried',380,['250g','500g'],
-  'Gram-flour battered chicken, fried to order.'),
- ('fried-wings','Fried Chicken Wings','fried',420,['6 pc','12 pc'],
-  'Crisp wings with a choice of buffalo or BBQ glaze.'),
- ('nuggets','Chicken Nuggets','fried',350,['6 pc','12 pc'],
-  'Breading made in-house, with dip.'),
- ('fries','French Fries','fried',200,['Regular','Large'],
-  'Double-cooked, salted on request.'),
- ('loaded-fries','Loaded Fries','fried',380,[],
-  'Cheese sauce, jalape&ntilde;os and coriander.'),
- ('egg-fried','Fried Egg','fried',80,['1 pc','2 pc'],
-  'Crisp edges, any way you like it.'),
- ('fried-chicken-piece','Fried Chicken (2 pc)','fried',480,[],
-  'Buttermilk-brisketed, fried to order.'),
- ('shami-kebab-fried','Fried Shami Kebab','fried',390,[],
-  'Shami kebab flattened and fried, with chutney.'),
+ # REAL dishes, supplied by the owner. "Began" and "mirch" are kept as
+# written; "Samosy" and "Pakory" are respelled to Samosa and Pakora,
+# which are the standard spellings. Say so if the shop prefers otherwise.
+ # TODO prices are the 999 sentinel again, descriptions are definitions.
+ ('samosa-fried','Samosa','fried',999,[],
+  'Fried pastry.'),
+ ('pakora','Pakora','fried',999,[],
+  'Battered and fried.'),
+ ('aloo-ki-tikki','Aloo Ki Tikki','fried',999,[],
+  'Spiced potato patty, fried.'),
+ ('began-pakora','Began Pakora','fried',999,[],
+  'Brinjal, battered and fried.'),
+ ('mirch-pakora','Mirch Pakora','fried',999,[],
+  'Chilli, battered and fried.'),
+ ('fried-naan','Fried Naan','fried',999,[],
+  'Fried bread.'),
 ]
 
 def item_card(i):
