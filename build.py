@@ -44,14 +44,13 @@ def nav_links(active):
         for lbl, href in NAV)
 
 def header(active):
-    """The component. Identical on every page except aria-current."""
-    cats = [('Chasha','chasha'),('Chaat','chaat'),('Fast Food','fastfood'),
-            ('Beverages','beverages'),('Deals','deals')]
+    """The component. Identical on every page except aria-current.
 
-    cat_links = '\n'.join(
-        f'      <a href="/menu#{cid}" data-nav="cat" data-cat="{cid}">{lbl}</a>'
-        for lbl, cid in cats)
-
+    Category links (Chasha, Chaat, Fast Food, Beverages, Deals) were
+    removed from the header on request. Categories still exist as
+    data-cat on the menu items, so the menu page filters and search are
+    unaffected.
+    """
     return f'''<a class="skip" href="#main">Skip to content</a>
 
 <header class="site-hdr">
@@ -99,10 +98,9 @@ def header(active):
     </div>
   </div>
 
-  <nav class="catnav" aria-label="Categories">
-    <div class="catnav-in">
+  <nav class="mainnav" aria-label="Primary">
+    <div class="mainnav-in">
 {nav_links(active)}
-{cat_links}
       <a class="nav-cta" href="/contact">Order Now</a>
     </div>
   </nav>

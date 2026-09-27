@@ -196,13 +196,13 @@ main{flex:1 0 auto;}
   font-size:.68rem;line-height:1.6;color:var(--fg-muted);
 }
 
-/* ---- category navigation row ---- */
-.catnav{border-top:1px solid var(--line);}
-.catnav-in{
+/* ---- primary navigation row ---- */
+.mainnav{border-top:1px solid var(--line);}
+.mainnav-in{
   max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter);
   display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;
 }
-.catnav a{
+.mainnav a{
   position:relative;
   padding:14px 18px;font-size:.76rem;font-weight:600;
   letter-spacing:.14em;text-transform:uppercase;
@@ -210,20 +210,20 @@ main{flex:1 0 auto;}
   display:inline-flex;align-items:center;min-height:52px;
   transition:color .2s;
 }
-.catnav a::after{
+.mainnav a::after{
   content:'';position:absolute;left:18px;right:18px;bottom:10px;height:1px;
   background:var(--accent);transform:scaleX(0);transform-origin:left;
   transition:transform .28s cubic-bezier(.22,1,.36,1);
 }
-.catnav a:hover{color:var(--fg);}
-.catnav a:hover::after,.catnav a[aria-current="page"]::after{transform:scaleX(1);}
-.catnav a[aria-current="page"]{color:var(--accent);}
-.catnav a.nav-cta{
+.mainnav a:hover{color:var(--fg);}
+.mainnav a:hover::after,.mainnav a[aria-current="page"]::after{transform:scaleX(1);}
+.mainnav a[aria-current="page"]{color:var(--accent);}
+.mainnav a.nav-cta{
   margin-left:10px;padding:11px 24px;border-radius:var(--r-pill);
   background:var(--accent);color:var(--on-accent);letter-spacing:.1em;
 }
-.catnav a.nav-cta::after{display:none;}
-.catnav a.nav-cta:hover{background:var(--accent-deep);color:var(--fg);}
+.mainnav a.nav-cta::after{display:none;}
+.mainnav a.nav-cta:hover{background:var(--accent-deep);color:var(--fg);}
 
 /* ---- hamburger ---- */
 .ham{
@@ -579,12 +579,12 @@ main{flex:1 0 auto;}
    ===================================================================== */
 @media (max-width:1000px){
   .hdr-contact,.hdr-tagline{display:none;}
-  .catnav a.nav-cta{display:none;}
+  .mainnav a.nav-cta{display:none;}
 }
 @media (max-width:860px){
-  .catnav-in{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-  .catnav-in::-webkit-scrollbar{display:none;}
-  .catnav a{white-space:nowrap;}
+  .mainnav-in{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .mainnav-in::-webkit-scrollbar{display:none;}
+  .mainnav a{white-space:nowrap;}
   .uico-hide{display:none;}
   .ham{display:flex;}
   .acct-grid{grid-template-columns:1fr;}

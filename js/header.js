@@ -69,9 +69,10 @@
   }
 
   /* -------------------------------------------------- current page */
-  /* Exactly one nav item may claim to be the current page. Category links
-     share the /menu path, so matching on path alone lit up all six links
-     at once, which tells a screen reader nothing useful. */
+  /* Exactly one nav item may claim to be the current page. The nav is
+     duplicated across the topbar and the mobile drawer, so both copies
+     of the matching link are marked — that is correct, they are two
+     landmarks pointing at the same page. */
   function markCurrent() {
     // /index.html and / both mean "home", otherwise the Home link is never
     // marked when the site is browsed by its .html filenames.
@@ -80,17 +81,11 @@
       return s === '' || s === '/index' ? '/' : s;
     };
     const path = norm(location.pathname);
-    const hash = location.hash.replace('#', '');
     $$('[data-nav]').forEach(a => {
       a.removeAttribute('aria-current');
+      if (a.dataset.nav !== 'page') return;
       const u = new URL(a.getAttribute('href'), location.origin);
-      const target = norm(u.pathname);
-      if (a.dataset.nav === 'page') {
-        if (target === path) a.setAttribute('aria-current', 'page');
-      } else if (a.dataset.nav === 'cat') {
-        // only the category actually being viewed
-        if (target === path && hash && a.dataset.cat === hash) a.setAttribute('aria-current', 'true');
-      }
+      if (norm(u.pathname) === path) a.setAttribute('aria-current', 'page');
     });
   }
 
