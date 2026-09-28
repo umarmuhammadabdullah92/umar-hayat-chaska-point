@@ -50,9 +50,33 @@ it evenly.
 ## The share card
 
 `og:image` is what WhatsApp, Facebook, X and iMessage show when someone
-shares a link. Until `img/social.jpg` exists it falls back to the logo,
-which renders as a small, badly cropped square. This is the highest-value
-image on the site and the cheapest to fix.
+shares a link. This is the highest-value image on the site.
+
+A card already exists. `tools/make-share-image.py` renders the wordmark
+and the address onto a 1200x630 ground in the site's own palette and
+fonts, and `python3 build.py` picks up the result as `img/social.png`.
+Breaking out of a tiny logo crop was the point of an image this size:
+1200x630 is what every platform asks for, and the trimmed logo is 426x278,
+a quarter of the width before any cropping starts.
+
+The card is honest about what it is: typography, not photography. A link
+to a restaurant read better as a photograph of the room or the grill, and
+a real photo should replace it. **Save the photo as `img/social.jpg`** and
+rebuild — `build.py` prefers `.jpg` over the generated `.png`, so the card
+is replaced with no other change. At 1200x630 it will also stand as the
+`photo` entry in the structured data, which is how Google shows one in a
+knowledge panel.
+
+To restyle the card, edit `tools/share-card.html` and rerun:
+
+```bash
+python3 tools/make-share-image.py
+python3 build.py
+```
+
+The script needs Chrome. The card it makes is flat colour and text, so it
+is written as PNG rather than JPEG: JPEG's artefacts land exactly on the
+letterforms, and lossless is a fifth of the size here.
 
 ## Do not hand-edit the HTML
 

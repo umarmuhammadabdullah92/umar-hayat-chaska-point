@@ -24,6 +24,7 @@ import os
 import re
 import sys
 import json
+import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 IMG_DIR = os.path.join(ROOT, 'img')
@@ -249,6 +250,27 @@ def find_image(key):
         if os.path.exists(os.path.join(IMG_DIR, key + ext)):
             return key + ext
     return None
+
+
+def read_palette(*names):
+    """Custom properties out of the :root block in css/style.css.
+
+    Read rather than repeated here, because a colour written twice is a
+    colour that has to be changed twice: the manifest and the
+    <meta name="theme-color"> already quote the page ground, and a
+    palette edit that missed them would show a home-screen icon on a
+    background the site does not use."""
+    src = open(os.path.join(ROOT, 'css', 'style.css'), encoding='utf-8').read()
+    root = re.search(r':root\s*\{(.*?)\}', src, re.S)
+    if not root:
+        raise ConfigError('no :root block in css/style.css')
+    out = {}
+    for name in names:
+        m = re.search(r'--%s\s*:\s*(#[0-9A-Fa-f]{3,8})' % re.escape(name), root.group(1))
+        if not m:
+            raise ConfigError('css/style.css :root has no --%s' % name)
+        out[name] = m.group(1)
+    return out
 
 
 # ===================================================================
@@ -1189,6 +1211,43 @@ def menu_index_json():
 
 OG_IMAGE = find_image('social')
 og_image = '/img/' + OG_IMAGE if OG_IMAGE else '/umarhayatchaskapoint-trimmed.png'
+PALETTE = read_palette('bg')
+
+
+# ===================================================================
+# The origin the site is served from
+# ---------------------------------------------------------------------
+# A link preview, a canonical URL and a schema.org address are all read
+# by something other than a browser sitting on this domain, and all three
+# have to be absolute. A root-relative "/img/social.jpg" is meaningless to
+# WhatsApp, which fetches the image on its own servers; it has no idea
+# which host the link came from.
+#
+# So every one of them is built from SITE.url in the config, through
+# absolute(), rather than being written inline where a half of them would
+# quietly stay relative.
+
+def _base_url():
+    url = str(need('url')).strip().rstrip('/')
+    if not re.match(r'^https://[^\s/]+$', url):
+        raise ConfigError(
+            'SITE.url must be an https origin with no path, e.g. '
+            '"https://example.com" -- got %r' % need('url'))
+    return url
+
+
+SITE_URL = _base_url()
+
+
+def absolute(path):
+    """A root-relative site path as a full URL. '/menu' -> the site's
+    /menu. Anything already absolute is left alone, so a config value that
+    is a full URL in one place and a path in another cannot produce a
+    double-prefixed link."""
+    if re.match(r'^[a-z]+:', path):
+        return path
+    return SITE_URL + (path if path.startswith('/') else '/' + path)
+
 
 NAME = need('name')
 TITLE = '%s &mdash; %s' % (NAME, need('tagline'))
@@ -1225,6 +1284,137 @@ def page_title(url):
     raise KeyError('no such page url: ' + url)
 
 
+# ===================================================================
+# Structured data
+# ---------------------------------------------------------------------
+# A <script type="application/ld+json"> block, which is the only thing on
+# this site that a search engine reads as a statement of fact rather than
+# as prose. It is what puts the restaurant's name, address, hours and
+# prices into a Google knowledge panel instead of leaving a blue link.
+#
+# It is generated from the same config as the visible page, which is the
+# only way it can be kept honest: the schema cannot say the kitchen closes
+# at eleven if the page under it says midnight, because both are reading
+# SITE.hours. That also means the placeholder phone number and the sentinel
+# prices are published here as well, and are fixed by fixing the config.
+
+# schema.org day names, against the numeric days the config uses.
+SCHEMA_DAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+              'Friday', 'Saturday']
+
+
+def opening_hours_spec():
+    """SITE.hours as openingHoursSpecification, grouping the days that
+    share hours exactly the way hours_table() groups them for the page.
+
+    Google reads one entry per distinct set of hours. Six identical rows
+    for six days is six ways to be wrong, and it is the same reasoning
+    that put the grouped table in the footer."""
+    rows = {}
+    for h in need('hours'):
+        rows.setdefault((h.get('open'), h.get('close')), []).append(int(h['day']))
+    out = []
+    for (open_, close), days in sorted(rows.items(), key=lambda kv: min(kv[1])):
+        if not open_ or not close:
+            continue          # a closed day is simply absent, which is correct
+        out.append({
+            '@type': 'OpeningHoursSpecification',
+            'dayOfWeek': ['https://schema.org/' + SCHEMA_DAY[d] for d in sorted(days)],
+            'opens': open_,
+            'closes': close,
+        })
+    return out
+
+
+def menu_schema():
+    """The menu as schema.org Menu/MenuSection/MenuItem, straight off the
+    same ITEMS list the page renders and the menu filters read.
+
+    Prices are quoted exactly as the page quotes them, sentinel included.
+    A schema that disagreed with the page it sits on is worse than no
+    schema: the prices are the part a guest acts on."""
+    sections = []
+    for c in need('categories'):
+        rows = [d for d in dishes() if d['cat'] == c['id']]
+        if not rows:
+            continue
+        sections.append({
+            '@type': 'MenuSection',
+            'name': c['label'],
+            'hasMenuItem': [{
+                '@type': 'MenuItem',
+                'name': d['name'],
+                'offers': {
+                    '@type': 'Offer',
+                    'price': str(int(d['price'])),
+                    'priceCurrency': need('currency', 'code'),
+                },
+            } for d in rows],
+        })
+    return {'@type': 'Menu', 'name': 'Menu', 'hasMenuSection': sections}
+
+
+def price_range():
+    """priceRange is a single string, so it is the real span of the menu
+    rather than a currency symbol on its own."""
+    prices = [int(d['price']) for d in dishes() if int(d['price']) > 0]
+    if not prices:
+        return ''
+    sym = need('currency', 'symbol')
+    fmt = lambda n: format(n, ',d')
+    return '%s %s%s%s' % (sym, fmt(min(prices)),
+                          ' to ' if min(prices) != max(prices) else '',
+                          fmt(max(prices)) if min(prices) != max(prices) else '')
+
+
+def json_ld(url):
+    """The Restaurant block for one page.
+
+    Only fields the config actually has are emitted. A property invented
+    to fill the schema -- a star rating, a review count, a founding date
+    parsed out of "Est. 1974" -- is a claim the site cannot support, and
+    fabricated review markup is the single fastest way to have structured
+    data ignored or a manual action applied. So: no aggregateRating, and
+    nothing derived by guessing."""
+    addr = need('address')
+    hours = opening_hours_spec()
+    data = {
+        '@context': 'https://schema.org',
+        '@type': 'Restaurant',
+        'name': NAME,
+        'description': PAGE_DESC[url],
+        'url': absolute(url),
+        'image': absolute(og_image),
+        'telephone': need('phone'),
+        'email': need('email'),
+        'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': addr['line1'],
+            'addressLocality': addr['city'],
+            'postalCode': addr['postcode'],
+            'addressCountry': addr.get('countryCode', addr['country']),
+        },
+        'currenciesAccepted': need('currency', 'code'),
+        'priceRange': price_range(),
+        'hasMenu': absolute('/menu'),
+        'menu': menu_schema(),
+        'acceptsReservations': 'True',
+        'sameAs': [url_ for _k, url_, _i in social_links()],
+    }
+    if hours:
+        data['openingHoursSpecification'] = hours
+    if need('cuisine'):
+        data['servesCuisine'] = list(need('cuisine'))
+    if OG_IMAGE:
+        # Only claim a photo if one is actually there to point at.
+        data['photo'] = [absolute(og_image)]
+
+    body = json.dumps(data, ensure_ascii=False, sort_keys=True, indent=None)
+    # "<" cannot survive inside a <script> block, and a config value is
+    # not trusted input. \u003c is the same character to a JSON parser.
+    return '<script type="application/ld+json">%s</script>' % body.replace('<', '\\u003c')
+
+
 def page(body, url):
     return '''<!DOCTYPE html>
 <html lang="en" class="no-js" data-theme="dark">
@@ -1233,18 +1423,26 @@ def page(body, url):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
+<link rel="canonical" href="{canonical}">
 <meta name="theme-color" content="#0B0907">
 <meta name="color-scheme" content="dark">
 <meta property="og:site_name" content="{name}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="{canonical}">
 <meta property="og:image" content="{og}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{og}">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/umarhayatchaskapoint.png">
+<meta name="apple-mobile-web-app-title" content="{name}">
 <link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/style.css">
+{ld}
 <script>document.documentElement.className=document.documentElement.className.replace('no-js','js')</script>
 </head>
 <body data-page="{url}">
@@ -1260,7 +1458,8 @@ def page(body, url):
 </html>
 '''.format(
         title=page_title(url), desc=esc(PAGE_DESC[url]), name=esc(NAME),
-        url=url, og=esc(og_image),
+        url=url, og=esc(absolute(og_image)), canonical=esc(absolute(url)),
+        ld=json_ld(url),
         header=header(url), overlays=overlays(url), menuindex=menu_index_json(),
         body=body, footer=footer(), scripts=SCRIPTS)
 
@@ -1288,6 +1487,166 @@ FAVICON = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
       text-anchor="middle" fill="#DDC491">U</text>
 </svg>
 '''
+
+
+# ===================================================================
+# Files that exist for machines rather than guests
+# ---------------------------------------------------------------------
+# sitemap.xml, robots.txt and the web manifest are all generated, because
+# a hand-kept sitemap goes stale the first time a page is added and a
+# stale sitemap is worse than none: it advertises a URL that 404s.
+#
+# 404.html is generated for a different reason. Vercel serves it for any
+# unmatched path, which means a guest who mistypes the address, or follows
+# a stale link, or lands on a page that has been renamed, gets the host's
+# generic error page. That is the one screen on the site with no way back
+# to the menu, and it is the screen that most needs the site's own header
+# and footer on it.
+
+def lastmod():
+    """The build's date, as W3C format.
+
+    This is when the page was last generated, which is what lastmod means.
+    It is not a claim about when the prose was written.
+
+    SOURCE_DATE_EPOCH is honoured because it is the standard way to ask
+    for a reproducible build, and a sitemap whose date moves on every
+    rebuild makes every deploy a diff that means nothing."""
+    epoch = os.environ.get('SOURCE_DATE_EPOCH')
+    when = int(epoch) if epoch and epoch.isdigit() else time.time()
+    return time.strftime('%Y-%m-%d', time.gmtime(when))
+
+
+def sitemap_xml():
+    """One entry per page in PAGES, in nav order rather than alphabetical,
+    so the file reads in the order the site does.
+
+    The 404 page is deliberately absent: it is a response to a URL that
+    does not exist, and listing it would invite it to be crawled."""
+    # changefreq and priority are advisory fields that every crawler since
+    # Google stopped using them has ignored. Emitting priorities that
+    # nothing reads is decoration, so only lastmod and loc are written.
+    rows = []
+    for _fn, url, _label, _nav in PAGES:
+        rows.append('  <url>\n    <loc>%s</loc>\n    <lastmod>%s</lastmod>\n  </url>'
+                    % (esc(absolute(url)), lastmod()))
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            '%s\n</urlset>\n' % '\n'.join(rows))
+
+
+def robots_txt():
+    """Crawl rules, kept to what is actually true.
+
+    /test/ is the build harness: 68KB of test script that describes every
+    check the site has to pass. There is no reason for a crawler to have
+    it, and .vercelignore keeps it off the deployment as well, so this
+    line is the belt to that braces."""
+    return '''# %s/robots.txt
+# There is nothing to hide on this site and no analytics, no tracking and
+# no third-party requests, so nothing is disallowed except the test
+# harness, which is not part of the site.
+
+User-agent: *
+Disallow: /test/
+Allow: /
+
+Sitemap: %s/sitemap.xml
+''' % (SITE_URL, SITE_URL)
+
+
+def manifest_json():
+    """The web manifest: what the site is called when it is installed to a
+    phone home screen, which is its own small SEO surface. Colours are the
+    page's own, read from the palette, so it cannot drift from the site."""
+    icons = [{'src': '/favicon.svg', 'sizes': 'any',
+              'type': 'image/svg+xml', 'purpose': 'any'}]
+    logo = find_image('logo-mark') or find_image('social')
+    if logo:
+        icons.append({'src': '/img/' + logo, 'sizes': '512x512',
+                      'type': 'image/png', 'purpose': 'any'})
+    data = {
+        'name': NAME,
+        'short_name': 'Chaska Point',
+        'description': PAGE_DESC['/'],
+        'start_url': '/',
+        'scope': '/',
+        'display': 'standalone',
+        'orientation': 'portrait',
+        'background_color': PALETTE['bg'],
+        'theme_color': PALETTE['bg'],
+        'lang': 'en',
+        'dir': 'ltr',
+        'categories': ['food', 'restaurant', 'lifestyle'],
+        'icons': icons,
+    }
+    return json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + '\n'
+
+
+def not_found_page():
+    """The 404, in the site's own chrome.
+
+    Served by the host for any path that is not a page, at whatever URL
+    the guest actually asked for. So it cannot be canonical, and it asks
+    not to be indexed: it is not a document, and indexing it would put a
+    dead link in a search result. No JSON-LD either -- there is no
+    restaurant described here, and a Restaurant block on a 404 would be
+    structured data attached to the wrong URL."""
+    links = '\n'.join(
+        '            <li><a href="%s">%s</a></li>' % (url, esc(label))
+        for _fn, url, label, _nav in PAGES if _nav)
+    return '''<!DOCTYPE html>
+<html lang="en" class="no-js" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found &mdash; %(name)s</title>
+<meta name="description" content="That page is not one of ours. The menu, the story, the hours and the reservation form all are.">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="%(bg)s">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/style.css">
+<script>document.documentElement.className=document.documentElement.className.replace('no-js','js')</script>
+</head>
+<body data-page="/404">
+<a class="skip" href="#main">Skip to content</a>
+%(header)s
+%(overlays)s
+<main id="main">
+  <section class="sect" id="notfound" aria-labelledby="nf-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Error 404</p>
+        <h1 id="nf-h">Nothing at this address</h1>
+        <span class="rule" aria-hidden="true"></span>
+        <p class="lede">The page you asked for is not one of ours. Nothing is
+          broken &mdash; there is simply nothing at that door, and we would
+          rather say so than show you an error from the host. Everything the
+          site does have is below.</p>
+      </div>
+      <ul class="nf-links">
+%(links)s
+      </ul>
+      <p class="nf-alt">Or call the room on
+        <a href="tel:%(tel)s">%(phone)s</a> and we will find you a table.</p>
+    </div>
+  </section>
+</main>
+%(footer)s
+<script src="/js/site-config.js" defer></script>
+<script src="/js/header.js" defer></script>
+</body>
+</html>
+''' % {
+        'name': esc(NAME), 'tel': esc(need('phoneHref')),
+        'phone': esc(need('phone')), 'bg': esc(PALETTE['bg']),
+        'header': header('/404'), 'overlays': overlays('/404'),
+        'footer': footer(), 'links': links,
+    }
+
 
 
 # ===================================================================
@@ -1384,6 +1743,81 @@ def validate(pages):
         if url not in pages:
             problems.append('page declared but not built: ' + url)
 
+    # 8. The sitemap has to agree with the site. A page added to PAGES and
+    #    left out of the sitemap is a page Google is never told about, and
+    #    a page that is in the sitemap but not built is a 404 handed
+    #    straight to a crawler. Both are invisible in a browser.
+    sitemap = sitemap_xml()
+    listed = re.findall(r'<loc>([^<]+)</loc>', sitemap)
+    expected = [absolute(u) for _fn, u, _l, _n in PAGES]
+    for miss in sorted(set(expected) - set(listed)):
+        problems.append('page missing from sitemap.xml: ' + miss)
+    for extra in sorted(set(listed) - set(expected)):
+        problems.append('sitemap.xml lists a page that is not built: ' + extra)
+
+    # 9. The canonical on every page is that page's own address. A
+    #    canonical pointing somewhere else tells a search engine the pages
+    #    you own are somewhere they are not, which is the single most
+    #    expensive thing a head tag can get wrong.
+    for url, out in sorted(pages.items()):
+        canon = re.findall(r'<link rel="canonical" href="([^"]+)"', out)
+        if canon != [absolute(url)]:
+            problems.append('%s: canonical is %s, expected [%s]'
+                            % (url, canon, absolute(url)))
+        # The share card has to be absolute. WhatsApp fetches the image on
+        # its own servers and has no idea which host the link came from, so
+        # a root-relative og:image previews as nothing at all.
+        for prop in re.findall(r'<meta property="og:(?:image|url)" content="([^"]+)"', out):
+            if not prop.startswith('https://'):
+                problems.append('%s: og image or url is not absolute: %s' % (url, prop))
+
+    # 10. The JSON-LD has to be JSON, and has to be a Restaurant. A
+    #     syntax error in it is silently ignored by every consumer, and a
+    #     structured data block that never parses looks fine in the page.
+    for url, out in sorted(pages.items()):
+        blocks = re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>', out, re.S)
+        if len(blocks) != 1:
+            problems.append('%s: %d JSON-LD blocks, expected exactly 1'
+                            % (url, len(blocks)))
+            continue
+        try:
+            ld = json.loads(blocks[0].replace('\\u003c', '<'))
+        except ValueError as e:
+            problems.append('%s: JSON-LD does not parse: %s' % (url, e))
+            continue
+        if ld.get('@type') != 'Restaurant':
+            problems.append('%s: JSON-LD @type is %r, expected Restaurant'
+                            % (url, ld.get('@type')))
+        # The schema is only worth anything if it agrees with the page it
+        # is on, and it is generated from the same config, so the two can
+        # only drift if someone hardcodes one of them.
+        if ld.get('name') != need('name'):
+            problems.append('%s: JSON-LD name disagrees with the config' % url)
+        if ld.get('telephone') != need('phone'):
+            problems.append('%s: JSON-LD telephone disagrees with the config' % url)
+        if not ld.get('openingHoursSpecification'):
+            problems.append('%s: JSON-LD has no opening hours' % url)
+
+    # 11. The generated JSON/XML files have to parse. A sitemap that is not
+    #     well-formed XML is silently discarded; a manifest that is not
+    #     valid JSON installs nothing and says nothing.
+    try:
+        import xml.etree.ElementTree as ET
+        ET.fromstring(sitemap)
+    except Exception as e:
+        problems.append('sitemap.xml is not well-formed XML: %s' % e)
+    try:
+        json.loads(manifest_json())
+    except ValueError as e:
+        problems.append('site.webmanifest is not valid JSON: %s' % e)
+
+    # 12. robots.txt has to point at the sitemap the build just wrote, at
+    #     the absolute URL, or the two files are not connected to anything.
+    robots = robots_txt()
+    if ('Sitemap: ' + absolute('/sitemap.xml')) not in robots:
+        problems.append('robots.txt does not advertise the sitemap')
+
     return problems, n_links, n_refs
 
 
@@ -1412,6 +1846,17 @@ if __name__ == '__main__':
     with open(os.path.join(ROOT, 'favicon.svg'), 'w', encoding='utf-8') as f:
         f.write(FAVICON)
     print('  %-20s %7d bytes' % ('favicon.svg', len(FAVICON.encode())))
+
+    # Generated for machines, not for guests. None of them is linked from
+    # the markup, so validate() has no reason to look at them; they get
+    # their own checks below instead.
+    for fn, text in (('sitemap.xml', sitemap_xml()),
+                     ('robots.txt', robots_txt()),
+                     ('site.webmanifest', manifest_json()),
+                     ('404.html', not_found_page())):
+        with open(os.path.join(ROOT, fn), 'w', encoding='utf-8') as f:
+            f.write(text)
+        print('  %-20s %7d bytes' % (fn, len(text.encode())))
 
     problems, n_links, n_refs = validate(written)
     print('  %d dishes, %d links, %d local files, all ids unique per page'

@@ -1,0 +1,10 @@
+# https://umar-hayat-chaska-point.vercel.app/robots.txt
+# There is nothing to hide on this site and no analytics, no tracking and
+# no third-party requests, so nothing is disallowed except the test
+# harness, which is not part of the site.
+
+User-agent: *
+Disallow: /test/
+Allow: /
+
+Sitemap: https://umar-hayat-chaska-point.vercel.app/sitemap.xml

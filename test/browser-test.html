@@ -591,8 +591,31 @@ async function run() {
   /* ------------------------------------------------ placeholder data */
   const todos = win.SITE.todos();
   ok('SITE.todos() reports the known placeholders', todos.length > 5, todos.length + ' reported');
-  ok('SITE.todos() flags the contact email', todos.some(t => /email/i.test(t)));
   ok('SITE.todos() flags the interlude quote', todos.some(t => /quote/i.test(t)));
+
+  /* Whether todos() still lists the email is a question about the config,
+     not about the function, and it changes the moment a real address goes
+     in -- which is exactly when a check written as "the email must be
+     flagged" starts failing on a site that has been finished. So what is
+     tested here is the detector: put a placeholder back, and it has to
+     say so. */
+  const realEmail = win.SITE.email;
+  win.SITE.email = 'hello@example.com';
+  const withFake = win.SITE.todos();
+  win.SITE.email = realEmail;
+  const afterRestore = win.SITE.todos();
+  ok('SITE.todos() flags a contact email that is still a placeholder',
+     withFake.some(t => /email/i.test(t)),
+     withFake.filter(t => /email/i.test(t)).join('; ') || 'not reported');
+  ok('and stops flagging it once the real address is in',
+     !afterRestore.some(t => /email/i.test(t)),
+     'the live address is ' + JSON.stringify(realEmail));
+  /* And the flag has to be one line, not a rewrite of the list: putting a
+     placeholder back adds exactly one entry and taking it away removes
+     exactly one, which is what proves the list is derived rather than
+     written out by hand somewhere. */
+  eq('SITE.todos() adds exactly one line for one placeholder field',
+     withFake.length, afterRestore.length + 1);
 
   /* ------------------------------------------------ no third parties */
   const ext = win.performance.getEntriesByType('resource')
@@ -1302,9 +1325,16 @@ async function run() {
      ignore. SITE.todos() is where that is tracked. */
   const ogEl = doc.querySelector('meta[property="og:image"]');
   const ogSrc = ogEl && ogEl.getAttribute('content');
+  /* og:image has to be absolute, because WhatsApp and Facebook fetch it
+     on their own servers and have no idea which host the link came from.
+     So the existence check takes the path back off and asks the host
+     running these tests. Fetching the absolute URL here would need the
+     production domain to resolve, and a check that fails for a reason
+     having nothing to do with the site is one people learn to ignore. */
+  const ogPath = ogSrc ? new URL(ogSrc, location.href).pathname : '';
   let ogExists = false;
-  if (ogSrc) {
-    try { ogExists = (await fetch(ogSrc, { method: 'HEAD' })).ok; } catch (e) { ogExists = false; }
+  if (ogPath) {
+    try { ogExists = (await fetch(ogPath, { method: 'HEAD' })).ok; } catch (e) { ogExists = false; }
   }
   ok('the share card image exists', ogExists, ogSrc || 'no og:image meta tag');
   /* Reported, not asserted. img/social.jpg has not been photographed yet
@@ -1320,6 +1350,285 @@ async function run() {
          Array.from(r.cssRules).some(x => /\[data-reveal\]/.test(x.selectorText || '') &&
            /^1(\.0+)?$/.test((x.style && x.style.opacity) || '')));
      } catch (e) { return false; } }));
+
+  stage('seo');
+  /* ============================================ canonical and schema */
+  /* The three things on this site that are read by something other than a
+     browser: the canonical URL, the share card, and the structured data.
+     All three are absolute, all three are generated from one config value
+     (SITE.url), and all three are the kind of mistake that is invisible
+     in a browser and expensive to find later -- a canonical pointing at
+     the wrong host tells a search engine the pages you own live
+     somewhere you do not control, and structured data that does not parse
+     is discarded in silence.
+
+     They are generated rather than hand-written, so the risk is not that
+     somebody mistypes one but that the two halves drift apart. Hence most
+     of what follows compares them to each other and to the config. */
+  const SITE_URL = String(win.SITE.url || '').replace(/\/+$/, '');
+  ok('the config names an absolute https origin for the site',
+     /^https:\/\/[^\s/?#]+$/.test(SITE_URL), SITE_URL || 'SITE.url is missing');
+  const SCHEMA_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+                       'Thursday', 'Friday', 'Saturday'];
+  const dishCount = JSON.parse(doc.getElementById('menuIndex').textContent).length;
+  const lds = {};
+
+  for (const p of PAGES) {
+    await goto(p.url);
+    resync();
+    const at = '/' + p.file;
+
+    const canon = doc.querySelectorAll('link[rel=canonical]');
+    eq(at + ' has exactly one canonical link', canon.length, 1);
+    const ch = canon[0] && canon[0].getAttribute('content' || 'href') || (canon[0] && canon[0].href);
+    eq(at + ' canonical is its own absolute address', ch, SITE_URL + p.url);
+    eq(at + ' og:url is the same address as the canonical',
+       (doc.querySelector('meta[property="og:url"]') || {}).content, ch);
+
+    const ogImg = (doc.querySelector('meta[property="og:image"]') || {}).content || '';
+    ok(at + ' og:image is absolute', /^https?:\/\//.test(ogImg), ogImg || 'no og:image');
+    ok(at + ' names a web manifest', !!doc.querySelector('link[rel=manifest][href]'));
+
+    /* Structured data. A syntax error here is invisible: the block is in
+       the page, the page renders, and every consumer ignores it. */
+    const blocks = doc.querySelectorAll('script[type="application/ld+json"]');
+    eq(at + ' has exactly one JSON-LD block', blocks.length, 1);
+    let ld = null;
+    try { ld = JSON.parse(blocks[0].textContent); } catch (e) { ld = null; }
+    ok(at + ' JSON-LD parses', !!ld, ld ? '' : (blocks[0] || {}).textContent);
+    if (!ld) continue;
+    lds[p.url] = ld;
+
+    ok(at + ' JSON-LD declares a Restaurant', ld['@type'] === 'Restaurant', ld['@type']);
+    ok(at + ' JSON-LD name agrees with the site name', ld.name === win.SITE.name, ld.name);
+    ok(at + ' JSON-LD telephone agrees with the config', ld.telephone === win.SITE.phone, ld.telephone);
+    ok(at + ' JSON-LD url agrees with the canonical', ld.url === ch, ld.url);
+    ok(at + ' JSON-LD image is absolute', /^https?:\/\//.test(ld.image || ''), ld.image);
+    ok(at + ' JSON-LD has a postal address naming the city',
+       !!(ld.address && ld.address.addressLocality === win.SITE.address.city &&
+          ld.address.streetAddress), JSON.stringify(ld.address));
+    ok(at + ' JSON-LD says it takes reservations', ld.acceptsReservations === 'True');
+    ok(at + ' JSON-LD links its own menu page',
+       ld.hasMenu === SITE_URL + '/menu', ld.hasMenu);
+
+    /* The hours, checked against the config rather than against the page,
+       because the page groups the same hours into one row and the schema
+       is meant to. Every day exactly once: a day listed twice is a day
+       the restaurant is open twice over, and one left out is a day a
+       guest is told the kitchen is shut. */
+    const covered = [];
+    (ld.openingHoursSpecification || []).forEach(s =>
+      (s.dayOfWeek || []).forEach(d => covered.push(SCHEMA_DAYS.indexOf(String(d).split('/').pop()))));
+    const flat = covered.slice().sort((a, b) => a - b);
+    ok(at + ' JSON-LD opening hours cover all seven days exactly once',
+       flat.length === 7 && flat.every((d, i) => d === i), '[' + covered.join(',') + ']');
+    const spec = ld.openingHoursSpecification || [];
+    /* One page's table, not both of them: /visit carries the hours in the
+       section and again in the footer, so counting every .hours on the
+       page would compare two grouped rows in the schema against four
+       printed rows and call a correct build wrong. */
+    const tableRows = doc.querySelectorAll('.hours')[0];
+    const pageRows = tableRows ? tableRows.querySelectorAll('[data-days]').length : -1;
+    ok(at + ' JSON-LD groups the days that share hours, as the page does',
+       spec.length === pageRows && pageRows > 0,
+       spec.length + ' in the schema, ' + pageRows + ' rows in the hours table');
+
+    /* The menu, counted against the same list the page renders. This is
+       the check that would catch a dish added to ITEMS and left out of
+       the schema, or a price quoted in one and not the other -- a price
+       is the part of a menu a guest actually acts on. */
+    const inSchema = (ld.menu && ld.menu.hasMenuSection || [])
+      .reduce((n, s) => n + (s.hasMenuItem || []).length, 0);
+    eq(at + ' JSON-LD lists every dish the site renders', inSchema, dishCount);
+    const prices = (ld.menu && ld.menu.hasMenuSection || [])
+      .flatMap(s => s.hasMenuItem || [])
+      .map(i => (i.offers || {}).price);
+    ok(at + ' every JSON-LD price is a number in the site currency',
+       prices.length > 0 && prices.every(p => /^\d+$/.test(String(p)) && ld.currenciesAccepted),
+       prices.slice(0, 3).join(',') + ' in ' + ld.currenciesAccepted);
+  }
+
+  /* The same block on every page, differing only in the url and the
+     description. One page quietly carrying a stale copy of the others is
+     a contradiction about a business that a consumer can see. */
+  const ldKeys = Object.keys(lds);
+  if (ldKeys.length === PAGES.length) {
+    const shared = ['name', 'telephone', 'email', 'image', 'priceRange',
+                    'currenciesAccepted', 'hasMenu', 'acceptsReservations'];
+    const stable = key => JSON.stringify(lds[ldKeys[0]][key]);
+    const drift = shared.filter(k => lds[ldKeys[0]][k] !== undefined &&
+      ldKeys.some(u => lds[u][k] !== lds[ldKeys[0]][k]));
+    ok('every page states the same facts about the restaurant',
+       drift.length === 0, drift.length ? drift.join(', ') + ' differ' : shared.length + ' fields checked');
+    ok('and each page describes itself with its own url',
+       ldKeys.every(u => lds[u].url === SITE_URL + u),
+       ldKeys.map(u => lds[u].url).join(' '));
+  }
+
+  /* ======================================== the machine-facing files */
+  stage('sitemap');
+  /* sitemap.xml, robots.txt and the manifest are generated, and none of
+     them is linked from the markup, so nothing in the suite above would
+     notice if one stopped being written or stopped matching the site. */
+  const getText = async (path) => {
+    try {
+      const r = await fetch(path);
+      return r.ok ? await r.text() : '';
+    } catch (e) { return ''; }
+  };
+
+  const sm = await getText('/sitemap.xml');
+  ok('sitemap.xml is served', sm.length > 0, sm.length + ' bytes');
+  const locs = (sm.match(/<loc>([^<]+)<\/loc>/g) || []).map(s => s.replace(/<\/?loc>/g, ''));
+  const wantLocs = PAGES.map(p => SITE_URL + p.url);
+  ok('the sitemap lists every page, and only the pages',
+     locs.length === wantLocs.length &&
+     wantLocs.every(u => locs.indexOf(u) !== -1) &&
+     locs.every(u => wantLocs.indexOf(u) !== -1),
+     locs.join(' '));
+  ok('every sitemap url is absolute', locs.every(u => /^https:\/\//.test(u)));
+  /* The 404 is a response to an address that does not exist. Listing it
+     invites a crawler to fetch it and be told, in a machine-readable
+     way, that it should. */
+  ok('the sitemap does not list the 404 page',
+     !locs.some(u => /404/.test(u)), locs.filter(u => /404/.test(u)).join(' '));
+  ok('every sitemap url ends in a real page file',
+     locs.length > 0 && (await Promise.all(wantLocs.map(async u => {
+       try { return (await fetch(new URL(u).pathname, { method: 'HEAD' })).ok; }
+       catch (e) { return false; }
+     }))).every(Boolean));
+
+  const rb = await getText('/robots.txt');
+  ok('robots.txt is served', rb.length > 0, rb.length + ' bytes');
+  ok('robots.txt advertises the sitemap by absolute url',
+     rb.indexOf('Sitemap: ' + SITE_URL + '/sitemap.xml') !== -1,
+     rb.split('\n').filter(l => /^sitemap:/i.test(l)).join(' ') || 'no Sitemap: line');
+  /* robots.txt points at a sitemap that is not there and the whole
+     connection between the two is lost, silently. */
+  ok('the sitemap robots.txt points at is really served',
+     !!(await getText('/sitemap.xml')).length);
+
+  stage('manifest');
+  const mf = await getText('/site.webmanifest');
+  ok('site.webmanifest is served', mf.length > 0, mf.length + ' bytes');
+  let man = null;
+  try { man = JSON.parse(mf); } catch (e) { man = null; }
+  ok('site.webmanifest is valid JSON', !!man, man ? '' : mf.slice(0, 80));
+  if (man) {
+    ok('the manifest names the site and where it starts',
+       man.name === win.SITE.name && man.start_url === '/', man.name + ' @ ' + man.start_url);
+    ok('the manifest is named off the site name, so it fits a home screen',
+       man.short_name && man.short_name.length <= 12 &&
+       man.short_name.length < man.name.length, man.short_name);
+    /* The icon has to be a file, or the home screen shows a blank tile --
+       and a manifest that names a missing icon is the one failure here
+       that is invisible until someone installs it. */
+    const iconPaths = (man.icons || []).map(i => new URL(i.src, location.href).pathname);
+    ok('the manifest names at least one icon', iconPaths.length > 0);
+    const iconOk = await Promise.all(iconPaths.map(async p => {
+      try { return (await fetch(p, { method: 'HEAD' })).ok; } catch (e) { return false; }
+    }));
+    ok('every icon the manifest names is a file that is served', iconOk.every(Boolean),
+       iconPaths.join(' '));
+    /* The manifest's colours have to be the page's own, or an installed
+       icon sits on a background the site does not use. */
+    const pageBg = win.getComputedStyle(win.document.documentElement)
+      .getPropertyValue('--bg').trim();
+    ok('the manifest background is the page ground colour',
+       !!pageBg && man.background_color === pageBg && man.theme_color === pageBg,
+       'manifest ' + man.background_color + '/' + man.theme_color + ', --bg ' + pageBg);
+  }
+  /* Named in the head of every page, or nothing installs it. */
+  ok('every page links the manifest',
+     (await Promise.all(PAGES.map(async p => {
+       const t = await getText(new URL(p.url, location.href).pathname);
+       return /<link rel="manifest" href="\/site\.webmanifest">/.test(t);
+     }))).every(Boolean));
+
+  stage('notfound');
+  /* The host serves this for any address that is not a page, so it is the
+     one screen a guest can land on with no way back to the menu. It has
+     to carry the site's own chrome, offer every page, and ask not to be
+     indexed -- it is a response, not a document. */
+  await goto('/404.html');
+  resync();
+  eq('the 404 page has exactly one h1', doc.querySelectorAll('h1').length, 1);
+  ok('the 404 asks not to be indexed',
+     (doc.querySelector('meta[name=robots]') || {}).content === 'noindex, follow',
+     (doc.querySelector('meta[name=robots]') || {}).content || 'no robots meta');
+  /* A canonical on the 404 would tell a search engine the page a guest
+     mistyped is a real page of the site. It is not one. */
+  eq('the 404 has no canonical link', doc.querySelectorAll('link[rel=canonical]').length, 0);
+  eq('the 404 carries no structured data',
+     doc.querySelectorAll('script[type="application/ld+json"]').length, 0);
+  ok('the 404 has the site header and footer',
+     !!doc.querySelector('.site-hdr') && !!doc.querySelector('.site-foot'));
+  const nfLinks = Array.from(doc.querySelectorAll('.nf-links a'))
+    .map(a => normPath(a.getAttribute('href')));
+  ok('the 404 offers every page in the nav',
+     PAGES.filter(x => x.url !== '/reserve').every(x => nfLinks.indexOf(x.url) !== -1) &&
+     nfLinks.length === PAGES.filter(x => x.url !== '/reserve').length,
+     nfLinks.join(' '));
+  /* A dead end that overflows sideways on a phone is a dead end on every
+     other address too, and the error page is the one nobody tests by
+     eye. The nav scroller is exempt for the same reason as everywhere
+     else. The width has to be set before measuring, or this compares a
+     1280px layout against a 360px budget and reports the whole page. */
+  await setWidth(360, 780);
+  const nfOff = overflowing(360);
+  ok('the 404 does not overflow sideways at 360px', nfOff.length === 0, nfOff.slice(0, 5).join(' | '));
+  await setWidth(1280, 900);
+  /* A guest who lands on a dead end and cannot tap what they are aiming
+     at has to type the address again. */
+  const small = Array.from(doc.querySelectorAll('.nf-links a'))
+    .filter(a => a.getBoundingClientRect().height < 44);
+  ok('the 404 links are large enough to tap', small.length === 0,
+     small.map(a => a.textContent.trim()).join(', '));
+  /* No reveal animation: a guest who mistyped a URL wants the answer now,
+     and a page that starts invisible because an observer has not fired is
+     the worst possible first impression. */
+  eq('the 404 hides nothing behind a scroll reveal',
+     doc.querySelectorAll('[data-reveal]').length, 0);
+
+  stage('headings');
+  /* A section that is a <h2> on the home page is the whole page's <h1>
+     everywhere else. The stylesheet has to style both, and when it styled
+     only h2 every page title fell back to the browser default and set at
+     30px against the 56px it was always meant to be -- on all five of the
+     pages that are not the home page, and invisible to any check that
+     only counted h1s. So the size is compared, not asserted against a
+     number that would need editing every time the type scale changes. */
+  const headSizes = {};
+  for (const p of PAGES) {
+    /* The home page is not part of this comparison. Its h1 is the hero
+       wordmark at 121.6px, which is a different thing on purpose and is
+       asserted as the restaurant's name further up. The pages being
+       compared here are the five where a section heading has become the
+       heading of the whole page. */
+    if (p.url === '/') continue;
+    await goto(p.url);
+    resync();
+    const h = doc.querySelector('main h1');
+    const sec = h && h.closest('.sec-head, .story-body, .res-body');
+    headSizes[p.url] = h ? {
+      px: parseFloat(win.getComputedStyle(h).fontSize),
+      inSecHead: !!sec
+    } : null;
+  }
+  /* The reference: the same heading, as an h2, on the home page. */
+  await goto('/');
+  resync();
+  const homeSecH2 = doc.querySelector('main .sec-head h2');
+  const refPx = homeSecH2 && parseFloat(win.getComputedStyle(homeSecH2).fontSize);
+  ok('a section heading is measurable on the home page to compare against', refPx > 0, refPx + 'px');
+  const wrong = Object.keys(headSizes).filter(u =>
+    !headSizes[u] || !headSizes[u].inSecHead || Math.abs(headSizes[u].px - refPx) > 0.5);
+  ok('every page title is set at the size of the same heading on the home page',
+     wrong.length === 0 && Object.keys(headSizes).length === PAGES.length - 1,
+     wrong.length ? wrong.map(u => u + '=' + (headSizes[u] ? headSizes[u].px + 'px' : 'missing')).join(' ') :
+                    'all ' + Object.keys(headSizes).length + ' pages at ' + refPx + 'px');
+  ok('and that size is a real heading, not the browser default',
+     refPx >= 40, refPx + 'px (the UA default for an h1 on this body size is 30.4px)');
 
   /* ======================================================== done */
   paint(true);

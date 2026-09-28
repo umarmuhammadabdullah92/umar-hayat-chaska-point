@@ -151,7 +151,12 @@ ul,ol{list-style:none;}
 .eyebrow::after{content:'';width:38px;height:1px;background:currentColor;opacity:.55;}
 
 .sec-head{max-width:780px;margin-bottom:clamp(48px,6vw,86px);}
-.sec-head h2{font-size:var(--fs-h2);letter-spacing:-.018em;margin-bottom:24px;}
+/* The same block is a section on the home page and the whole page
+   elsewhere, so its top heading is an h2 in the first case and an h1 in
+   the second. Targeting the tag alone styled only the home page: every
+   page's own <h1> fell back to the browser default and set at 30px
+   against the 56px it was always meant to be. */
+.sec-head h1,.sec-head h2{font-size:var(--fs-h2);letter-spacing:-.018em;margin-bottom:24px;}
 .sec-head .lede{color:var(--fg-soft);font-size:var(--fs-lede);line-height:1.8;max-width:var(--measure);}
 
 .rule{display:block;width:54px;height:1px;background:var(--gold);opacity:.8;}
@@ -584,7 +589,7 @@ ul,ol{list-style:none;}
   max-width:var(--max-w);margin:0 auto;padding-inline:var(--gutter);
 }
 .story-fig{position:sticky;top:calc(var(--hdr-h,116px) + 32px);}
-.story-body h2{font-size:var(--fs-h2);letter-spacing:-.018em;margin-bottom:30px;}
+.story-body h1,.story-body h2{font-size:var(--fs-h2);letter-spacing:-.018em;margin-bottom:30px;}
 .story-body p{color:var(--fg-soft);line-height:1.95;max-width:56ch;}
 .story-body p + p{margin-top:20px;}
 .story-close{
@@ -674,7 +679,7 @@ ul,ol{list-style:none;}
   display:grid;grid-template-columns:.9fr 1.1fr;
   gap:clamp(36px,5vw,84px);align-items:start;
 }
-.res-body h2{font-size:var(--fs-h2);letter-spacing:-.018em;margin-bottom:24px;}
+.res-body h1,.res-body h2{font-size:var(--fs-h2);letter-spacing:-.018em;margin-bottom:24px;}
 .res-body .lede{color:var(--fg-soft);font-size:var(--fs-lede);line-height:1.8;}
 .res-facts{list-style:none;margin-top:34px;padding-top:26px;border-top:1px solid var(--line);}
 .res-facts li{
@@ -748,6 +753,13 @@ ul,ol{list-style:none;}
 .visit{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,80px);align-items:start;}
 .info-row{display:flex;gap:16px;padding:22px 0;border-bottom:1px solid var(--line);}
 .info-row:first-child{padding-top:0;}
+/* A flex item will not shrink below the width of its longest word unless
+   it is told it may, so one long unbreakable value -- an email address is
+   the usual one, and a real one is always longer than the placeholder it
+   replaced -- used to push the whole column off the side of a 360px
+   phone. min-width:0 lets the item shrink; overflow-wrap gives the one
+   word somewhere to break. */
+.info-row > div{min-width:0;overflow-wrap:anywhere;}
 .info-ico{
   width:42px;height:42px;flex-shrink:0;border:1px solid var(--line-2);
   border-radius:var(--r-m);color:var(--gold);
@@ -786,6 +798,50 @@ ul,ol{list-style:none;}
 }
 .soc:hover{color:var(--gold);background:var(--gold-wash);}
 .soc svg{width:18px;height:18px;}
+
+/* =====================================================================
+   NOT FOUND
+   ---------------------------------------------------------------------
+   Served by the host for any address that is not a page, so this is the
+   one screen a guest can arrive at with no way back. It carries the
+   site's own header and footer rather than being a bare error string,
+   and it links every page rather than making a lost guest type the
+   address again.
+
+   The links are set as a set of choices rather than a list of addresses:
+   a dead end is a dead end whichever way it is labelled, so the page
+   says what the site is and then offers the five places worth going.
+   ===================================================================== */
+.nf-links{
+  list-style:none;margin:0;padding:0;
+  border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+}
+.nf-links a{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  min-height:60px;padding:14px 4px 14px 0;
+  border-bottom:1px solid var(--line);
+  font-family:var(--display);font-size:var(--fs-h3);
+  color:var(--fg);transition:color .2s;
+}
+.nf-links a::after{
+  content:'';flex-shrink:0;width:20px;height:10px;
+  /* The same arrow the rest of the site draws, as a chevron in two
+     borders rather than an <svg>, so a list of them costs no markup. */
+  border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;
+  transform:rotate(45deg) translate(-2px,2px);
+  color:var(--gold);opacity:.65;transition:transform .2s,opacity .2s;
+}
+.nf-links a:hover{color:var(--gold);}
+.nf-links a:hover::after{opacity:1;transform:rotate(45deg) translate(1px,-1px);}
+.nf-links a:focus-visible::after{opacity:1;}
+/* The row is the tap target, not the words: a link you have to hit
+   precisely is a link that fails on a phone. */
+.nf-links li{margin:0;}
+.nf-alt{
+  margin-top:34px;font-size:var(--fs-small);color:var(--fg-muted);
+}
+.nf-alt a{color:var(--gold);border-bottom:1px solid var(--gold-deep);}
 
 /* =====================================================================
    FOOTER

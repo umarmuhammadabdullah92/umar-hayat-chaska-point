@@ -36,6 +36,28 @@
   ],
   "headers": [
     {
+      "source": "/(sitemap.xml|robots.txt)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/site.webmanifest",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    },
+    {
       "source": "/fonts/(.*)",
       "headers": [
         {
@@ -54,16 +76,7 @@
       ]
     },
     {
-      "source": "/(logo|logo-120|logo-min).webp",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=604800, stale-while-revalidate=2592000"
-        }
-      ]
-    },
-    {
-      "source": "/logo-min.png",
+      "source": "/(umarhayatchaskapoint|umarhayatchaskapoint-trimmed).png",
       "headers": [
         {
           "key": "Cache-Control",

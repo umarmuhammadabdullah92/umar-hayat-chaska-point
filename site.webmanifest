@@ -1,0 +1,32 @@
+{
+  "background_color": "#0B0907",
+  "categories": [
+    "food",
+    "restaurant",
+    "lifestyle"
+  ],
+  "description": "Umar Hayat Chaska Point in Sahiwal. Nashta cooked the way it has been cooked here for three generations, and a charcoal grill that runs until midnight. Read the menu, see the hours, book a table.",
+  "dir": "ltr",
+  "display": "standalone",
+  "icons": [
+    {
+      "purpose": "any",
+      "sizes": "any",
+      "src": "/favicon.svg",
+      "type": "image/svg+xml"
+    },
+    {
+      "purpose": "any",
+      "sizes": "512x512",
+      "src": "/img/social.png",
+      "type": "image/png"
+    }
+  ],
+  "lang": "en",
+  "name": "Umar Hayat Chaska Point",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "Chaska Point",
+  "start_url": "/",
+  "theme_color": "#0B0907"
+}

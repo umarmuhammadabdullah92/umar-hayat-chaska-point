@@ -11,6 +11,12 @@ story.html              generated. Do not hand-edit.
 private-dining.html     generated. Do not hand-edit.
 visit.html              generated. Do not hand-edit.
 reserve.html            generated. Do not hand-edit.
+404.html                generated. Served by the host for any unknown address.
+sitemap.xml             generated. Machine-readable list of the six pages.
+robots.txt              generated. Crawl rules; points at the sitemap.
+site.webmanifest        generated. What the site is called when installed.
+favicon.svg             generated. The U monogram.
+tools/make-share-image.py  renders img/social.png, the 1200x630 link card.
 ```
 
 | Route | Page | What is on it |
@@ -33,14 +39,53 @@ the links in the markup are the links that are tested. Old addresses are
 kept working by redirects: `/about` → `/story`, `/contact` → `/visit`,
 `/dining` → `/private-dining`, `/reservation` → `/reserve`.
 
+## Where the site is, and how a search engine reads it
+
+Every page names itself a second time, to software that is not a browser
+and cannot see the design: a canonical URL, an `og:url`, and an
+`application/ld+json` block describing a **Restaurant** with its address,
+phone, opening hours and the full menu and prices. All of it is generated
+from the same `js/site-config.js` as the visible page, so the schema and
+the page cannot drift apart: the hours in the structured data and the
+hours in the footer are the same list of numbers, printed two ways.
+
+Three things follow from that:
+
+- **`/sitemap.xml`, `robots.txt` and `site.webmanifest` are generated** by
+  every build, not kept by hand, because a hand-kept sitemap goes stale
+  the first time a page is added and a stale sitemap advertises a URL
+  that 404s. A page added to `PAGES` and not the sitemap fails the build.
+- **`/404.html` is generated** in the site's own chrome. Vercel serves it
+  for any unknown address, so a guest who mistypes, or follows a stale
+  link, gets the site's header and footer and a list of every page rather
+  than the host's generic error page. It is `noindex`, has no canonical
+  and no structured data, because it is a response and not a document.
+- **The one address everything is built from is `SITE.url`** in
+  `js/site-config.js`. Change it there, rebuild, and the canonical, the
+  sitemap, robots, the manifest and the JSON-LD all move with it. It is a
+  TODO placeholder (`umar-hayat-chaska-point.vercel.app`) until the real
+  domain exists, and `SITE.todos()` reports it as such.
+
+`og:image` points at `img/social.png`, a 1200x630 card generated from the
+site's own wordmark and palette (see `img/README.md`). A share card has to
+be absolute -- WhatsApp fetches it on its own servers -- and it has to be
+sized for the feed it appears in: the trimmed logo this used as a fallback
+is 426x278, a blurred stamp at the size the platforms render it.
+
+The test suite checks all of this, including that each new check can fail:
+see *SEO guards* under Testing.
+
 ---
 
 ## Read this before the site goes live
 
-**Nothing on this site is real business data.** The address, phone number,
-WhatsApp number, email, opening hours, social links, founding year, and
-almost all of the prose are invented so the layout could be built and
-judged. They must be replaced. See *Placeholder data* below.
+**Nothing on this site is real business data except the email.** The
+address, phone number, WhatsApp number, opening hours, social links,
+founding year, the domain, and almost all of the prose are invented so the
+layout could be built and judged. They must be replaced. See *Placeholder
+data* below. Every one of them is source to both the visible page and the
+structured data, so nothing is published in one and omitted from the
+other.
 
 The reservation form does not book anything. It validates what the guest
 typed and hands the request to WhatsApp, where a person reads it.
@@ -76,9 +121,15 @@ Currently outstanding:
 - **Nine of the sixteen dishes carry a price of `999`**, a sentinel for
   "not a real price yet". The remaining seven are barbecue items with
   prices that look plausible and are not real. `python3 build.py` lists
-  every one.
-- Address, phone, WhatsApp number, email, all social links
+  every one. The same prices are the `priceRange` and every `MenuItem` in
+  the structured data, so they are the one placeholder this site now
+  publishes as a fact to a search engine, on a page it calls the menu.
+- Address, phone, WhatsApp number, all social links
+- **`SITE.url`**, still the Vercel preview domain. Until it is the real
+  one, every canonical on the site, the sitemap and the JSON-LD assert a
+  domain that belongs to Vercel.
 - Opening hours, and the largest table the room seats
+- The cuisine list (`SITE.cuisine`) is inferred, not confirmed.
 - The interlude quote and every paragraph of the story and experience copy
 - The descriptions in `ITEMS` are one-line definitions ("Egg curry."),
   not copy. Nothing on the site displays them -- see *The menu format* --
@@ -128,14 +179,20 @@ since those are correct regional spellings rather than typos.
 Everything is in **`js/site-config.js`**. No other file needs touching.
 
 ```js
-phone:     '+92 300 0000000',   // tel: link, footer and WhatsApp all read this
+url:       'https://umar-hayat-chaska-point.vercel.app',  // the one domain; TODO
+phone:     '+92 300 0000000',   // tel: link, footer, WhatsApp and JSON-LD all read this
 whatsapp:  '923000000000',      // country code + number, no +, no spaces
-email:     'hello@example.com',
+email:     'umarmuhammadabdullah92@gmail.com',
 currency:  { code: 'PKR', symbol: 'PKR' },
 ```
 
 `build.py` reads this file with a small parser and fails loudly if a value
 it needs is missing, rather than printing "None" into the page.
+
+`url` is deliberately called out: it is the root of the canonical on every
+page, of `sitemap.xml`, `robots.txt`, the manifest and the JSON-LD. It
+must be an `https://` origin with no path, and the build refuses anything
+else.
 
 ### Menu items
 Live in `build.py` (the `ITEMS` list) because the markup is generated. After
@@ -145,12 +202,16 @@ editing, run:
 python3 build.py
 ```
 
-It rewrites all six pages and `favicon.svg`, then checks that every page
+It rewrites all six pages, `favicon.svg`, `404.html`, `sitemap.xml`,
+`robots.txt` and `site.webmanifest`, then checks that every page
 has **exactly one `<h1>`** and never skips a heading level, that every
 `id` on a page is unique, that every link to another page points at a page
-that is actually built, that every same-page `#anchor` resolves, and that
-every local file a page asks for is on disk. Each of those renders a
-usable-looking page when it is wrong, so none of them is obvious by eye.
+that is actually built, that every same-page `#anchor` resolves, that
+every local file a page asks for is on disk, that the canonical on each
+page is that page's own absolute address, that the JSON-LD parses as a
+Restaurant, and that the sitemap lists exactly the pages that are built.
+Each of those renders a usable-looking page when it is wrong, so none of
+them is obvious by eye.
 
 It also refuses to publish a dish whose category is missing from the
 config, and a category with no dishes. A dish nobody can filter to is a
@@ -186,8 +247,9 @@ that dropping images in later cannot reflow the page:
 
 - hero and story slots are 4:5
 - the signature dish slots are 4:5
-- `img/social.jpg` is the `og:image` for link previews on WhatsApp,
-  Facebook and X. Until it exists the logo is used, which previews badly.
+- `img/social.png` is generated from the wordmark and palette as the
+  1200x630 `og:image` and the JSON-LD `photo`. A real photograph, saved as
+  `img/social.jpg`, replaces it without any other change at all.
 
 Drop a file named after the slot into `img/` and rebuild. No markup to
 edit. See `img/README.md`.
@@ -261,7 +323,7 @@ any of them appear anywhere in the rendered page.
 bash test/run.sh
 ```
 
-Builds the site, serves it, and drives it in headless Chrome: 271
+Builds the site, serves it, and drives it in headless Chrome: 418
 assertions in the main pass and 8 in a second pass under
 `--force-prefers-reduced-motion`, which confirms a guest who asks for less
 motion is not left with a page of invisible content.
@@ -292,6 +354,38 @@ reservation flow through to the generated WhatsApp message, opening hours
 and the day grouping, the mobile drawer, and the column counts and
 photo-slot ratios at each breakpoint.
 
+### SEO guards
+
+The newest group checks what software other than a browser reads, and it
+checks it against the config rather than against the page, because a page
+and its canonical are the kind of pair that drifts apart in silence:
+
+- On every page: one canonical, and it is that page's own absolute
+  address; `og:url` matches it; `og:image` is absolute; the manifest is
+  linked.
+- The JSON-LD on every page parses, declares a **Restaurant**, agrees with
+  the config on name, phone, city and reservations, covers all seven days
+  exactly once, groups the days the page groups, and lists every dish with
+  a number for a price. The six pages must state the same facts about the
+  restaurant and describe themselves with their own urls.
+- `sitemap.xml` is served, lists exactly the pages `build.py` builds, and
+  does not list the 404. `robots.txt` points at that sitemap by absolute
+  url. `site.webmanifest` parses, names a real icon path, and uses the
+  same `--bg` the stylesheet does.
+- The 404 has one `<h1>`, the site's header and footer, no canonical and
+  no structured data, `noindex, follow`, links that are large enough to
+  tap, no sideways overflow at 360px, and nothing hidden behind a scroll
+  reveal — the page is a response, not a document.
+- Every page title is set at the size of *the same heading* on the home
+  page. This group exists because it was once 30px everywhere: the
+  stylesheet styled the section head as `h2`, and when each section
+  became its own page and the top heading became an `<h1>`, every page
+  title fell back to the browser default. The check compares sizes rather
+  than asserting a number, so changing the type scale does not break it.
+- What is flagged as a placeholder is tested from both ends: put
+  `hello@example.com` into `SITE.email`, and `SITE.todos()` has to add
+  exactly one line; take it out, and the line has to go.
+
 Several of them are guards against a decision being quietly undone:
 
 - The menu check reads every description and serving note out of
@@ -300,6 +394,12 @@ Several of them are guards against a decision being quietly undone:
   of its own when it shares hours with the day next to it.
 - `build.py` fails if a page has other than exactly one `<h1>`, which is
   how five pages were caught having none.
+- `build.py` also fails if a page's canonical is not its own address, if
+  the JSON-LD does not parse, if the sitemap and the built pages disagree,
+  if robots does not point at the sitemap, or if the manifest or sitemap
+  are not valid files -- and the browser suite independently re-proves
+  each of those from the rendered output, so a check that only lives in
+  one place cannot be talked out of working.
 - `ok()` fails the run if an assertion name is used twice, because a stale
   copy of an old check is how a page quietly stops being tested while
   everything is still green. It caught one on the first run.

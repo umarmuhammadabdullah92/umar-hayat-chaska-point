@@ -13,6 +13,21 @@
    ===================================================================== */
 
 window.SITE = {
+  /* --- where the site lives --------------------------------------------
+     The one absolute address everything is built from: the canonical URL
+     on every page, og:url, sitemap.xml, robots.txt and the JSON-LD all
+     derive from this string, so moving the site is a one-line edit here
+     and a rebuild.
+
+     It must be a real, resolvable origin and must match the host the site
+     is actually served from. A canonical pointing somewhere the site is
+     not is worse than no canonical at all: it tells a search engine the
+     pages you own live on a domain you do not control.
+
+     No trailing slash, no trailing path. TODO: swap to the real domain
+     the day the site is published. */
+  url: 'https://umar-hayat-chaska-point.vercel.app',
+
   /* --- identity ------------------------------------------------------- */
   name: 'Umar Hayat Chaska Point',   // the real name, kept as given
   /* What the room actually is. The old one described the categories. */
@@ -34,14 +49,23 @@ window.SITE = {
   phone: '+92 300 0000000',
   phoneHref: '+923000000000',         // TODO — tel: target, no spaces
   whatsapp: '923000000000',           // TODO — country code + number, no +, no spaces
-  email: 'hello@example.com',         // TODO
+  email: 'umarmuhammadabdullah92@gmail.com',
   address: {
     line1: 'Shop 12, Mall Road',      // TODO
     line2: 'Sahiwal, Punjab',         // TODO
     city: 'Sahiwal',                  // TODO
     country: 'Pakistan',
+    countryCode: 'PK',                // ISO 3166-1 alpha-2, for the JSON-LD
     postcode: '60050'                 // TODO
   },
+
+  /* --- cuisine ---------------------------------------------------------
+     What the room actually serves, in the vocabulary a search engine and
+     a guest both use. Separate from the menu categories above, which are
+     how the menu is filed: "From the Coal" is a section heading and not
+     a cuisine, and putting section names in servesCuisine tells Google
+     the restaurant serves something called "From the Coal". */
+  cuisine: ['Pakistani', 'North Indian', 'Barbecue'],
 
   /* --- social ---------------------------------------------------------
      TODO: fill in the real profiles, or delete the keys you don't use.
@@ -241,6 +265,13 @@ window.SITE.todos = function () {
   flag('establishing year', SITE.est);
   flag('hero kicker', SITE.heroKicker);
   flag('hero lede', SITE.heroLede);
+  /* The canonical, sitemap and JSON-LD are all built from SITE.url, so a
+     placeholder host here is published to every search engine that reads
+     the site. Checked separately from the rest because a real-looking
+     hosting domain does not contain "TODO" or "example.com". */
+  if (!/^https:\/\//.test(SITE.url || '') || /vercel\.app|\bTODO\b/i.test(SITE.url || '')) {
+    t.push('site url (canonical, sitemap, robots and JSON-LD are built from it)');
+  }
   SITE.categories.forEach(c => { if (ph(c.note)) t.push('menu category note: ' + c.label); });
   SITE.house.forEach(h => { if (ph(h.value)) t.push('house detail: ' + h.label); });
   SITE.experience.forEach(x => { if (ph(x.body)) t.push('experience step: ' + x.title); });
@@ -256,6 +287,7 @@ window.SITE.todos = function () {
      here rather than flagged. */
   t.push('opening hours (unconfirmed)');
   t.push('menu prices (see the sentinel report from build.py)');
+  t.push('cuisine list (inferred, confirm it describes the food actually served)');
   /* The menu is names and prices only, and so are the signature cards.
      These descriptions and serving notes are written but not rendered
      anywhere, and search matches on the dish name alone. They are listed
