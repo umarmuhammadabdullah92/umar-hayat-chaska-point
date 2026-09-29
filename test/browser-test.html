@@ -720,22 +720,36 @@ async function run() {
   const h1st = win.getComputedStyle(doc.querySelector('h1'));
   ok('the hero name is set large', parseFloat(h1st.fontSize) >= 43, h1st.fontSize);
   /* Three faces, and none of them may have collapsed into another. The
-     hero name is set in the script, the wordmark in the brand serif,
-     and the body in neither. */
-  ok('the hero name is set in the script face', /^Script/.test(h1st.fontFamily),
+     wordmark is the script, the hero name stays the brand serif, and
+     the body is neither. */
+  const wmSt = win.getComputedStyle(doc.querySelector('.wordmark'));
+  ok('the wordmark is set in the script face', /^Script/.test(wmSt.fontFamily),
+     wmSt.fontFamily);
+  ok('the hero name is set in the brand face', /^Brand/.test(h1st.fontFamily),
      h1st.fontFamily);
-  const wmFace = win.getComputedStyle(doc.querySelector('.wordmark')).fontFamily;
-  ok('the wordmark is set in the brand face', /^Brand/.test(wmFace), wmFace);
   /* The script ships one weight. If the rule ever asks for 700 the
      browser fakes a bold, which smears the thin strokes -- so the
      declared weight is checked, not just the family. */
-  const heroWeight = win.getComputedStyle(doc.querySelector('.hero-title')).fontWeight;
   ok('the script is not given a weight it does not have',
-     heroWeight === '400', heroWeight);
-  /* Script ascenders and descenders reach well outside the cap height,
-     so a hero line-height that would clip a serif will clip these. */
-  const heroLH = parseFloat(win.getComputedStyle(doc.querySelector('.hero-title')).lineHeight);
-  ok('the hero name has room for its ascenders', heroLH >= 40, heroLH + 'px');
+     wmSt.fontWeight === '400', wmSt.fontWeight);
+  /* A script face is not drawn for capitals. Running the name through
+     text-transform:uppercase produces an all-caps script that stops
+     reading as handwriting, so the name has to be left as written. */
+  ok('the script wordmark is not forced into capitals',
+     wmSt.textTransform === 'none', wmSt.textTransform);
+  /* Tracking is not neutral for this face: script letters are joined by
+     eye rather than by their shapes, so a gap wide enough to separate a
+     serif wordmark from a heading stops the script reading as a word. */
+  const wmTrack = parseFloat(wmSt.letterSpacing);
+  ok('the script wordmark is not tracked out like a serif',
+     wmTrack <= 1, wmTrack + 'px');
+  /* Swashes and ascenders reach outside the x-height, so a line-height
+     that suits a serif will clip these. Checked against this element's
+     own font-size rather than a fixed pixel count, so the check still
+     holds if the clamp is retuned. */
+  const wmLH = parseFloat(wmSt.lineHeight);
+  ok('the script wordmark has room for its swashes',
+     wmLH >= parseFloat(wmSt.fontSize) * 1.2, wmLH + 'px');
   /* Asserting the family name is not enough: a webfont that failed to
      load falls back silently and the name still computes. So the font
      that actually got used is checked against the one declared. */

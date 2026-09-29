@@ -247,22 +247,29 @@ background:rgba(255,255,255,.92);
 .topbar-tel:hover{color:var(--gold);}
 
 /* The brand is a name, not a mark, so it is live text: selectable,
-   searchable and crisp at any zoom. Uppercase and tracked out, which is
-   what separates a wordmark from a heading at a glance. The size is
-   clamped because the name is 24 characters wide and has to shrink
-   smoothly as the side columns close in. */
+   searchable and crisp at any zoom. The size is clamped because the name
+   is 24 characters wide and has to shrink smoothly as the side columns
+   close in. */
 /* min-height so the brand is a real tap target on a phone, not just a
-   line of text that happens to be a link. */
+   line of text that happens to be the link. */
 .logo{justify-self:center;min-width:0;min-height:44px;display:flex;align-items:center;padding:2px 6px;}
+/* The wordmark is the one place a script can carry the brand. It stays
+   live text, so the name is still selectable and searchable.
+   Three values are set for the script rather than inherited. Weight is
+   pinned to 400 because Pinyon Script ships one weight -- 700 would be
+   faked by the browser, smearing the thin strokes. Uppercase is
+   dropped, because a script face is not drawn for caps and running the
+   name through it produces an all-caps script that no longer reads as
+   handwriting. And tracking goes from .2em to .01em: .2em was doing real
+   work separating this wordmark from a heading, but script letters are
+   joined by eye rather than by their shapes, and at that gap they
+   stop reading as a word. Line-height opens to 1.4 for the swashes,
+   which sit outside the x-height. */
 .wordmark{
   display:block;
-  /* The brand face, not the display face: the name is the one thing on
-     the site that should not look like a heading. Weight 600 rather than
-     700 because Playfair is a high-contrast face and this is set as
-     small as as 13px, where the heavier cut goes spindly. */
-  font-family:var(--brand);font-weight:600;
-  font-size:clamp(13px,1.45vw,19px);
-  letter-spacing:.2em;text-transform:uppercase;
+  font-family:var(--script);font-weight:400;
+  font-size:clamp(15px,1.6vw,21px);
+  letter-spacing:.01em;text-transform:none;line-height:1.4;
   white-space:nowrap;color:var(--fg);transition:color .25s;
 }
 .logo:hover .wordmark{color:var(--gold);}
@@ -474,22 +481,17 @@ background:rgba(255,255,255,.92);
 }
 .hero-kicker::before,.hero-kicker::after{content:'';width:clamp(18px,4vw,44px);height:1px;background:currentColor;opacity:.6;}
 
-/* The hero name is the one place a script earns its keep: set as large
-   as 7.6rem, calligraphy is what makes the name look written rather
-   than typed.
-
-   Three things here are load-bearing rather than taste. Weight is
-   pinned to 400 because Pinyon Script ships one weight -- leaving 700
-   would make the browser synthesise a faux bold, which smears the thin
-   strokes and turns copperplate into graffiti. Line-height opens from
-   .95 to 1.05 because a script's ascenders, descenders and swashes
-   reach well outside the cap height, and .95 clipped them. And the
-   tracking goes from -0.01em to +0.01em, because script is joined by
-   eye rather than by the shapes of its letters, and negative tracking
-   closes those shapes up. */
+/* The hero name is the brand serif again, and this is where Playfair
+   earns its keep: set as large as 7.6rem it is what makes the name look
+   like a name rather than a heading. The script carries the identity at
+   the top of the page and in the header, but a script at 121px loses
+   the stroke contrast that gives it its texture, so the hero stays a
+   high-contrast serif. The negative tracking is pulled back from the
+   heading value, because a face this contrasty needs the letters to
+   breathe rather than crowd. */
 .hero-title{
-  font-family:var(--script);font-weight:400;
-  font-size:var(--fs-hero);line-height:1.05;letter-spacing:.01em;
+  font-family:var(--brand);font-weight:700;
+  font-size:var(--fs-hero);line-height:.95;letter-spacing:-.01em;
 }
 .hero-line{display:block;}
 /* The second line of the wordmark is the coal-and-gold note: set in the
