@@ -13,11 +13,16 @@
    ===================================================================== */
 
 /* Self-hosted and subset to Latin, so the site makes no third-party
-   requests. Swap these four files to change typeface. */
+   requests. Swap these files to change typeface. */
 @font-face{font-family:'Display';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/display-700.woff2) format('woff2');}
 @font-face{font-family:'Display';font-style:italic;font-weight:700;font-display:swap;src:url(/fonts/display-700i.woff2) format('woff2');}
 @font-face{font-family:'Body';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/body-400.woff2) format('woff2');}
 @font-face{font-family:'Body';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/body-700.woff2) format('woff2');}
+/* The brand face: a high-contrast serif, used only for the name -- the
+   wordmark in the header and the hero name. One variable file carries
+   weights 400-900, so the whole range costs a single 38KB request
+   rather than one file per weight. */
+@font-face{font-family:'Brand';font-style:normal;font-weight:400 900;font-display:swap;src:url(/fonts/brand-var.woff2) format('woff2');}
 
 :root{
   color-scheme:light;
@@ -27,6 +32,7 @@
      1px rules are what make it read as a room rather than an app. */
   --r-s:2px; --r-m:3px; --r-l:4px; --r-pill:999px;
   --display:'Display',Georgia,'Times New Roman',serif;
+  --brand:'Brand',Georgia,'Times New Roman',serif;
   --body:'Body',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --gutter:clamp(20px,5%,64px);
   --max-w:1280px;
@@ -247,7 +253,11 @@ background:rgba(255,255,255,.92);
 .logo{justify-self:center;min-width:0;min-height:44px;display:flex;align-items:center;padding:2px 6px;}
 .wordmark{
   display:block;
-  font-family:var(--display);font-weight:700;
+  /* The brand face, not the display face: the name is the one thing on
+     the site that should not look like a heading. Weight 600 rather than
+     700 because Playfair is a high-contrast face and this is set as
+     small as as 13px, where the heavier cut goes spindly. */
+  font-family:var(--brand);font-weight:600;
   font-size:clamp(13px,1.45vw,19px);
   letter-spacing:.2em;text-transform:uppercase;
   white-space:nowrap;color:var(--fg);transition:color .25s;
@@ -461,7 +471,14 @@ background:rgba(255,255,255,.92);
 }
 .hero-kicker::before,.hero-kicker::after{content:'';width:clamp(18px,4vw,44px);height:1px;background:currentColor;opacity:.6;}
 
-.hero-title{font-size:var(--fs-hero);line-height:.95;letter-spacing:-.022em;}
+/* The brand face again, and this is where it earns its keep: Playfair
+   set as large as 7.6rem is what makes the name look like a name. The
+   negative tracking is pulled back from the heading value, because a
+   face this contrasty needs the letters to breathe rather than crowd. */
+.hero-title{
+  font-family:var(--brand);font-weight:700;
+  font-size:var(--fs-hero);line-height:.95;letter-spacing:-.01em;
+}
 .hero-line{display:block;}
 /* The second line of the wordmark is the coal-and-gold note: set in the
    house gold, and where the browser can clip a gradient to text it runs

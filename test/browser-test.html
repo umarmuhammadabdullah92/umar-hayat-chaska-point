@@ -719,13 +719,24 @@ async function run() {
   await setWidth(1440, 900);
   const h1st = win.getComputedStyle(doc.querySelector('h1'));
   ok('the hero name is set large', parseFloat(h1st.fontSize) >= 43, h1st.fontSize);
-  /* Two faces, and they must not have collapsed into one. The display
-     face is the serif; the body face is not. */
-  ok('the hero name is set in the display face', /^Display|Georgia|serif/i.test(h1st.fontFamily) &&
-     !/^Body/.test(h1st.fontFamily), h1st.fontFamily);
+  /* Three faces, and the brand face must not have collapsed into
+     another. The name -- header wordmark and hero -- is set in Brand;
+     the body is not; the menu's prices stay in the display serif. */
+  ok('the hero name is set in the brand face', /^Brand/.test(h1st.fontFamily),
+     h1st.fontFamily);
+  const wmFace = win.getComputedStyle(doc.querySelector('.wordmark')).fontFamily;
+  ok('the wordmark is set in the brand face too', /^Brand/.test(wmFace), wmFace);
+  /* Asserting the family name is not enough: a webfont that failed to
+     load falls back silently and the name still computes. So the font
+     that actually got used is checked against the one declared. */
+  ok('the brand font actually loaded, not just declared',
+     doc.fonts && Array.from(doc.fonts).some(f =>
+       f.family === 'Brand' && f.status === 'loaded'),
+     (doc.fonts ? Array.from(doc.fonts).filter(f => f.family === 'Brand')
+          .map(f => f.family + ':' + f.status).join(', ') : 'no document.fonts'));
   const bodyFace = win.getComputedStyle(doc.body).fontFamily;
   ok('body copy is set in the text face, not the display face',
-     /^Body/.test(bodyFace) && !/Display/.test(bodyFace), bodyFace);
+     /^Body/.test(bodyFace) && !/Display|Brand/.test(bodyFace), bodyFace);
 
   stage('menu type');
   /* =============================================== the menu's own type */
