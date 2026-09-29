@@ -1486,6 +1486,7 @@ def page(body, url):
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/umarhayatchaskapoint.png">
 <meta name="apple-mobile-web-app-title" content="{name}">
+<link rel="preload" href="/fonts/script-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/brand-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -1654,6 +1655,7 @@ def not_found_page():
 <meta name="theme-color" content="%(bg)s">
 <meta name="color-scheme" content="light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/script-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/brand-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>
