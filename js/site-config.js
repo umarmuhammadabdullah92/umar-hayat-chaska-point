@@ -150,6 +150,18 @@ window.SITE = {
       'usually within the hour between 12:00 and 23:00.'
   },
 
+  /* --- online ordering ---
+     The menu page lets a guest add dishes and send the list to WhatsApp,
+     the same honest hand-off as a reservation: no server, no payment and
+     nothing stored. The single editable sentence below is what sits under
+     the order button, so it is the one line that has to say plainly what
+     sending the order does and does not do. */
+  ordering: {
+    note:
+      'Sending this order tells the kitchen what to start. Nothing is ' +
+      'paid for here — the bill is settled when it is picked up or arrives.'
+  },
+
   /* --- private dining ---
      TODO: confirm the real rooms, capacities and terms. `seats` and
      `terms` are shown verbatim on the page, so make them the sentence
@@ -280,6 +292,7 @@ window.SITE.todos = function () {
     if (ph(p.terms)) t.push('private dining terms: ' + p.name);
   });
   if (ph(SITE.reservations.notice)) t.push('reservation notice');
+  if (ph(SITE.ordering.note)) t.push('ordering note');
   flag('interlude quote', SITE.quote.text);
   flag('interlude attribution', SITE.quote.by);
 

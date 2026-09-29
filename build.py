@@ -627,13 +627,21 @@ def dish_row(d):
     # Name and price only. The description and the service note stay in
     # ITEMS because the signature cards still use them and because they
     # are what search matches on, but the menu itself reads as a printed
-    # menu: a line of names, a leader, a price.
+    # menu: a line of names, a leader, a price. The quantity control
+    # beside the price is what turns a printed menu into an order.
     return '''        <li class="dish" id="dish-{id}" data-item="{name}"
             data-anchor="dish-{id}" data-price="{price}" data-cat="{cat}">
           <div class="dish-head">
             <h3 class="dish-name">{name}{tags}</h3>
             <span class="dish-lead" aria-hidden="true"></span>
             <span class="dish-price">{price_fmt}</span>
+            <span class="qty" data-qty>
+              <button type="button" class="qty-btn" data-qty-sub
+                aria-label="Take one out of {name}" disabled>&minus;</button>
+              <span class="qty-n" data-qty-n>0</span>
+              <button type="button" class="qty-btn qty-btn--add" data-qty-add
+                aria-label="Add one {name}">+</button>
+            </span>
           </div>
         </li>'''.format(
         id=esc(d['id']), name=esc(d['name']), tags=tags,
@@ -650,6 +658,29 @@ def head(level, ident, text):
     places that have to agree."""
     tag = 'h%d' % level
     return '<%s id="%s">%s</%s>' % (tag, ident, text, tag)
+
+
+def order_bar():
+    """The sticky tray at the bottom of the menu page.
+
+    It is in the markup, empty and hidden, so the page never depends on
+    js/order.js: without JavaScript it stays hidden and the fine print
+    above sends the guest to the phone instead."""
+    note = need('ordering', 'note')
+    return '''  <div class="orderbar" id="orderBar" hidden>
+    <div class="wrap orderbar-in">
+      <p class="orderbar-what">
+        <span class="orderbar-count" id="orderCount" aria-live="polite">0 items</span>
+        <span class="orderbar-sep" aria-hidden="true"></span>
+        <span class="orderbar-total" id="orderTotal">{zero}</span>
+      </p>
+      <div class="orderbar-acts">
+        <button type="button" class="btn btn-wa" id="orderSend" disabled>Send order</button>
+        <button type="button" class="orderbar-clear" id="orderClear">Clear the order</button>
+      </div>
+      <p class="orderbar-note">{note}</p>
+    </div>
+  </div>'''.format(zero=esc(money(0)), note=esc(note))
 
 
 def menu_section(level=2):
@@ -702,10 +733,15 @@ def menu_section(level=2):
     </div>
 
     <p class="menu-fine">Prices include tax. Grill dishes are cooked to order
-      and take longer than everything else on this page.</p>
+      and take longer than everything else on this page. <span
+      class="js-order-note">To order, tap&nbsp;+ beside a dish and send the
+      list on WhatsApp.</span><span class="nojs-order-note">To order,
+      call {phone} or message the kitchen on WhatsApp.</span></p>
   </div>
+{orderbar}
 </section>'''.format(filters=filters, groups='\n'.join(groups),
-                       h='h%d' % level)
+                   h='h%d' % level, phone=esc(need('phone')),
+                   orderbar=order_bar())
 
 
 def signature_section():
@@ -828,8 +864,12 @@ def experience_section():
     if band:
         band_html = ('<img src="/img/%s" alt="" loading="lazy" decoding="async" '
                      'width="2000" height="900">' % esc(band))
+        band_cls = ' band--shot'
     else:
         band_html = '<span class="shot-ph shot-ph--wide">The room, after ten</span>'
+        # As in the hero: the wash is for a photograph, not for the bare
+        # ground, where it would black out the pull quote.
+        band_cls = ''
 
     return '''<section id="experience" class="sect" aria-labelledby="exp-h">
   <div class="wrap">
@@ -845,14 +885,14 @@ def experience_section():
     </ol>
   </div>
 
-  <div class="band" data-reveal>
+  <div class="band{band_cls}" data-reveal>
     <div class="band-shot">{band}</div>
     <blockquote class="band-quote">
       <p>{q}</p>
       <cite>{by}</cite>
     </blockquote>
   </div>
-</section>'''.format(steps='\n'.join(steps), band=band_html,
+</section>'''.format(steps='\n'.join(steps), band=band_html, band_cls=band_cls,
                      q=esc(q['text']), by=esc(q['by']))
 
 
@@ -1145,12 +1185,17 @@ def hero():
     if src:
         bg = ('<img class="hero-img" src="/img/%s" alt="" fetchpriority="high" '
               'decoding="async" width="2000" height="1200">' % esc(src))
+        bg_cls = ' hero-bg--shot'
     else:
         bg = ''
+        # No photograph means no scrim: the dark wash exists to hold the
+        # name over a bright photo, and over the bare ground it would
+        # only paint the white hero black behind dark text.
+        bg_cls = ''
 
     a = need('address')
     return '''<section class="hero" id="top">
-  <div class="hero-bg" aria-hidden="true">{bg}<span class="hero-grain"></span></div>
+  <div class="hero-bg{bg_cls}" aria-hidden="true">{bg}<span class="hero-grain"></span></div>
   <div class="hero-in">
     <p class="hero-kicker">{kicker}</p>
     <h1 class="hero-title">
@@ -1174,7 +1219,8 @@ def hero():
     </p>
   </div>
 </section>'''.format(
-        bg=bg,     kicker=esc(need('heroKicker')),
+        bg=bg,     bg_cls=bg_cls,
+        kicker=esc(need('heroKicker')),
         line1=esc(lines[0]), line2=esc(lines[-1]),
         lede=esc(need('heroLede')),
         open_hours=esc('Open %s &ndash; %s' % (
@@ -1192,6 +1238,7 @@ def hero():
 SCRIPTS = '''<script src="/js/site-config.js" defer></script>
 <script src="/js/header.js" defer></script>
 <script src="/js/menu.js" defer></script>
+<script src="/js/order.js" defer></script>
 <script src="/js/reserve.js" defer></script>'''
 def menu_index_json():
     """The dish list, as JSON, inlined into every page.
@@ -1417,15 +1464,15 @@ def json_ld(url):
 
 def page(body, url):
     return '''<!DOCTYPE html>
-<html lang="en" class="no-js" data-theme="dark">
+<html lang="en" class="no-js" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{canonical}">
-<meta name="theme-color" content="#0B0907">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light">
 <meta property="og:site_name" content="{name}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
@@ -1482,9 +1529,9 @@ BODY = {
 
 
 FAVICON = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" fill="#0B0907"/>
+<rect width="64" height="64" fill="#FFFFFF"/>
 <text x="32" y="46" font-family="Georgia,serif" font-size="36" font-weight="700"
-      text-anchor="middle" fill="#DDC491">U</text>
+      text-anchor="middle" fill="#8A6634">U</text>
 </svg>
 '''
 
@@ -1596,7 +1643,7 @@ def not_found_page():
         '            <li><a href="%s">%s</a></li>' % (url, esc(label))
         for _fn, url, label, _nav in PAGES if _nav)
     return '''<!DOCTYPE html>
-<html lang="en" class="no-js" data-theme="dark">
+<html lang="en" class="no-js" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1604,7 +1651,7 @@ def not_found_page():
 <meta name="description" content="That page is not one of ours. The menu, the story, the hours and the reservation form all are.">
 <meta name="robots" content="noindex, follow">
 <meta name="theme-color" content="%(bg)s">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/display-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/body-400.woff2" as="font" type="font/woff2" crossorigin>

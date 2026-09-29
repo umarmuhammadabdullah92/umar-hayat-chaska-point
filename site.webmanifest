@@ -1,5 +1,5 @@
 {
-  "background_color": "#0B0907",
+  "background_color": "#FFFFFF",
   "categories": [
     "food",
     "restaurant",
@@ -28,5 +28,5 @@
   "scope": "/",
   "short_name": "Chaska Point",
   "start_url": "/",
-  "theme_color": "#0B0907"
+  "theme_color": "#FFFFFF"
 }

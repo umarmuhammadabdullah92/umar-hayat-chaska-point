@@ -227,9 +227,20 @@ and `ITEMS` in `build.py`.
 
 ### Colours and typefaces
 The palette is in `:root` at the top of `css/style.css`. The page is
-deliberately near-black (`#0B0907`) with a warm off-black for alternating
-sections, and the accent is the logo's own gold (`#DDC491`), which is
-sampled from the artwork and only works on a dark ground.
+paper-white (`#FFFFFF`) with a warm off-white for alternating sections,
+and the accent is the logo's own gold hue darkened to `#866130` for the
+light ground: the artwork gold `#DDC491` measures 1.6:1 on white, so it
+is a texture colour here, not a text colour.
+
+Two rules that are easy to break when editing the palette:
+
+- The dark washes over photographs (`.hero-bg--shot::after` and
+  `.band--shot::before`) only exist to hold light text over a photo.
+  They are keyed to the photo being present, because over the bare
+  white ground they paint the hero and the pull quote black.
+- Alpha reads very differently over white than over near-black. Muted
+  text that looked right at `rgba(..., .58)` on a dark theme fails WCAG
+  AA on white; `--fg-muted` is `.62` for that reason.
 
 The test suite checks the contrast of the text as it stands, so a palette
 change that breaks WCAG AA fails the build rather than shipping.

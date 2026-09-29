@@ -1,10 +1,11 @@
 /* =====================================================================
    Umar Hayat Chaska Point
    ---------------------------------------------------------------------
-   One dark, warm, low-lit room. Near-black ground, the logo's own gold
-   used sparingly, hairlines instead of boxes, sharp corners instead of
-   rounded ones, and a lot of empty space. Every colour is a token in
-   :root, so rebranding means editing that block and nothing else.
+   One bright, warm, paper-white room. A faintly warm ground, the logo's
+   gold darkened until it can carry text, hairlines instead of boxes,
+   sharp corners instead of rounded ones, and a lot of empty space.
+   Every colour is a token in :root, so rebranding means editing that
+   block and nothing else.
 
    Shape and type tokens live in :root too and are deliberately NOT
    overridden by the theme, which is why there is only one theme and it
@@ -19,7 +20,7 @@
 @font-face{font-family:'Body';font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/body-700.woff2) format('woff2');}
 
 :root{
-  color-scheme:dark;
+  color-scheme:light;
 
   /* --- shape, type and layout -----------------------------------------
      Nothing in the site is rounded except the pills. Sharp corners and
@@ -42,37 +43,49 @@
   --track-micro:0.24em;
 
   /* --- colour ----------------------------------------------------------
-     The ground is not pure black. Pure black kills the warm cast that
-     makes the gold look like gold, and it crushes the hairlines.
-     The logo's own gold measures 11.6:1 on this ground, which is why
-     it can carry body text and why the previous palette had to darken
-     it for a white page. */
-  --bg:#0B0907;          /* page                    */
-  --bg-2:#100D0A;        /* deep sections, footer   */
-  --bg-3:#16110C;        /* raised: fields, panels  */
-  --fg:#F2EAD9;          /* text                    */
-  --fg-soft:rgba(242,234,217,.82);
-  --fg-muted:rgba(242,234,217,.58);
-  --gold:#DDC491;
-  --gold-deep:#B08D57;
-  --gold-wash:rgba(221,196,145,.12);
-  --on-gold:#0B0907;
+     A white page, but not a cold one: the ground carries a faint warm
+     cast so the gold still reads as gold and the hairlines still look
+     like ink rather than grey.
 
-  /* Three weights of hairline. --line is decorative and deliberately
-     below any contrast threshold; --line-3 is the boundary of an
-     interactive control and is the one that has to clear 3:1, which at
-     0.45 alpha it does (3.1:1 on --bg). Field borders use --line-3 for
-     that reason and never --line. */
-  --line:rgba(221,196,145,.15);
-  --line-2:rgba(221,196,145,.28);
-  --line-3:rgba(221,196,145,.45);
+     The logo's own gold is #DDC491, which measures 11.6:1 on near-black
+     but only 1.6:1 on white -- it disappears as text. So the accent here
+     is that same hue darkened, which is why --gold is not the logo
+     colour on a light ground. #866130 carries body text at 5.6:1 on
+     white and still clears AA on the raised --bg-3 panels. */
+  --bg:#FFFFFF;          /* page                    */
+  --bg-2:#FAF7F1;        /* deep sections, footer   */
+  --bg-3:#F2EDE3;        /* raised: fields, panels  */
+  --fg:#1B150E;          /* text                    */
+  --fg-soft:rgba(27,21,14,.84);
+  /* .62 rather than .58: alpha reads very differently over white than
+     it does over near-black, and .58 lands at 4.2:1 on --bg-3, which is
+     under AA. .62 clears it on the darkest surface the site has. */
+  --fg-muted:rgba(27,21,14,.62);
+  --gold:#866130;        /* logo gold, darkened for white */
+  --gold-deep:#5F4122;
+  --gold-wash:rgba(134,97,48,.09);
+  --on-gold:#FFFFFF;
 
-  --danger:#E8946B;
+  /* Three weights of hairline, all warm-black rather than gold so they
+     read as ink. --line is decorative and deliberately below any
+     contrast threshold; --line-3 is the boundary of an interactive
+     control and is the one that has to clear 3:1, which at 0.42 alpha it
+     does (3.1:1 on --bg). Field borders use --line-3 for that reason
+     and never --line. */
+  --line:rgba(27,21,14,.13);
+  --line-2:rgba(27,21,14,.26);
+  --line-3:rgba(27,21,14,.42);
+
+  --danger:#B4421F;
   --wa:#25D366;
   --wa-hi:#1DB954;
   --on-wa:#04240F;
 
-  --shadow:0 24px 70px rgba(0,0,0,.6);
+  /* Shadows do the separating on white, because the ground and the
+     raised surfaces are close in value and a hairline alone will not
+     lift a panel off the page. Kept very soft: a hard shadow on white
+     reads as dirt rather than depth. */
+  --shadow:0 18px 48px rgba(27,21,14,.12);
   --hdr-h:0px;
 }
 
@@ -178,10 +191,10 @@ ul,ol{list-style:none;}
 }
 .btn:active{transform:scale(.98);}
 .btn-gold{background:var(--gold);color:var(--on-gold);}
-.btn-gold:hover{background:#EBD6A9;}
-/* The outline button sits on a near-black ground, so its border is
+.btn-gold:hover{background:var(--gold-deep);}
+/* The outline button sits on a near-white ground, so its border is
    --line-2 and not --line-3: it does not need to carry a 3:1 boundary
-   the way a text field does, and a brighter one would shout. */
+   the way a text field does, and a darker one would shout. */
 .btn-line{border-color:var(--line-2);color:var(--fg);}
 .btn-line:hover{border-color:var(--gold);color:var(--gold);}
 .btn-wa{background:var(--wa);color:var(--on-wa);}
@@ -199,12 +212,12 @@ ul,ol{list-style:none;}
      so there is no bar across the name. Once anything has scrolled under
      it, it becomes an opaque bar so the text over moving content stays
      readable. Both states are driven from one class. */
-  background:linear-gradient(to bottom,rgba(11,9,7,.7),rgba(11,9,7,0));
+  background:linear-gradient(to bottom,rgba(255,255,255,.75),rgba(255,255,255,0));
   border-bottom-color:transparent;
   transition:background .3s,border-color .3s;
 }
 .site-hdr.is-stuck{
-  background:rgba(11,9,7,.9);
+background:rgba(255,255,255,.92);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
   border-bottom-color:var(--line);
@@ -364,7 +377,7 @@ ul,ol{list-style:none;}
 .drawer{
   position:fixed;top:var(--drawer-top,0px);right:0;bottom:0;z-index:199;
   width:min(360px,90vw);
-  background:var(--bg-2);box-shadow:-24px 0 60px rgba(0,0,0,.7);
+  background:var(--bg-2);box-shadow:-24px 0 60px rgba(27,21,14,.16);
   transform:translateX(106%);visibility:hidden;
   transition:transform .4s cubic-bezier(.2,.9,.3,1),visibility .4s;
   display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
@@ -411,25 +424,28 @@ ul,ol{list-style:none;}
 }
 .hero-bg{position:absolute;inset:0;z-index:-2;overflow:hidden;
   /* Two glows from below: a wide warm one for the coal and a tighter
-     orange one for the fire itself. This is the only place on the site
-     that is allowed to look lit. */
+     orange one for the fire itself. Held very low on a white ground --
+     the point is the faintest warmth at the base of the page, not a
+     lit room. */
   background:
-    radial-gradient(120% 62% at 50% 112%,rgba(221,196,145,.14),transparent 62%),
-    radial-gradient(70% 46% at 50% 116%,rgba(191,74,32,.20),transparent 66%),
+    radial-gradient(120% 62% at 50% 112%,rgba(134,97,48,.07),transparent 62%),
+    radial-gradient(70% 46% at 50% 116%,rgba(180,66,31,.06),transparent 66%),
     var(--bg);
 }
 .hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 /* A scrim over any hero photograph. Without it a mid-bright photo puts
    the cream name straight over a bright patch and the name stops being
    readable. */
-.hero-bg::after{
+.hero-bg--shot::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(to bottom,rgba(11,9,7,.66) 0%,rgba(11,9,7,.5) 42%,rgba(11,9,7,.86) 88%);
 }
-/* Film grain, inline so it costs no request. It is what stops the large
-   flat areas of near-black from banding on an 8-bit panel. */
+/* Paper tooth, inline so it costs no request. It was originally film
+   grain to stop near-black banding on an 8-bit panel; on a white ground
+   the same noise reads as the faint tooth of paper instead. Soft-light
+   rather than overlay, so it textures without dirtying the white. */
 .hero-grain{
-  position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
+  position:absolute;inset:0;opacity:.035;mix-blend-mode:soft-light;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -447,6 +463,18 @@ ul,ol{list-style:none;}
 
 .hero-title{font-size:var(--fs-hero);line-height:.95;letter-spacing:-.022em;}
 .hero-line{display:block;}
+/* The second line of the wordmark is the coal-and-gold note: set in the
+   house gold, and where the browser can clip a gradient to text it runs
+   warm instead of flat. The plain gold underneath the @supports block is
+   the fallback, and live text keeps its semantics either way. */
+.hero-line:last-child{color:var(--gold);}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .hero-line:last-child{
+    background:linear-gradient(96deg,var(--gold-deep) 0%,var(--gold) 50%,#6E4F26 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+}
 .hero-title .rule{margin:clamp(24px,3.4vw,40px) auto;}
 .hero-lede{
   max-width:52ch;color:var(--fg-soft);
@@ -467,7 +495,7 @@ ul,ol{list-style:none;}
    closed state is the only red thing on the site and it is worth the
    exception. */
 .dot{width:6px;height:6px;border-radius:50%;background:var(--fg-muted);flex-shrink:0;}
-.is-open .dot{background:var(--gold);box-shadow:0 0 0 3px rgba(221,196,145,.16);}
+.is-open .dot{background:var(--gold);box-shadow:0 0 0 3px rgba(134,97,48,.16);}
 .is-closed .dot{background:var(--danger);}
 .strip-addr{white-space:nowrap;}
 .strip-links{display:flex;align-items:center;gap:10px;}
@@ -491,15 +519,15 @@ ul,ol{list-style:none;}
   position:absolute;inset:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   padding:20px;text-align:center;
-  color:rgba(221,196,145,.44);
+  color:rgba(27,21,14,.38);
   font-size:var(--fs-micro);font-weight:700;letter-spacing:var(--track-micro);
   text-transform:uppercase;
   background:
-    radial-gradient(88% 66% at 50% 104%,rgba(221,196,145,.08),transparent 62%),
-    repeating-linear-gradient(135deg,rgba(221,196,145,.03) 0 1px,transparent 1px 10px),
+    radial-gradient(88% 66% at 50% 104%,rgba(134,97,48,.06),transparent 62%),
+    repeating-linear-gradient(135deg,rgba(27,21,14,.025) 0 1px,transparent 1px 10px),
     var(--bg-3);
 }
-.shot-rule{display:block;width:26px;height:1px;background:rgba(221,196,145,.5);}
+.shot-rule{display:block;width:26px;height:1px;background:rgba(134,97,48,.5);}
 
 /* =====================================================================
    MENU
@@ -543,10 +571,19 @@ ul,ol{list-style:none;}
 /* One line per dish, so the rows sit closer than they would with a
    description under them. The name and price stay on one baseline, which
    is what makes the two columns scan as a list. */
-.dish{padding:15px 0;border-bottom:1px solid var(--line);}
+.dish{padding:15px 0;border-bottom:1px solid var(--line);
+  transition:background-color .25s;}
+.dish:hover .dish-name{color:var(--gold);}
+.dish:hover .dish-lead{border-color:var(--line-3);}
 .dish.hidden{display:none;}
-.dish-head{display:flex;align-items:baseline;gap:10px;}
-.dish-name{font-size:1.06rem;line-height:1.35;}
+/* Centred rather than baseline so the quantity control has a real
+   vertical home instead of hanging from the text. The leader keeps its
+   own seat near the baseline. Row wraps on a narrow screen rather than
+   pushing past the gutter; the dotted leader is dropped then, because
+   there is no right-side price it is leading to once the price and the
+   stepper sit on the line below. */
+.dish-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;row-gap:8px;}
+.dish-name{font-size:1.06rem;line-height:1.35;transition:color .2s;}
 /* The leader is a zero-height box with a dotted bottom edge, sitting on
    the text baseline via align-self. A row of literal dots would not
    survive a dish name that wraps. */
@@ -556,6 +593,32 @@ ul,ol{list-style:none;}
   font-family:var(--display);font-size:1.02rem;color:var(--gold);
   font-variant-numeric:tabular-nums;white-space:nowrap;
 }
+/* The quantity control on every dish. Two finger-sized buttons around a
+   read-only count; the group is hidden without JavaScript because a + a
+   guest taps and nothing happens is worse than no + at all. */
+.qty{display:inline-flex;align-items:center;gap:10px;margin-left:14px;flex:0 0 auto;}
+.qty-btn{
+  width:40px;height:40px;border:1px solid var(--line-3);border-radius:var(--r-pill);
+  color:var(--fg);display:inline-flex;align-items:center;justify-content:center;
+  font-size:1.05rem;line-height:1;
+  transition:border-color .2s,color .2s,background-color .2s;
+}
+.qty-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.qty-btn:active:not(:disabled){transform:scale(.94);}
+.qty-btn--add{background:var(--gold-wash);}
+.qty-btn:disabled{opacity:.32;cursor:default;}
+.qty-n{
+  min-width:20px;text-align:center;
+  font-family:var(--display);font-size:.95rem;color:var(--fg);
+  font-variant-numeric:tabular-nums;
+}
+
+/* The one line of copy announcing that the menu takes an order. It sits
+   inside .menu-fine and has a no-JavaScript twin that swaps in. */
+.nojs-order-note{display:none;}
+.no-js .nojs-order-note{display:inline;}
+.no-js .js-order-note{display:none;}
+.no-js .qty{display:none;}
 .menu-fine{
   margin-top:clamp(44px,5vw,68px);padding-top:20px;
   border-top:1px solid var(--line);
@@ -570,9 +633,20 @@ ul,ol{list-style:none;}
 .sig{position:relative;}
 .sig .shot{margin-bottom:24px;transition:border-color .4s;}
 .sig:hover .shot{border-color:var(--line-2);}
+/* A slow push into the photograph, not a jump: the card settles instead
+   of snapping. Motion is optional, so the reduced-motion block turns it
+   off with the rest of the transitions. */
+.sig .shot img,.sig .shot-ph{
+  transition:transform .9s cubic-bezier(.22,.7,.3,1);
+}
+.sig:hover .shot img,.sig:hover .shot-ph{transform:scale(1.045);}
 .sig-idx{
   font-family:var(--display);font-size:.78rem;letter-spacing:.24em;
   color:var(--gold);margin-bottom:10px;
+}
+.sig-idx::before{
+  content:'';display:inline-block;width:18px;height:1px;
+  background:var(--gold);margin-right:10px;vertical-align:2px;
 }
 .sig-name{font-size:var(--fs-h3);margin-bottom:10px;}
 .sig-price{
@@ -635,7 +709,7 @@ ul,ol{list-style:none;}
 .band-shot{position:absolute;inset:0;z-index:-1;}
 .band-shot .shot{position:absolute;inset:0;height:100%;aspect-ratio:auto;border:0;}
 .band-shot .shot-ph{opacity:.5;}
-.band::before{
+.band--shot::before{
   content:'';position:absolute;inset:0;z-index:-1;
   background:linear-gradient(to bottom,rgba(11,9,7,.7),rgba(11,9,7,.82));
 }
@@ -715,7 +789,7 @@ ul,ol{list-style:none;}
   background-repeat:no-repeat;background-position:right 15px center;
   padding-right:38px;
 }
-.field input::placeholder,.field textarea::placeholder{color:rgba(242,234,217,.34);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(27,21,14,.38);}
 .field input:focus,.field select:focus,.field textarea:focus{
   outline:none;border-color:var(--gold);background:var(--bg-2);
 }
@@ -736,7 +810,7 @@ ul,ol{list-style:none;}
   font-size:.8rem;font-weight:700;letter-spacing:.06em;color:var(--gold);
   text-decoration:underline;text-underline-offset:4px;
 }
-.link-btn:hover{color:#EBD6A9;}
+.link-btn:hover{color:var(--gold-deep);}
 
 /* With JavaScript off the selects would be empty, so the markup shows
    the phone and WhatsApp panel instead of a form that cannot submit. */
@@ -916,6 +990,51 @@ ul,ol{list-style:none;}
 @keyframes toast-out{to{opacity:0;transform:translateY(-8px);}}
 
 /* =====================================================================
+   ORDER BAR
+   ---------------------------------------------------------------------
+   The sticky tray that holds an order together while the guest walks it
+   down the menu. It is the last child of the menu section, so it rests
+   at the bottom of the page once the menu is scrolled to its end, and
+   while that has not happened it pins to the foot of the viewport. */
+.orderbar{
+  position:sticky;bottom:0;z-index:160;
+  background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line-2);
+  box-shadow:0 -14px 36px rgba(27,21,14,.10);
+  padding-top:env(safe-area-inset-top);
+}
+.orderbar-in{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px 22px;flex-wrap:wrap;
+  padding:16px var(--gutter) 8px;
+}
+.orderbar-what{display:flex;align-items:baseline;gap:14px;flex:1 1 auto;}
+.orderbar-count{
+  font-size:var(--fs-micro);font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--fg-muted);
+}
+.orderbar-sep{width:1px;height:12px;background:var(--line-2);align-self:center;}
+.orderbar-total{
+  font-family:var(--display);font-size:1.4rem;color:var(--gold);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.orderbar-acts{display:flex;align-items:center;gap:6px;}
+.orderbar-clear{
+  min-height:44px;padding:0 14px;
+  font-size:var(--fs-micro);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--fg-muted);
+}
+.orderbar-clear:hover{color:var(--gold);}
+.orderbar-note{
+  font-size:var(--fs-micro);letter-spacing:.06em;
+  color:var(--fg-muted);line-height:1.6;
+  padding:2px var(--gutter) 14px;
+  max-width:calc(var(--max-w) + 2 * var(--gutter));
+  margin:0 auto;width:100%;
+}
+
+/* =====================================================================
    RESPONSIVE
    ===================================================================== */
 @media (max-width:1080px){
@@ -940,7 +1059,7 @@ ul,ol{list-style:none;}
   .mainnav-in::-webkit-scrollbar{display:none;}
   .uico-hide,.topbar-tel,.topbar-cta{display:none;}
   .ham{display:flex;}
-  .site-hdr{background:rgba(11,9,7,.9);
+  .site-hdr{background:rgba(255,255,255,.92);
     backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
 }
 @media (max-width:760px){
@@ -966,4 +1085,11 @@ ul,ol{list-style:none;}
   .sig .shot{margin-bottom:22px;}
   .res-panel{padding:22px 18px;}
   .toasts{bottom:20px;}
+  /* On a phone the price and the stepper sit on the line under the name,
+     so the dotted leader has nothing to lead to. */
+  .dish-lead{display:none;}
+  .qty{margin-left:12px;gap:8px;}
+  .orderbar-note{display:none;}
+  .orderbar-total{font-size:1.15rem;}
+  .orderbar-clear{padding:0 8px;}
 }
